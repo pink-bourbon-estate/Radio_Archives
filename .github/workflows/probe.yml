@@ -6,39 +6,25 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Look at how the playlist page gets its plays
+      - name: Embedded history size and API addresses in the scripts
         run: |
           UA="RadioArchivesBot/0.1 (+https://github.com/pink-bourbon-estate/Radio_Archives; unofficial non-commercial archive; one-off check)"
-          curl -sS -A "$UA" -o page.html -w "page: %{http_code} %{size_download} bytes\n" https://www.hellorayo.co.uk/jazz-fm/playlist
+          curl -sS -A "$UA" -o page.html https://www.hellorayo.co.uk/jazz-fm/playlist
           python3 - <<'PY'
           import re, json
           h = open("page.html", encoding="utf-8").read()
-          m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', h, re.S)
-          d = json.loads(m.group(1))
-          pp = d["props"]["pageProps"]
-          print("pageProps keys:", list(pp.keys()))
-          def find(o, path=""):
-              if isinstance(o, dict):
-                  for k, v in o.items():
-                      p = f"{path}.{k}"
-                      if k in ("songHistory", "stationId", "playlist") or "history" in k.lower():
-                          print(p, "=", json.dumps(v)[:400])
-                      find(v, p)
-              elif isinstance(o, list):
-                  for i, v in enumerate(o[:2]): find(v, f"{path}[{i}]")
-          find(d)
-          print("buildId:", d.get("buildId"))
-          srcs = sorted(set(re.findall(r'src="(/_next/static/[^"]+\.js)"', h)))
-          print("scripts:", len(srcs))
-          for s in srcs: print("  ", s)
-          open("srcs.txt", "w").write("\n".join(srcs))
+          d = json.loads(re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', h, re.S).group(1))
+          hist = d["props"]["initialState"]["station"]["data"]["stationPlayHistory"]
+          print("EMBEDDED_HISTORY", len(hist), hist[0]["nowPlayingTime"], "->", hist[-1]["nowPlayingTime"])
+          print("ITEM_KEYS", list(hist[0].keys()))
+          print("STATION", {k: v for k, v in d["props"]["initialState"]["station"]["data"].items() if isinstance(v, (str, int)) and len(str(v)) < 80})
+          print("PLAYLIST_STATE", json.dumps(d["props"]["initialState"]["playlist"])[:300])
+          print("RUNTIME_CONFIG", json.dumps(d.get("runtimeConfig"))[:600] if d.get("runtimeConfig") else None)
+          print("ENV-LIKE", [m for m in set(re.findall(r'https?://[A-Za-z0-9./_-]*(?:api|listen)[A-Za-z0-9./_-]*', json.dumps(d)))][:20])
           PY
-      - name: Search the page scripts for the endpoint
-        run: |
-          UA="RadioArchivesBot/0.1 (+https://github.com/pink-bourbon-estate/Radio_Archives; unofficial non-commercial archive; one-off check)"
-          for s in $(grep -E "pages/|_app|playlist|main" srcs.txt | head -8); do
-            sleep 2
-            curl -sS -A "$UA" -o chunk.js "https://www.hellorayo.co.uk$s"
-            echo "== $s ($(wc -c < chunk.js) bytes)"
-            grep -oE ".{120}(songHistory|song-history|recently-played|recentlyPlayed|nowplaying|now-playing|/api/[a-zA-Z/_-]+).{160}" chunk.js | head -6
-          done
+          sleep 2
+          curl -sS -A "$UA" -o app.js "https://www.hellorayo.co.uk/_next/static/chunks/pages/_app-71213e65cbc096d9.js"
+          echo "APP_URLS"
+          grep -oE "https?://[A-Za-z0-9.-]*(planetradio|bauer|hellorayo|listenapi)[A-Za-z0-9./_?=&{}\$-]*" app.js | sort | uniq -c | sort -rn | head -30
+          echo "PLAYLIST_FETCH"
+          grep -oE ".{200}(fetchPlaylist|playlistHistory|stations_playhistory|playhistory|tracklistById).{300}" app.js | head -4
