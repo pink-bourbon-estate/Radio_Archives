@@ -1,0 +1,11 @@
+{
+ "final_url": "https://play.radioplayer.org/en/search",
+ "text": "About Radioplayer\nListen Live\nBroadcaster login\nHome\nLive\nPodcasts\nSearch\nEnglish\nradioplayer.org\nHome\nSearch\nSettings\nDiscover\nExplore radio and unique podcasts for every genre\nRecent Search History\nDiscover stations\nDiscover podcasts",
+ "responses": [
+  {
+   "url": "https://play.radioplayer.org/api/languages?locale=en",
+   "status": 200,
+   "body": "\"English\""
+  }
+ ]
+}
