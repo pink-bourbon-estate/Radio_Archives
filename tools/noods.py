@@ -80,6 +80,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-shows", type=int, default=400)
     ap.add_argument("--delay", type=float, default=0.4)
+    ap.add_argument("--max-minutes", type=float, default=20)
     a = ap.parse_args()
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
@@ -100,15 +101,16 @@ def main():
     for key in ("featured", "latest"):
         for p in shows.get(key, []):
             queue.append((p.get("id", ""), ""))
-    print(f"{len(residents)} residents")
+    print(f"{len(residents)} residents", flush=True)
 
     new = 0
+    t0 = time.time()
     with open(OUT, "a", encoding="utf-8") as out:
 
         def take(show_id, start):
             nonlocal new
             slug = show_id.split("/", 1)[-1]
-            if not show_id.startswith("shows/") or slug in have or new >= a.max_shows:
+            if not show_id.startswith("shows/") or slug in have or new >= a.max_shows or time.time() - t0 > a.max_minutes * 60:
                 return
             d = get(f"{show_id}.json", a.delay)
             if not d:
@@ -123,18 +125,20 @@ def main():
             }
             out.write(json.dumps(rec, ensure_ascii=False) + "\n")
             out.flush()
+            if new % 25 == 0:
+                print(f"  {new} shows so far ({time.time() - t0:.0f}s)", flush=True)
             have.add(slug)
             new += 1
 
         for sid, start in queue:
             take(sid, start)
         for rid in residents:
-            if new >= a.max_shows:
+            if new >= a.max_shows or time.time() - t0 > a.max_minutes * 60:
                 break
             url = f"{rid}.json"
             start = ""
             page = 0
-            while url and new < a.max_shows and page < 60:
+            while url and new < a.max_shows and page < 60 and time.time() - t0 < a.max_minutes * 60:
                 r = get(url, a.delay)
                 if not r:
                     break

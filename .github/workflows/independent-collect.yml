@@ -28,7 +28,7 @@ jobs:
           for attempt in 1 2 3; do
             git fetch origin main
             git reset --hard origin/main
-            python3 tools/noods.py --max-shows 400
+            python3 -u tools/noods.py --max-shows 400 --max-minutes 20
             git add independent/data
             if git diff --cached --quiet; then echo "Nothing new."; exit 0; fi
             git commit -m "Independent Archive: new Noods Radio shows $(date -u +%Y-%m-%d)"
