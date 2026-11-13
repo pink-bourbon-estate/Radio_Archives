@@ -1,0 +1,1065 @@
+{
+ "Ujima Radio": {
+  "user": ""
+ },
+ "Wave Radio": {
+  "user": "WaveWsM",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/WaveWsM/cloudcasts/?limit=20&until=2026-09-20+10%3A03%3A37",
+   "previous": "https://api.mixcloud.com/WaveWsM/cloudcasts/?limit=20&since=2026-11-12+21%3A07%3A20"
+  },
+  "first_item": {
+   "key": "/WaveWsM/the-country-weston-show-old-and-new/",
+   "url": "https://www.mixcloud.com/WaveWsM/the-country-weston-show-old-and-new/",
+   "name": "The Country & Weston Show Old and New",
+   "tags": [
+    {
+     "key": "/genres/country/",
+     "url": "https://www.mixcloud.com/genres/country/",
+     "name": "Country"
+    },
+    {
+     "key": "/genres/bluegrass/",
+     "url": "https://www.mixcloud.com/genres/bluegrass/",
+     "name": "Bluegrass"
+    },
+    {
+     "key": "/genres/honky-tonk/",
+     "url": "https://www.mixcloud.com/genres/honky-tonk/",
+     "name": "Honky tonk"
+    },
+    {
+     "key": "/genres/traditional-country-music/",
+     "url": "https://www.mixcloud.com/genres/traditional-country-music/",
+     "name": "Traditional country music"
+    },
+    {
+     "key": "/genres/western-cowboy-country/",
+     "url": "https://www.mixcloud.com/genres/western-cowboy-country/",
+     "name": "Western (Cowboy) country"
+    }
+   ],
+   "created_time": "2026-11-12T21:07:20Z",
+   "updated_time": "2026-11-12T21:07:20Z",
+   "play_count": 0,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 0,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946"
+   },
+   "slug": "the-country-weston-show-old-and-new",
+   "user": {
+    "key": "/WaveWsM/",
+    "url": "https://www.mixcloud.com/WaveWsM/",
+    "name": "Wave Community Radio",
+    "username": "WaveWsM",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946"
+    }
+   },
+   "hosts": [],
+   "audio_length": 3599
+  },
+  "detail": {
+   "key": "/WaveWsM/the-country-weston-show-old-and-new/",
+   "url": "https://www.mixcloud.com/WaveWsM/the-country-weston-show-old-and-new/",
+   "name": "The Country & Weston Show Old and New",
+   "tags": [
+    {
+     "key": "/genres/country/",
+     "url": "https://www.mixcloud.com/genres/country/",
+     "name": "Country"
+    },
+    {
+     "key": "/genres/bluegrass/",
+     "url": "https://www.mixcloud.com/genres/bluegrass/",
+     "name": "Bluegrass"
+    },
+    {
+     "key": "/genres/honky-tonk/",
+     "url": "https://www.mixcloud.com/genres/honky-tonk/",
+     "name": "Honky tonk"
+    },
+    {
+     "key": "/genres/traditional-country-music/",
+     "url": "https://www.mixcloud.com/genres/traditional-country-music/",
+     "name": "Traditional country music"
+    },
+    {
+     "key": "/genres/western-cowboy-country/",
+     "url": "https://www.mixcloud.com/genres/western-cowboy-country/",
+     "name": "Western (Cowboy) country"
+    }
+   ],
+   "created_time": "2026-11-12T21:07:20Z",
+   "updated_time": "2026-11-12T21:07:20Z",
+   "play_count": 0,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 0,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946"
+   },
+   "slug": "the-country-weston-show-old-and-new",
+   "user": {
+    "key": "/WaveWsM/",
+    "url": "https://www.mixcloud.com/WaveWsM/",
+    "name": "Wave Community Radio",
+    "username": "WaveWsM",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/c/1/6/a/c2af-7118-40dd-b839-1780b0234946"
+    }
+   },
+   "hosts": [],
+   "audio_length": 3599,
+   "description": "",
+   "sections": []
+  }
+ },
+ "Brixton Radio": {
+  "user": "brixtonradiolive",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/brixtonradiolive/cloudcasts/?limit=20&until=2026-11-13+16%3A21%3A12",
+   "previous": "https://api.mixcloud.com/brixtonradiolive/cloudcasts/?limit=20&since=2026-11-13+16%3A42%3A02"
+  },
+  "first_item": {
+   "key": "/brixtonradiolive/ricochets-reload-w-jirani-altered-orbit-101126/",
+   "url": "https://www.mixcloud.com/brixtonradiolive/ricochets-reload-w-jirani-altered-orbit-101126/",
+   "name": "RICOCHET'S RELOAD W. JIRANI & ALTERED ORBIT 10.11.26",
+   "tags": [
+    {
+     "key": "/genres/drum-and-bass/",
+     "url": "https://www.mixcloud.com/genres/drum-and-bass/",
+     "name": "Drum and bass"
+    },
+    {
+     "key": "/genres/ambient-drum-and-bass/",
+     "url": "https://www.mixcloud.com/genres/ambient-drum-and-bass/",
+     "name": "Ambient drum and Bass"
+    },
+    {
+     "key": "/genres/atmospheric-drum-and-bass/",
+     "url": "https://www.mixcloud.com/genres/atmospheric-drum-and-bass/",
+     "name": "Atmospheric drum and bass"
+    },
+    {
+     "key": "/genres/jump-up-drum-and-bass/",
+     "url": "https://www.mixcloud.com/genres/jump-up-drum-and-bass/",
+     "name": "Jump Up drum and Bass"
+    },
+    {
+     "key": "/genres/liquid-drum-and-bass/",
+     "url": "https://www.mixcloud.com/genres/liquid-drum-and-bass/",
+     "name": "Liquid drum and bass"
+    }
+   ],
+   "created_time": "2026-11-13T16:42:02Z",
+   "updated_time": "2026-11-13T18:29:42Z",
+   "play_count": 1,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 0,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2"
+   },
+   "slug": "ricochets-reload-w-jirani-altered-orbit-101126",
+   "user": {
+    "key": "/brixtonradiolive/",
+    "url": "https://www.mixcloud.com/brixtonradiolive/",
+    "name": "Brixton Radio",
+    "username": "brixtonradiolive",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a"
+    }
+   },
+   "hosts": [],
+   "audio_length": 7052
+  },
+  "detail": {
+   "key": "/brixtonradiolive/ricochets-reload-w-jirani-altered-orbit-101126/",
+   "url": "https://www.mixcloud.com/brixtonradiolive/ricochets-reload-w-jirani-altered-orbit-101126/",
+   "name": "RICOCHET'S RELOAD W. JIRANI & ALTERED ORBIT 10.11.26",
+   "tags": [
+    {
+     "key": "/genres/drum-and-bass/",
+     "url": "https://www.mixcloud.com/genres/drum-and-bass/",
+     "name": "Drum and bass"
+    },
+    {
+     "key": "/genres/ambient-drum-and-bass/",
+     "url": "https://www.mixcloud.com/genres/ambient-drum-and-bass/",
+     "name": "Ambient drum and Bass"
+    },
+    {
+     "key": "/genres/atmospheric-drum-and-bass/",
+     "url": "https://www.mixcloud.com/genres/atmospheric-drum-and-bass/",
+     "name": "Atmospheric drum and bass"
+    },
+    {
+     "key": "/genres/jump-up-drum-and-bass/",
+     "url": "https://www.mixcloud.com/genres/jump-up-drum-and-bass/",
+     "name": "Jump Up drum and Bass"
+    },
+    {
+     "key": "/genres/liquid-drum-and-bass/",
+     "url": "https://www.mixcloud.com/genres/liquid-drum-and-bass/",
+     "name": "Liquid drum and bass"
+    }
+   ],
+   "created_time": "2026-11-13T16:42:02Z",
+   "updated_time": "2026-11-13T18:29:42Z",
+   "play_count": 1,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 0,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/e/e/7/b/6a25-3154-42fd-897e-4a6591203ab2"
+   },
+   "slug": "ricochets-reload-w-jirani-altered-orbit-101126",
+   "user": {
+    "key": "/brixtonradiolive/",
+    "url": "https://www.mixcloud.com/brixtonradiolive/",
+    "name": "Brixton Radio",
+    "username": "brixtonradiolive",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/b/d/1/1/d8a6-bd96-488e-a9d3-ee7754a17b7a"
+    }
+   },
+   "hosts": [],
+   "audio_length": 7052,
+   "description": "",
+   "sections": [],
+   "picture_primary_color": "57b8f9"
+  }
+ },
+ "Voices Radio": {
+  "user": "VoicesRadio",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/VoicesRadio/cloudcasts/?limit=20&until=2026-11-12+15%3A52%3A03",
+   "previous": "https://api.mixcloud.com/VoicesRadio/cloudcasts/?limit=20&since=2026-11-13+18%3A12%3A22"
+  },
+  "first_item": {
+   "key": "/VoicesRadio/dmd-radio-w-lex-hearth-131126-voices-radio/",
+   "url": "https://www.mixcloud.com/VoicesRadio/dmd-radio-w-lex-hearth-131126-voices-radio/",
+   "name": "DMD Radio w/ Lex Hearth - 13/11/26 [Voices Radio]",
+   "tags": [
+    {
+     "key": "/genres/deep-house/",
+     "url": "https://www.mixcloud.com/genres/deep-house/",
+     "name": "Deep house"
+    },
+    {
+     "key": "/genres/house/",
+     "url": "https://www.mixcloud.com/genres/house/",
+     "name": "House"
+    }
+   ],
+   "created_time": "2026-11-13T18:12:22Z",
+   "updated_time": "2026-11-13T18:12:22Z",
+   "play_count": 0,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 0,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a"
+   },
+   "slug": "dmd-radio-w-lex-hearth-131126-voices-radio",
+   "user": {
+    "key": "/VoicesRadio/",
+    "url": "https://www.mixcloud.com/VoicesRadio/",
+    "name": "Voices Radio",
+    "username": "VoicesRadio",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12"
+    }
+   },
+   "hosts": [],
+   "hidden_stats": true,
+   "audio_length": 3709
+  },
+  "detail": {
+   "key": "/VoicesRadio/dmd-radio-w-lex-hearth-131126-voices-radio/",
+   "url": "https://www.mixcloud.com/VoicesRadio/dmd-radio-w-lex-hearth-131126-voices-radio/",
+   "name": "DMD Radio w/ Lex Hearth - 13/11/26 [Voices Radio]",
+   "tags": [
+    {
+     "key": "/genres/deep-house/",
+     "url": "https://www.mixcloud.com/genres/deep-house/",
+     "name": "Deep house"
+    },
+    {
+     "key": "/genres/house/",
+     "url": "https://www.mixcloud.com/genres/house/",
+     "name": "House"
+    }
+   ],
+   "created_time": "2026-11-13T18:12:22Z",
+   "updated_time": "2026-11-13T18:12:22Z",
+   "play_count": 0,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 0,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/5/0/c/e/b43b-23a1-4561-a842-28f385240c9a"
+   },
+   "slug": "dmd-radio-w-lex-hearth-131126-voices-radio",
+   "user": {
+    "key": "/VoicesRadio/",
+    "url": "https://www.mixcloud.com/VoicesRadio/",
+    "name": "Voices Radio",
+    "username": "VoicesRadio",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/5/b/6/c/144f-c867-4ff8-a88d-ee212dedec12"
+    }
+   },
+   "hosts": [],
+   "hidden_stats": true,
+   "audio_length": 3709,
+   "description": "@dmduk is back this month with @lexhearth stepping in for @shanagujral. For the next hour we’ll be bringing you the best in deep house, gearing you up for the weekend ✨",
+   "sections": [],
+   "picture_primary_color": "713624"
+  }
+ },
+ "Worldwide FM": {
+  "user": "worldwidefm",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/worldwidefm/cloudcasts/?limit=20&until=2026-11-09+13%3A52%3A40",
+   "previous": "https://api.mixcloud.com/worldwidefm/cloudcasts/?limit=20&since=2026-11-13+16%3A00%3A00"
+  },
+  "first_item": {
+   "key": "/worldwidefm/dj-sotofett-presents-resonance-of-dub-13-11-26/",
+   "url": "https://www.mixcloud.com/worldwidefm/dj-sotofett-presents-resonance-of-dub-13-11-26/",
+   "name": "DJ Sotofett presents Resonance of Dub // 13-11-26",
+   "tags": [
+    {
+     "key": "/genres/dub/",
+     "url": "https://www.mixcloud.com/genres/dub/",
+     "name": "Dub"
+    },
+    {
+     "key": "/genres/reggae/",
+     "url": "https://www.mixcloud.com/genres/reggae/",
+     "name": "Reggae"
+    },
+    {
+     "key": "/genres/worldwide-fm/",
+     "url": "https://www.mixcloud.com/genres/worldwide-fm/",
+     "name": "WorldWide FM"
+    }
+   ],
+   "created_time": "2026-11-13T16:00:00Z",
+   "updated_time": "2026-11-13T18:41:29Z",
+   "play_count": 0,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 0,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/3/6/6/1/8b9f-1280-496f-a92b-e8b4e931141b",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/3/6/6/1/8b9f-1280-496f-a92b-e8b4e931141b",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/3/6/6/1/8b9f-1280-496f-a92b-e8b4e931141b",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/3/6/6/1/8b9f-1280-496f-a92b-e8b4e931141b",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/3/6/6/1/8b9f-1280-496f-a92b-e8b4e931141b",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/3/6/6/1/8b9f-1280-496f-a92b-e8b4e931141b",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/3/6/6/1/8b9f-1280-496f-a92b-e8b4e931141b",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/3/6/6/1/8b9f-1280-496f-a92b-e8b4e931141b",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/3/6/6/1/8b9f-1280-496f-a92b-e8b4e931141b",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/3/6/6/1/8b9f-1280-496f-a92b-e8b4e931141b"
+   },
+   "slug": "dj-sotofett-presents-resonance-of-dub-13-11-26",
+   "user": {
+    "key": "/worldwidefm/",
+    "url": "https://www.mixcloud.com/worldwidefm/",
+    "name": "Worldwide FM",
+    "username": "worldwidefm",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/d/1/2/9/9939-bfc8-4690-b1ba-eef25166f04b",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/d/1/2/9/9939-bfc8-4690-b1ba-eef25166f04b",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/d/1/2/9/9939-bfc8-4690-b1ba-eef25166f04b",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/d/1/2/9/9939-bfc8-4690-b1ba-eef25166f04b",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/d/1/2/9/9939-bfc8-4690-b1ba-eef25166f04b",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/d/1/2/9/9939-bfc8-4690-b1ba-eef25166f04b",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/d/1/2/9/9939-bfc8-4690-b1ba-eef25166f04b",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/d/1/2/9/9939-bfc8-4690-b1ba-eef25166f04b"
+    }
+   },
+   "hosts": [],
+   "hidden_stats": true,
+   "audio_length": 7201
+  }
+ },
+ "Foundation FM": {
+  "user": "FOUNDATION_FM",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/FOUNDATION_FM/cloudcasts/?limit=20&until=2026-09-21+10%3A35%3A26",
+   "previous": "https://api.mixcloud.com/FOUNDATION_FM/cloudcasts/?limit=20&since=2026-11-10+15%3A36%3A54"
+  },
+  "first_item": {
+   "key": "/FOUNDATION_FM/karlie-marx-05112026-foundationfm/",
+   "url": "https://www.mixcloud.com/FOUNDATION_FM/karlie-marx-05112026-foundationfm/",
+   "name": "Karlie marx - 05.11.2026 - foundation.fm",
+   "tags": [
+    {
+     "key": "/genres/dubstep/",
+     "url": "https://www.mixcloud.com/genres/dubstep/",
+     "name": "Dubstep"
+    },
+    {
+     "key": "/genres/bass/",
+     "url": "https://www.mixcloud.com/genres/bass/",
+     "name": "Bass"
+    },
+    {
+     "key": "/genres/club/",
+     "url": "https://www.mixcloud.com/genres/club/",
+     "name": "Club"
+    }
+   ],
+   "created_time": "2026-11-10T15:36:54Z",
+   "updated_time": "2026-11-13T17:26:09Z",
+   "play_count": 13,
+   "favorite_count": 2,
+   "comment_count": 0,
+   "listener_count": 5,
+   "repost_count": 1,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/b/0/1/9/723f-79e6-4dfe-be86-0e574c3c5a49",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/b/0/1/9/723f-79e6-4dfe-be86-0e574c3c5a49",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/b/0/1/9/723f-79e6-4dfe-be86-0e574c3c5a49",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/b/0/1/9/723f-79e6-4dfe-be86-0e574c3c5a49",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/b/0/1/9/723f-79e6-4dfe-be86-0e574c3c5a49",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/b/0/1/9/723f-79e6-4dfe-be86-0e574c3c5a49",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/b/0/1/9/723f-79e6-4dfe-be86-0e574c3c5a49",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/b/0/1/9/723f-79e6-4dfe-be86-0e574c3c5a49",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/b/0/1/9/723f-79e6-4dfe-be86-0e574c3c5a49",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/b/0/1/9/723f-79e6-4dfe-be86-0e574c3c5a49"
+   },
+   "slug": "karlie-marx-05112026-foundationfm",
+   "user": {
+    "key": "/FOUNDATION_FM/",
+    "url": "https://www.mixcloud.com/FOUNDATION_FM/",
+    "name": "foundation.fm",
+    "username": "FOUNDATION_FM",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/3/b/f/e/524b-f8bd-424e-ae50-38439c18e285",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/3/b/f/e/524b-f8bd-424e-ae50-38439c18e285",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/3/b/f/e/524b-f8bd-424e-ae50-38439c18e285",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/3/b/f/e/524b-f8bd-424e-ae50-38439c18e285",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/3/b/f/e/524b-f8bd-424e-ae50-38439c18e285",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/3/b/f/e/524b-f8bd-424e-ae50-38439c18e285",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/3/b/f/e/524b-f8bd-424e-ae50-38439c18e285",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/3/b/f/e/524b-f8bd-424e-ae50-38439c18e285"
+    }
+   },
+   "hosts": [],
+   "audio_length": 3429
+  }
+ },
+ "Netil Radio": {
+  "user": "NetilRadio",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/NetilRadio/cloudcasts/?limit=20&until=2023-08-04+15%3A03%3A32",
+   "previous": "https://api.mixcloud.com/NetilRadio/cloudcasts/?limit=20&since=2024-01-25+08%3A15%3A00"
+  },
+  "first_item": {
+   "key": "/NetilRadio/s%C3%B8unds-fl%C3%B8ating-ar%C3%B8und-w-flaavi%C3%B8-20th-january-2024/",
+   "url": "https://www.mixcloud.com/NetilRadio/s%C3%B8unds-fl%C3%B8ating-ar%C3%B8und-w-flaavi%C3%B8-20th-january-2024/",
+   "name": "Søunds fløating arøund w/ Flaaviø - 20th January 2024",
+   "tags": [
+    {
+     "key": "/genres/deep-house/",
+     "url": "https://www.mixcloud.com/genres/deep-house/",
+     "name": "Deep house"
+    },
+    {
+     "key": "/genres/italo-disco/",
+     "url": "https://www.mixcloud.com/genres/italo-disco/",
+     "name": "Italo disco"
+    },
+    {
+     "key": "/genres/house/",
+     "url": "https://www.mixcloud.com/genres/house/",
+     "name": "House"
+    },
+    {
+     "key": "/genres/electronica/",
+     "url": "https://www.mixcloud.com/genres/electronica/",
+     "name": "Electronica"
+    },
+    {
+     "key": "/genres/jazz-house/",
+     "url": "https://www.mixcloud.com/genres/jazz-house/",
+     "name": "Jazz house"
+    }
+   ],
+   "created_time": "2024-01-25T08:15:00Z",
+   "updated_time": "2026-11-13T11:44:38Z",
+   "play_count": 0,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 0,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/6/4/b/a/7b41-9258-451b-b441-86572ac908e2",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/6/4/b/a/7b41-9258-451b-b441-86572ac908e2",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/6/4/b/a/7b41-9258-451b-b441-86572ac908e2",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/6/4/b/a/7b41-9258-451b-b441-86572ac908e2",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/6/4/b/a/7b41-9258-451b-b441-86572ac908e2",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/6/4/b/a/7b41-9258-451b-b441-86572ac908e2",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/6/4/b/a/7b41-9258-451b-b441-86572ac908e2",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/6/4/b/a/7b41-9258-451b-b441-86572ac908e2",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/6/4/b/a/7b41-9258-451b-b441-86572ac908e2",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/6/4/b/a/7b41-9258-451b-b441-86572ac908e2"
+   },
+   "slug": "søunds-fløating-arøund-w-flaaviø-20th-january-2024",
+   "user": {
+    "key": "/NetilRadio/",
+    "url": "https://www.mixcloud.com/NetilRadio/",
+    "name": "Netil Radio",
+    "username": "NetilRadio",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/8/2/8/1/f0f2-86bb-4f8d-9863-937cc43d3d86",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/8/2/8/1/f0f2-86bb-4f8d-9863-937cc43d3d86",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/8/2/8/1/f0f2-86bb-4f8d-9863-937cc43d3d86",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/8/2/8/1/f0f2-86bb-4f8d-9863-937cc43d3d86",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/8/2/8/1/f0f2-86bb-4f8d-9863-937cc43d3d86",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/8/2/8/1/f0f2-86bb-4f8d-9863-937cc43d3d86",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/8/2/8/1/f0f2-86bb-4f8d-9863-937cc43d3d86",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/8/2/8/1/f0f2-86bb-4f8d-9863-937cc43d3d86"
+    }
+   },
+   "hosts": [],
+   "hidden_stats": true,
+   "audio_length": 7203
+  }
+ },
+ "Reform Radio": {
+  "user": "Missbdj",
+  "list_keys": [
+   "data",
+   "name"
+  ],
+  "count_first_page": 0,
+  "paging": null,
+  "first_item": {
+   "data": [],
+   "name": "Gina Breeze's Cloudcasts"
+  }
+ },
+ "All FM": {
+  "user": "allfm969",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/allfm969/cloudcasts/?limit=20&until=2026-11-11+14%3A21%3A01",
+   "previous": "https://api.mixcloud.com/allfm969/cloudcasts/?limit=20&since=2026-11-13+14%3A00%3A08"
+  },
+  "first_item": {
+   "key": "/allfm969/the-peace-love-show-thursday-10-september-2026/",
+   "url": "https://www.mixcloud.com/allfm969/the-peace-love-show-thursday-10-september-2026/",
+   "name": "The Peace & Love Show - Thursday 10 September 2026",
+   "tags": [],
+   "created_time": "2026-11-13T14:00:08Z",
+   "updated_time": "2026-11-13T14:20:04Z",
+   "play_count": 1,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 0,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/c/3/8/b/562f-a73f-4949-91ac-06b77492e762",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/c/3/8/b/562f-a73f-4949-91ac-06b77492e762",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/c/3/8/b/562f-a73f-4949-91ac-06b77492e762",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/c/3/8/b/562f-a73f-4949-91ac-06b77492e762",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/c/3/8/b/562f-a73f-4949-91ac-06b77492e762",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/c/3/8/b/562f-a73f-4949-91ac-06b77492e762",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/c/3/8/b/562f-a73f-4949-91ac-06b77492e762",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/c/3/8/b/562f-a73f-4949-91ac-06b77492e762",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/c/3/8/b/562f-a73f-4949-91ac-06b77492e762",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/c/3/8/b/562f-a73f-4949-91ac-06b77492e762"
+   },
+   "slug": "the-peace-love-show-thursday-10-september-2026",
+   "user": {
+    "key": "/allfm969/",
+    "url": "https://www.mixcloud.com/allfm969/",
+    "name": "ALL FM 96.9 Listen Again",
+    "username": "allfm969",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/e/9/e/d/ac0e-cf47-4a82-9697-221f1452d89a",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/e/9/e/d/ac0e-cf47-4a82-9697-221f1452d89a",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/e/9/e/d/ac0e-cf47-4a82-9697-221f1452d89a",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/e/9/e/d/ac0e-cf47-4a82-9697-221f1452d89a",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/e/9/e/d/ac0e-cf47-4a82-9697-221f1452d89a",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/e/9/e/d/ac0e-cf47-4a82-9697-221f1452d89a",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/e/9/e/d/ac0e-cf47-4a82-9697-221f1452d89a",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/e/9/e/d/ac0e-cf47-4a82-9697-221f1452d89a"
+    }
+   },
+   "hosts": [],
+   "audio_length": 3599
+  }
+ },
+ "BHCR": {
+  "user": ""
+ },
+ "Brum Radio": {
+  "user": "unsafe",
+  "list_keys": [
+   "data",
+   "name"
+  ],
+  "count_first_page": 0,
+  "paging": null,
+  "first_item": {
+   "data": [],
+   "name": "UnSaFe's Cloudcasts"
+  }
+ },
+ "CamGlen Radio": {
+  "user": "camglenradio",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/camglenradio/cloudcasts/?limit=20&until=2024-03-18+17%3A39%3A45",
+   "previous": "https://api.mixcloud.com/camglenradio/cloudcasts/?limit=20&since=2026-09-12+10%3A02%3A53"
+  },
+  "first_item": {
+   "key": "/CamGlenRadio/rutherglen-library-part-2/",
+   "url": "https://www.mixcloud.com/CamGlenRadio/rutherglen-library-part-2/",
+   "name": "Rutherglen Library Part 2",
+   "tags": [],
+   "created_time": "2026-09-12T10:02:53Z",
+   "updated_time": "2026-11-09T13:10:56Z",
+   "play_count": 21,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 1,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44"
+   },
+   "slug": "rutherglen-library-part-2",
+   "user": {
+    "key": "/CamGlenRadio/",
+    "url": "https://www.mixcloud.com/CamGlenRadio/",
+    "name": "CamGlen Radio",
+    "username": "CamGlenRadio",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/b/4/7/2/1e84-66ce-4177-a383-43e73ba30e44"
+    }
+   },
+   "hosts": [],
+   "audio_length": 1021
+  }
+ },
+ "Cannock Chase Radio": {
+  "user": ""
+ },
+ "Do!!You!!! World": {
+  "user": "do_you_radio",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/do_you_radio/cloudcasts/?limit=20&until=2026-11-04+19%3A59%3A22",
+   "previous": "https://api.mixcloud.com/do_you_radio/cloudcasts/?limit=20&since=2026-11-13+14%3A17%3A58"
+  },
+  "first_item": {
+   "key": "/do_you_radio/rosy-ross-131126/",
+   "url": "https://www.mixcloud.com/do_you_radio/rosy-ross-131126/",
+   "name": "Rosy Ross 13/11/26",
+   "tags": [
+    {
+     "key": "/genres/house/",
+     "url": "https://www.mixcloud.com/genres/house/",
+     "name": "House"
+    },
+    {
+     "key": "/genres/balearic/",
+     "url": "https://www.mixcloud.com/genres/balearic/",
+     "name": "Balearic"
+    },
+    {
+     "key": "/genres/dub/",
+     "url": "https://www.mixcloud.com/genres/dub/",
+     "name": "Dub"
+    },
+    {
+     "key": "/genres/acid/",
+     "url": "https://www.mixcloud.com/genres/acid/",
+     "name": "Acid"
+    }
+   ],
+   "created_time": "2026-11-13T14:17:58Z",
+   "updated_time": "2026-11-13T18:41:20Z",
+   "play_count": 0,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 0,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/d/7/3/e/ef81-3fbb-4b38-8ad9-3cf8458a9821",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/d/7/3/e/ef81-3fbb-4b38-8ad9-3cf8458a9821",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/d/7/3/e/ef81-3fbb-4b38-8ad9-3cf8458a9821",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/d/7/3/e/ef81-3fbb-4b38-8ad9-3cf8458a9821",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/d/7/3/e/ef81-3fbb-4b38-8ad9-3cf8458a9821",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/d/7/3/e/ef81-3fbb-4b38-8ad9-3cf8458a9821",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/d/7/3/e/ef81-3fbb-4b38-8ad9-3cf8458a9821",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/d/7/3/e/ef81-3fbb-4b38-8ad9-3cf8458a9821",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/d/7/3/e/ef81-3fbb-4b38-8ad9-3cf8458a9821",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/d/7/3/e/ef81-3fbb-4b38-8ad9-3cf8458a9821"
+   },
+   "slug": "rosy-ross-131126",
+   "user": {
+    "key": "/do_you_radio/",
+    "url": "https://www.mixcloud.com/do_you_radio/",
+    "name": "Do!! You!!! Radio",
+    "username": "do_you_radio",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/b/e/d/c/00c5-6759-4598-8106-571248c5a44e",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/b/e/d/c/00c5-6759-4598-8106-571248c5a44e",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/b/e/d/c/00c5-6759-4598-8106-571248c5a44e",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/b/e/d/c/00c5-6759-4598-8106-571248c5a44e",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/b/e/d/c/00c5-6759-4598-8106-571248c5a44e",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/b/e/d/c/00c5-6759-4598-8106-571248c5a44e",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/b/e/d/c/00c5-6759-4598-8106-571248c5a44e",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/b/e/d/c/00c5-6759-4598-8106-571248c5a44e"
+    }
+   },
+   "hosts": [],
+   "hidden_stats": true,
+   "audio_length": 7196
+  }
+ },
+ "EAVA FM": {
+  "user": ""
+ },
+ "FAB Radio": {
+  "user": "FabRadioShows",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/FabRadioShows/cloudcasts/?limit=20&until=2026-09-17+13%3A28%3A05",
+   "previous": "https://api.mixcloud.com/FabRadioShows/cloudcasts/?limit=20&since=2026-11-13+11%3A23%3A31"
+  },
+  "first_item": {
+   "key": "/FabRadioShows/alive-she-cried-e2/",
+   "url": "https://www.mixcloud.com/FabRadioShows/alive-she-cried-e2/",
+   "name": "Alive She Cried E2",
+   "tags": [
+    {
+     "key": "/genres/indie-rock/",
+     "url": "https://www.mixcloud.com/genres/indie-rock/",
+     "name": "Indie rock"
+    },
+    {
+     "key": "/genres/folk-rock/",
+     "url": "https://www.mixcloud.com/genres/folk-rock/",
+     "name": "Folk rock"
+    },
+    {
+     "key": "/genres/radio/",
+     "url": "https://www.mixcloud.com/genres/radio/",
+     "name": "Radio"
+    }
+   ],
+   "created_time": "2026-11-13T11:23:31Z",
+   "updated_time": "2026-11-13T17:26:02Z",
+   "play_count": 3,
+   "favorite_count": 0,
+   "comment_count": 0,
+   "listener_count": 1,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/5/1/1/6/0327-35f1-4eb5-98dd-96a39592374c",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/5/1/1/6/0327-35f1-4eb5-98dd-96a39592374c",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/5/1/1/6/0327-35f1-4eb5-98dd-96a39592374c",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/5/1/1/6/0327-35f1-4eb5-98dd-96a39592374c",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/5/1/1/6/0327-35f1-4eb5-98dd-96a39592374c",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/5/1/1/6/0327-35f1-4eb5-98dd-96a39592374c",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/5/1/1/6/0327-35f1-4eb5-98dd-96a39592374c",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/5/1/1/6/0327-35f1-4eb5-98dd-96a39592374c",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/5/1/1/6/0327-35f1-4eb5-98dd-96a39592374c",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/5/1/1/6/0327-35f1-4eb5-98dd-96a39592374c"
+   },
+   "slug": "alive-she-cried-e2",
+   "user": {
+    "key": "/FabRadioShows/",
+    "url": "https://www.mixcloud.com/FabRadioShows/",
+    "name": "FabRadioShows",
+    "username": "FabRadioShows",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/6/e/e/2/30fb-0d9c-46b0-855e-0a551baaedd0",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/6/e/e/2/30fb-0d9c-46b0-855e-0a551baaedd0",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/6/e/e/2/30fb-0d9c-46b0-855e-0a551baaedd0",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/6/e/e/2/30fb-0d9c-46b0-855e-0a551baaedd0",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/6/e/e/2/30fb-0d9c-46b0-855e-0a551baaedd0",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/6/e/e/2/30fb-0d9c-46b0-855e-0a551baaedd0",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/6/e/e/2/30fb-0d9c-46b0-855e-0a551baaedd0",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/6/e/e/2/30fb-0d9c-46b0-855e-0a551baaedd0"
+    }
+   },
+   "hosts": [],
+   "audio_length": 3716
+  }
+ },
+ "RadioReverb": {
+  "user": ""
+ },
+ "Steam Radio": {
+  "user": ""
+ },
+ "Totally Wired Radio": {
+  "user": "totallywiredradio",
+  "list_keys": [
+   "data",
+   "paging",
+   "name"
+  ],
+  "count_first_page": 20,
+  "paging": {
+   "next": "https://api.mixcloud.com/totallywiredradio/cloudcasts/?limit=20&until=2026-11-09+08%3A30%3A02",
+   "previous": "https://api.mixcloud.com/totallywiredradio/cloudcasts/?limit=20&since=2026-11-13+08%3A30%3A33"
+  },
+  "first_item": {
+   "key": "/totallywiredradio/mellow-mellow-right-on-w-richio-suzuki-w-jerome-anderson-the-mrs-121126/",
+   "url": "https://www.mixcloud.com/totallywiredradio/mellow-mellow-right-on-w-richio-suzuki-w-jerome-anderson-the-mrs-121126/",
+   "name": "Mellow Mellow Right On ~ Richio Suzuki w/ Jerome Anderson & The Mrs ~ 12.11.26",
+   "tags": [
+    {
+     "key": "/genres/jazz-funk/",
+     "url": "https://www.mixcloud.com/genres/jazz-funk/",
+     "name": "Jazz-funk"
+    },
+    {
+     "key": "/genres/modern-soul/",
+     "url": "https://www.mixcloud.com/genres/modern-soul/",
+     "name": "Modern soul"
+    },
+    {
+     "key": "/genres/soul/",
+     "url": "https://www.mixcloud.com/genres/soul/",
+     "name": "Soul"
+    },
+    {
+     "key": "/genres/vinyl-only/",
+     "url": "https://www.mixcloud.com/genres/vinyl-only/",
+     "name": "Vinyl Only"
+    },
+    {
+     "key": "/genres/space-disco/",
+     "url": "https://www.mixcloud.com/genres/space-disco/",
+     "name": "Space disco"
+    }
+   ],
+   "created_time": "2026-11-13T08:30:33Z",
+   "updated_time": "2026-11-13T18:41:56Z",
+   "play_count": 36,
+   "favorite_count": 5,
+   "comment_count": 0,
+   "listener_count": 15,
+   "repost_count": 0,
+   "pictures": {
+    "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/extaudio/3/b/f/9/93b9-1f2f-493c-892b-95ee9dc242b0",
+    "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/extaudio/3/b/f/9/93b9-1f2f-493c-892b-95ee9dc242b0",
+    "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/extaudio/3/b/f/9/93b9-1f2f-493c-892b-95ee9dc242b0",
+    "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/extaudio/3/b/f/9/93b9-1f2f-493c-892b-95ee9dc242b0",
+    "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/3/b/f/9/93b9-1f2f-493c-892b-95ee9dc242b0",
+    "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/extaudio/3/b/f/9/93b9-1f2f-493c-892b-95ee9dc242b0",
+    "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/extaudio/3/b/f/9/93b9-1f2f-493c-892b-95ee9dc242b0",
+    "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/extaudio/3/b/f/9/93b9-1f2f-493c-892b-95ee9dc242b0",
+    "768wx768h": "https://thumbnailer.mixcloud.com/unsafe/768x768/extaudio/3/b/f/9/93b9-1f2f-493c-892b-95ee9dc242b0",
+    "1024wx1024h": "https://thumbnailer.mixcloud.com/unsafe/1024x1024/extaudio/3/b/f/9/93b9-1f2f-493c-892b-95ee9dc242b0"
+   },
+   "slug": "mellow-mellow-right-on-w-richio-suzuki-w-jerome-anderson-the-mrs-121126",
+   "user": {
+    "key": "/totallywiredradio/",
+    "url": "https://www.mixcloud.com/totallywiredradio/",
+    "name": "Totally Wired Radio",
+    "username": "totallywiredradio",
+    "pictures": {
+     "small": "https://thumbnailer.mixcloud.com/unsafe/25x25/profile/5/3/a/f/1fe0-ab7e-44e3-964e-0b98874a316d",
+     "thumbnail": "https://thumbnailer.mixcloud.com/unsafe/50x50/profile/5/3/a/f/1fe0-ab7e-44e3-964e-0b98874a316d",
+     "medium_mobile": "https://thumbnailer.mixcloud.com/unsafe/80x80/profile/5/3/a/f/1fe0-ab7e-44e3-964e-0b98874a316d",
+     "medium": "https://thumbnailer.mixcloud.com/unsafe/100x100/profile/5/3/a/f/1fe0-ab7e-44e3-964e-0b98874a316d",
+     "large": "https://thumbnailer.mixcloud.com/unsafe/300x300/profile/5/3/a/f/1fe0-ab7e-44e3-964e-0b98874a316d",
+     "320wx320h": "https://thumbnailer.mixcloud.com/unsafe/320x320/profile/5/3/a/f/1fe0-ab7e-44e3-964e-0b98874a316d",
+     "extra_large": "https://thumbnailer.mixcloud.com/unsafe/600x600/profile/5/3/a/f/1fe0-ab7e-44e3-964e-0b98874a316d",
+     "640wx640h": "https://thumbnailer.mixcloud.com/unsafe/640x640/profile/5/3/a/f/1fe0-ab7e-44e3-964e-0b98874a316d"
+    }
+   },
+   "hosts": [],
+   "audio_length": 7662
+  }
+ }
+}
