@@ -38,20 +38,29 @@ jobs:
           key: jazzfm-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'catalogue/src/**', 'stations/jazz-fm/src/**') }}
           restore-keys: jazzfm-${{ runner.os }}-
 
-      - name: Collect new plays
-        run: |
-          cargo run --release --locked -p jazzfm -- collect \
-            --data stations/jazz-fm/data --catalogue catalogue/data
-
-      - name: Commit new data
+      # Collects, commits and pushes. If another run pushed first (for example two manual runs
+      # started together), start again from the latest main: collecting is incremental, so
+      # repeating it is safe and always ends with a clean push.
+      - name: Collect new plays and commit them
         run: |
           git config user.name "radio-archives-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add catalogue/data stations/jazz-fm/data
-          if git diff --cached --quiet; then
-            echo "No new plays."
-          else
+          cargo build --release --locked -p jazzfm
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            ./target/release/jazzfm collect \
+              --data stations/jazz-fm/data --catalogue catalogue/data
+            git add catalogue/data stations/jazz-fm/data
+            if git diff --cached --quiet; then
+              echo "No new plays."
+              exit 0
+            fi
             git commit -m "Jazz FM: add plays $(date -u +%Y-%m-%dT%H:%MZ)"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); starting again from the latest main."
+          done
+          echo "Could not push after 3 attempts." >&2
+          exit 1
