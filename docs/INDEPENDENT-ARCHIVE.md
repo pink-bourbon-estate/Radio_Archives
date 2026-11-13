@@ -6,12 +6,31 @@ tracking, unofficial and non-commercial.
 
 ## Registry
 
-`independent/stations.tsv` lists each station: area, kind, music, status, website, and
-`track_data`, which says what we know about its public play records. Every row starts at
+`independent/stations.tsv` lists each station: city, kind, music, status, **risk**, website,
+contact email, `track_data` (what we know about its public play records), notes and the
+source of each fact. Risk is one of:
+
+- `closed` / `paused`: off air. Nothing can be collected live; surviving show tracklists
+  (for example on Mixcloud) could still be imported by hand.
+- `high`: a public emergency fundraiser, eviction or funding cut in the last few years.
+- `watch`: small and self-funded, with no specific public warning found.
+- `low`: larger and better funded.
+- `unknown`: not confirmed to be on air. Every row starts at
 `unchecked`. A station only gets collected once someone has looked at how it publishes tracks.
 
 Places to grow the list: Ofcom's list of community radio stations, the Community Radio Index
 (about 300 stations worldwide, launched July 2026) and the Underground Radio Directory.
+
+## Why now
+
+Since 2022 many UK independent stations have closed or cut back, almost always citing rent,
+energy and running costs: SWU.FM (Bristol, 2022, later bought by Rinse), 1020 Radio (Bristol,
+2023), Melodic Distraction (Liverpool, 2023), Worldwide FM (much reduced, 2022), Vandelay Radio
+(Swansea, paused 2024), Coast Radio (Peterhead, 2025), Tone FM (Taunton, 2025). Others have run
+emergency fundraisers: Reprezent, Brixton Radio, Threads, Loose.FM, Clyde Built Radio and
+Resonance FM. Government money (the Community Radio Fund, about £0.9m in 2026/27) is only for
+Ofcom-licensed stations, so online-only stations, which are most of this list, cannot apply.
+When a station closes its play history usually goes with it.
 
 ## Where a station's track records might come from
 
