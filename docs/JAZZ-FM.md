@@ -21,7 +21,7 @@ GET https://listenapi.planetradio.co.uk/api9.2/events/jaz/{cursor}/{count}
 
 **We call this API directly. We do not load, render or scrape the web page.**
 
-Once a day (06:17 UTC, `.github/workflows/jazz-fm.yml`) `jazzfm collect`:
+Once a day (05:17 UTC, `.github/workflows/jazz-fm.yml`) `jazzfm collect`:
 
 1. Finds the newest play already stored.
 2. Walks backwards from now, 48 plays per request, pausing 0.25 s between requests.
@@ -39,10 +39,6 @@ It identifies itself as `RadioArchivesBot/0.2 (+https://github.com/pink-bourbon-
 It does not send browser headers (no browser `User-Agent`, `Origin` or `Referer`) and does not
 pretend to be the website.
 
-The earlier approach read the web page every 15 minutes, because the page only embeds the latest
-5 plays. That meant 96 full page loads a day, gaps whenever GitHub delayed a run, and no
-history. It is gone.
-
 ## robots.txt: a deliberate decision
 
 `listenapi.planetradio.co.uk` serves a `robots.txt` that disallows automated access. This
@@ -53,9 +49,9 @@ project **does not obey it for this host**, and says so openly. The reasons:
    a statement that the play list is secret. The same data is shown to every visitor of the
    public playlist page. The endpoint is unauthenticated and publicly cacheable (its responses
    carry `cache-control: max-age=3600, public` and are served through Cloudflare).
-2. **Load.** Polling the full page every 15 minutes means 672 page loads a week, each with
-   scripts, styles and layout. This approach is about 42 JSON requests a week (6 a day), about
-   120 KB in total, 0.25 s apart, mostly answered from cache. It puts close to no load on the origin.
+2. **Load.** About 42 small JSON requests a week (6 a day), about 120 KB in total, 0.25 s
+   apart, mostly answered from cache. It never loads the web page, its scripts or its styles,
+   and puts close to no load on the origin.
 3. **Nature of the data.** There is no paywall or login to bypass, no personal data (it is song
    titles, artist names and broadcast times), no degradation of the service (about 2 seconds
    of requests, once a day), and no commercial redistribution. It is a non-commercial archive
