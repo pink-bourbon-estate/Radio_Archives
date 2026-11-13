@@ -86,16 +86,20 @@ jobs:
       - name: Build the Independent Archive
         run: |
           python3 tools/independent_export.py _independent_data
-          # the same generator and look as the 6 Music and Jazz FM sites
-          ./stations/bbc-radio-6-music/target/release/bbc6 site --data _independent_data \
-            --src stations/bbc-radio-6-music/site \
-            --brand independent/site/brand.json --about independent/site/about.html \
-            --out public/independent \
-            --origin "https://${{ github.repository_owner }}.github.io" \
-            --base "/${{ github.event.repository.name }}/independent/"
-          cp _independent_data/plays.csv public/independent/plays.csv
-          node --check public/independent/assets/app.js
-          test -f public/independent/data/meta.json
+          if ls _independent_data/plays/*.csv >/dev/null 2>&1; then
+            # the same generator and look as the 6 Music and Jazz FM sites
+            ./stations/bbc-radio-6-music/target/release/bbc6 site --data _independent_data \
+              --src stations/bbc-radio-6-music/site \
+              --brand independent/site/brand.json --about independent/site/about.html \
+              --out public/independent \
+              --origin "https://${{ github.repository_owner }}.github.io" \
+              --base "/${{ github.event.repository.name }}/independent/"
+            cp _independent_data/plays.csv public/independent/plays.csv
+            node --check public/independent/assets/app.js
+            test -f public/independent/data/meta.json
+          else
+            echo 'No Independent Archive plays collected yet; building the station list only.'
+          fi
           # the list of stations (with the article) lives under /independent/stations/
           python3 tools/build_independent.py public/independent/stations
         env:
