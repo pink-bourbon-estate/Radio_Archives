@@ -1,12 +1,12 @@
 station	city	kind	music	status	risk	website	contact_email	track_data	notes	source	robots	checked_on
-Noods Radio	Bristol	independent online + DAB+	eclectic, dance; ska/reggae shows	on air; DAB+ since 24 Aug 2026	watch	noodsradio.com		unchecked	listener membership scheme; about 300 residents	worlddab.org; theransomnote.com	allowed	2026-11-13
-1020 Radio	Bristol	independent online	underground electronic	CLOSED 28 May 2023	closed	1020.live		unchecked	closed citing covid and rising costs; any surviving tracklists could be imported	djmag.com; bristol247.com	allowed	2026-11-13
+Noods Radio	Bristol	independent online + DAB+	eclectic, dance; ska/reggae shows	on air; DAB+ since 24 Aug 2026	watch	noodsradio.com		tracklists + programmes: collected daily (own JSON feed)	listener membership scheme; about 300 residents	worlddab.org; theransomnote.com	allowed	2026-11-13
+1020 Radio	Bristol	independent online	underground electronic	CLOSED 28 May 2023	closed	1020.live		no tracks or programmes found on site	closed citing covid and rising costs; any surviving tracklists could be imported	djmag.com; bristol247.com	allowed	2026-11-13
 SWU.FM	Bristol	community FM 103.7 + online	dubstep, garage, jungle/D&B, reggae	closed 1 Sep 2022; bought by Rinse FM and returned	watch			unchecked	possible match for the friend's station	bristol247.com; mixmag.net		
-Pigpen Radio	Bristol	independent online	reggae, dub	unknown	unknown	pigpenradio.org	oinkoink@pigpenradio.org	unchecked	from a 2020 list	shoutoutradio.lgbt	none	2026-11-13
+Pigpen Radio	Bristol	independent online	reggae, dub	unknown	unknown	pigpenradio.org	oinkoink@pigpenradio.org	AzuraCast: now-playing API (current track only)	from a 2020 list	shoutoutradio.lgbt	none	2026-11-13
 After Dark	Bristol	independent online	drum and bass	unknown	unknown			unchecked	website not found yet	shoutoutradio.lgbt		
 Workshop Radio	Bristol	independent online	club, grassroots artists	on air	watch			unchecked	set up after local closures	mixmag.net		
 Kunt Up Music.FM (K.U.M FM)	Bristol	independent online	queer-led; indie punk to hard dance	launched Feb 2024	watch			unchecked		bristol247.com		
-Ujima Radio	Bristol	Ofcom community FM 98.0 + DAB	African-Caribbean; reggae, soca	on air	watch	ujimaradio.com	info@ujimaradio.com; ujimaoffice@gmail.com; sales@ujimaradio.com	unchecked	shows on Mixcloud (UjimaRadio098)	ofcom.org.uk	allowed	2026-11-13
+Ujima Radio	Bristol	Ofcom community FM 98.0 + DAB	African-Caribbean; reggae, soca	on air	watch	ujimaradio.com	info@ujimaradio.com; ujimaoffice@gmail.com; sales@ujimaradio.com	programmes on Mixcloud; its API disallows bots (decision needed)	shows on Mixcloud (UjimaRadio098)	ofcom.org.uk	allowed	2026-11-13
 BCfm	Bristol	Ofcom community FM 93.2 + DAB	multicultural	on air; licence to Mar 2027	watch			unchecked		ofcom.org.uk		
 Bradley Stoke Radio	North Bristol	community FM + DAB	local	on air	watch			unchecked		radiotoday.co.uk		
 Base Radio	South Bristol	community online + DAB	local; invites local bands	on air	watch			unchecked		bristol247.com		
@@ -14,73 +14,73 @@ BassPort FM	Bristol	independent online	D&B, dubstep, bass	CLOSED	closed			unchec
 BURST Radio	Bristol	online	ska/punk show Clampdown (2012)	unknown	unknown	burstradio.org.uk		unchecked	old reference; confirm	punktastic.com	unknown	2026-11-13
 BA-1 Radio	Bath	community online	youth	unknown	unknown	ba1.radio		unchecked	from a 2020 list	shoutoutradio.lgbt	unknown	2026-11-13
 Bath Community Radio	Bath	community online	local	unknown	unknown	bathradio.org.uk		unchecked	from a 2020 list	shoutoutradio.lgbt	unknown	2026-11-13
-Wave Radio	Weston-super-Mare	local online	local	unknown	unknown	wavewsm.co.uk	studio@wavewsm.co.uk	unchecked	from a 2020 list	shoutoutradio.lgbt	allowed	2026-11-13
+Wave Radio	Weston-super-Mare	local online	local	unknown	unknown	wavewsm.co.uk	studio@wavewsm.co.uk	programmes on Mixcloud; its API disallows bots (decision needed)	from a 2020 list	shoutoutradio.lgbt	allowed	2026-11-13
 Reprezent Radio	London (Brixton)	youth community station	grime, rap, new UK music	on air	high			unchecked	emergency £50k crowdfunder Feb 2024 after funding cuts	mixmag.net; trenchtrenchtrench.com		
-Brixton Radio	London (Brixton)	community online	local artists	unknown after 2024	high	brixtonradio.com	info@brixtonradio.com	unchecked	said it was on the verge of closing; crowdfunder raised £670 of £50k (closed Jun 2024)	ra.co; justgiving.com	allowed	2026-11-13
+Brixton Radio	London (Brixton)	community online	local artists	unknown after 2024	high	brixtonradio.com	info@brixtonradio.com	programmes on Mixcloud; its API disallows bots (decision needed)	said it was on the verge of closing; crowdfunder raised £670 of £50k (closed Jun 2024)	ra.co; justgiving.com	allowed	2026-11-13
 Threads Radio	London (Tottenham)	independent online	underground	remote and pop-up after eviction (Aug 2022)	high			unchecked	evicted from studio	djmag.com		
 Balamii	London (Peckham)	independent online	underground	on air; cut back in 2022; subscription	watch			unchecked		theguardian.com via inkl.com		
-Voices Radio	London (King's Cross)	independent online	eclectic	on air	watch	voicesradio.co.uk	info@voicesradio.co.uk	unchecked	director said they came close to running out of cash	mixmag.net	allowed	2026-11-13
-Resonance FM	London	community FM 104.4 + DAB	experimental, arts	on air	high	resonancefm.com	contact@resonancefm.com; intothemossradio@gmail.com; info@resonancefm.com	unchecked	2026 fundraiser for £30k to stay independent	resonancefm.com; ra.co	allowed	2026-11-13
-Worldwide FM	London	independent online	jazz, global	much reduced service since Oct 2022	paused	worldwidefm.net	info@worldwidefm.net	unchecked	archive kept online	rollingstone.co.uk	allowed	2026-11-13
-Loose.FM	London	independent online	underground	unknown	high	loose.fm		unchecked	ran a crowdfunder over rising costs	guap.co	allowed	2026-11-13
-Foundation FM	London	independent online	diverse artists	on air	watch	foundation.fm		unchecked		londonsoundacademy.com	allowed	2026-11-13
-Netil Radio	London (Hackney)	independent online	underground	on air	watch	netilradio.com		unchecked		mixmag.net	allowed	2026-11-13
+Voices Radio	London (King's Cross)	independent online	eclectic	on air	watch	voicesradio.co.uk	info@voicesradio.co.uk	programmes on Mixcloud; its API disallows bots (decision needed)	director said they came close to running out of cash	mixmag.net	allowed	2026-11-13
+Resonance FM	London	community FM 104.4 + DAB	experimental, arts	on air	high	resonancefm.com	contact@resonancefm.com; intothemossradio@gmail.com; info@resonancefm.com	playlist pages found; to inspect	2026 fundraiser for £30k to stay independent	resonancefm.com; ra.co	allowed	2026-11-13
+Worldwide FM	London	independent online	jazz, global	much reduced service since Oct 2022	paused	worldwidefm.net	info@worldwidefm.net	programmes on Mixcloud; its API disallows bots (decision needed)	archive kept online	rollingstone.co.uk	allowed	2026-11-13
+Loose.FM	London	independent online	underground	unknown	high	loose.fm		programme/schedule pages only; no tracks seen	ran a crowdfunder over rising costs	guap.co	allowed	2026-11-13
+Foundation FM	London	independent online	diverse artists	on air	watch	foundation.fm		programmes on Mixcloud; its API disallows bots (decision needed)		londonsoundacademy.com	allowed	2026-11-13
+Netil Radio	London (Hackney)	independent online	underground	on air	watch	netilradio.com		programmes on Mixcloud; its API disallows bots (decision needed)		mixmag.net	allowed	2026-11-13
 No Signal	London	independent online	Black diasporas	on air	watch			unchecked		theguardian.com via inkl.com		
-Rinse FM	London	community FM + online	garage, grime, dubstep, jungle	on air	low	rinse.fm		unchecked	larger; now also runs SWU.FM	londonsoundacademy.com	none	2026-11-13
-NTS	London	independent online	everything	on air	low	nts.live/about		unchecked	larger; well funded	londonsoundacademy.com	none	2026-11-13
-Reform Radio	Manchester	independent online CIC	eclectic	on air	watch	reformradio.co.uk	shout@reformradio.co.uk; projects@reformradio.co.uk; rachel@reformradio.co.uk; michael@boltondeafsociety.co.uk	unchecked	Arts Council NPO; youth employment	reformradio.co.uk; clinks.org	allowed	2026-11-13
+Rinse FM	London	community FM + online	garage, grime, dubstep, jungle	on air	low	rinse.fm		playlist pages found; to inspect	larger; now also runs SWU.FM	londonsoundacademy.com	none	2026-11-13
+NTS	London	independent online	everything	on air	low	nts.live/about		programme/schedule pages only; no tracks seen	larger; well funded	londonsoundacademy.com	none	2026-11-13
+Reform Radio	Manchester	independent online CIC	eclectic	on air	watch	reformradio.co.uk	shout@reformradio.co.uk; projects@reformradio.co.uk; rachel@reformradio.co.uk; michael@boltondeafsociety.co.uk	programmes on Mixcloud; its API disallows bots (decision needed)	Arts Council NPO; youth employment	reformradio.co.uk; clinks.org	allowed	2026-11-13
 Limbo Radio	Manchester (Fallowfield)	independent online	DJ mixes	unknown	unknown			unchecked		thestateofthearts.co.uk		
-Melodic Distraction	Liverpool	independent online	house, disco, local	CLOSED 29 Sep 2023	closed	melodicdistraction.com		unchecked	closed citing cost of living; over 9,000 shows	djmag.com; mixmag.net	allowed	2026-11-13
+Melodic Distraction	Liverpool	independent online	house, disco, local	CLOSED 29 Sep 2023	closed	melodicdistraction.com		no tracks or programmes found on site	closed citing cost of living; over 9,000 shows	djmag.com; mixmag.net	allowed	2026-11-13
 KMAH Radio	Leeds	independent online, non-profit	underground	unknown	watch			unchecked	run by volunteers with day jobs	theguardian.com via newssniffer		
 Sable Radio	Leeds	independent online	Black-led, diverse	unknown	watch			unchecked		djmag.com		
 Mondo Radio	Sheffield	independent online	eclectic; 60+ residents	on air (relaunched 2022)	watch			unchecked	unpaid volunteer team	ourfaveplaces.co.uk		
 Sheffield Live	Sheffield	Ofcom community	local	on air	watch			unchecked		radiohear.com		
 Clyde Built Radio	Glasgow	independent online	dance, eclectic	on air	high	clydebuiltradio.com		unchecked	£20k crowdfunder Nov 2025 for rent and running costs	mixmag.net	unknown	2026-11-13
 Subcity Radio	Glasgow	student/community online	freeform	on air since 1995	watch			unchecked		theskinny.co.uk		
-Radio Buena Vida	Glasgow	independent online	eclectic	unknown	watch	buenavida.co.uk	hello@buenavida.co.uk; radio@buenavida.co.uk; partner@buenavida.co.uk	unchecked		theskinny.co.uk	allowed	2026-11-13
+Radio Buena Vida	Glasgow	independent online	eclectic	unknown	watch	buenavida.co.uk	hello@buenavida.co.uk; radio@buenavida.co.uk; partner@buenavida.co.uk	programme posts via WordPress API; no tracks seen		theskinny.co.uk	allowed	2026-11-13
 Sunny G Community Radio	Glasgow (Govan)	community	local	unknown	unknown			unchecked		theskinny.co.uk		
-EH-FM	Edinburgh	independent online	eclectic	on air	watch	ehfm.live		unchecked	Patreon-funded	theskinny.co.uk	allowed	2026-11-13
+EH-FM	Edinburgh	independent online	eclectic	on air	watch	ehfm.live		programme/schedule pages only; no tracks seen	Patreon-funded	theskinny.co.uk	allowed	2026-11-13
 Coast Radio	Peterhead	independent local	local	CLOSED 30 Nov 2025	closed			unchecked	operational and financial pressures	holdthefrontpage.co.uk		
 Vandelay Radio	Swansea	independent online, non-profit	eclectic	PAUSED Aug 2024	paused			unchecked	funds 'drying up'	mixmag.net		
 Neighbourhood Belfast	Belfast	pop-up community	underground electronic	pop-up broadcasts	watch			unchecked		worldwidefm.net		
-1BTN	Brighton	independent online	underground, specialist	on air	watch	1btn.fm		unchecked		1btn.fm	allowed	2026-11-13
+1BTN	Brighton	independent online	underground, specialist	on air	watch	1btn.fm		programme/schedule pages only; no tracks seen		1btn.fm	allowed	2026-11-13
 MIMM	Nottingham	independent online	underground	unknown	unknown			unchecked	launched 2018	leftlion.co.uk		
 Tone FM	Taunton	Ofcom community	local	CLOSED 5 Mar 2025	closed			unchecked	stopped without explanation	wikipedia.org		
 Made in Kent Radio	Kent	independent local	local talent	owner ceased trading Jan 2026	high			unchecked	cited business rates and licensing costs	radiotoday.co.uk		
-Aaja Radio	London	online / community (Golden Age directory)		listed; not confirmed	unknown	aajamusic.com/radio		unchecked		radio.surfacepressure.net	none	2026-11-13
-All FM	Manchester	online / community (Golden Age directory)		listed; not confirmed	unknown	allfm.org	studio@allfm.org; ed@allfm.org; phil@allfm.org	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Avondale Radio	Avondale	online / community (Golden Age directory)		listed; not confirmed	unknown	avondaleradio.com	info@avondaleradio.com; hello@marissawaitecreative.com; avondaleradiostation@gmail.com	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-BCB Radio	Bradford	online / community (Golden Age directory)		listed; not confirmed	unknown	bcbradio.co.uk	hello@bcbradio.co.uk	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-BHCR	Brighton	online / community (Golden Age directory)		listed; not confirmed	unknown	bhcr.org.uk		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Brum Radio	Birmingham	online / community (Golden Age directory)		listed; not confirmed	unknown	brumradio.com	studio@brumradio.com; outercircle@brumradio.com; connect@brumradio.com	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-CamGlen Radio	Rutherglen	online / community (Golden Age directory)		listed; not confirmed	unknown	camglenradio.org	enquiries@camglenradio.org; advertising@camglenradio.org; drama@camglenradio.org	unchecked		radio.surfacepressure.net	none	2026-11-13
-CandoFM	Barrow In Furness	online / community (Golden Age directory)		listed; not confirmed	unknown	candofm.co.uk	adverts@candofm.co.uk; contact@candofm.co.uk	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Cannock Chase Radio	Staffordshire	online / community (Golden Age directory)		listed; not confirmed	unknown	cannockchaseradio.co.uk	info@chasemediatraining.co.uk; office@cannockchaseradio.co.uk	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Countywide Radio	Wigan	online / community (Golden Age directory)		listed; not confirmed	unknown	countywideradio.com		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Crystal FM	Penicuik	online / community (Golden Age directory)		listed; not confirmed	unknown	crystalfm.co.uk	studio@crystalfm.co.uk	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Do!!You!!! World		online / community (Golden Age directory)		listed; not confirmed	unknown	doyou.world		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-dundee radio club	Dundee	online / community (Golden Age directory)		listed; not confirmed	unknown	dundeeradio.club		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-EAVA FM	Leicester	online / community (Golden Age directory)		listed; not confirmed	unknown	eavafm.com		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-FAB Radio	Manchester	online / community (Golden Age directory)		listed; not confirmed	unknown	fabradiointernational.com/?qtajax=true	fabradio2025@gmail.com; studio@fabradiointernational.com	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Fuse FM	Manchester	online / community (Golden Age directory)		listed; not confirmed	unknown	fusefm.co.uk		unchecked		radio.surfacepressure.net	allowed	2026-11-13
+Aaja Radio	London	online / community (Golden Age directory)		listed; not confirmed	unknown	aajamusic.com/radio		no tracks or programmes found on site		radio.surfacepressure.net	none	2026-11-13
+All FM	Manchester	online / community (Golden Age directory)		listed; not confirmed	unknown	allfm.org	studio@allfm.org; ed@allfm.org; phil@allfm.org	programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	allowed	2026-11-13
+Avondale Radio	Avondale	online / community (Golden Age directory)		listed; not confirmed	unknown	avondaleradio.com	info@avondaleradio.com; hello@marissawaitecreative.com; avondaleradiostation@gmail.com	programme posts via WordPress API; no tracks seen		radio.surfacepressure.net	allowed	2026-11-13
+BCB Radio	Bradford	online / community (Golden Age directory)		listed; not confirmed	unknown	bcbradio.co.uk	hello@bcbradio.co.uk	radio.co: now-playing only		radio.surfacepressure.net	allowed	2026-11-13
+BHCR	Brighton	online / community (Golden Age directory)		listed; not confirmed	unknown	bhcr.org.uk		programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	allowed	2026-11-13
+Brum Radio	Birmingham	online / community (Golden Age directory)		listed; not confirmed	unknown	brumradio.com	studio@brumradio.com; outercircle@brumradio.com; connect@brumradio.com	programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	allowed	2026-11-13
+CamGlen Radio	Rutherglen	online / community (Golden Age directory)		listed; not confirmed	unknown	camglenradio.org	enquiries@camglenradio.org; advertising@camglenradio.org; drama@camglenradio.org	programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	none	2026-11-13
+CandoFM	Barrow In Furness	online / community (Golden Age directory)		listed; not confirmed	unknown	candofm.co.uk	adverts@candofm.co.uk; contact@candofm.co.uk	programme posts via WordPress API; no tracks seen		radio.surfacepressure.net	allowed	2026-11-13
+Cannock Chase Radio	Staffordshire	online / community (Golden Age directory)		listed; not confirmed	unknown	cannockchaseradio.co.uk	info@chasemediatraining.co.uk; office@cannockchaseradio.co.uk	programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	allowed	2026-11-13
+Countywide Radio	Wigan	online / community (Golden Age directory)		listed; not confirmed	unknown	countywideradio.com		programme posts via WordPress API; no tracks seen		radio.surfacepressure.net	allowed	2026-11-13
+Crystal FM	Penicuik	online / community (Golden Age directory)		listed; not confirmed	unknown	crystalfm.co.uk	studio@crystalfm.co.uk	no tracks or programmes found on site		radio.surfacepressure.net	allowed	2026-11-13
+Do!!You!!! World		online / community (Golden Age directory)		listed; not confirmed	unknown	doyou.world		programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	allowed	2026-11-13
+dundee radio club	Dundee	online / community (Golden Age directory)		listed; not confirmed	unknown	dundeeradio.club		no tracks or programmes found on site		radio.surfacepressure.net	allowed	2026-11-13
+EAVA FM	Leicester	online / community (Golden Age directory)		listed; not confirmed	unknown	eavafm.com		programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	allowed	2026-11-13
+FAB Radio	Manchester	online / community (Golden Age directory)		listed; not confirmed	unknown	fabradiointernational.com/?qtajax=true	fabradio2025@gmail.com; studio@fabradiointernational.com	programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	allowed	2026-11-13
+Fuse FM	Manchester	online / community (Golden Age directory)		listed; not confirmed	unknown	fusefm.co.uk		playlist pages found; to inspect		radio.surfacepressure.net	allowed	2026-11-13
 Isles FM	Stornoway	online / community (Golden Age directory)		listed; not confirmed	unknown	islesfm.com		unchecked		radio.surfacepressure.net	unknown	2026-11-13
-Margate Radio	Margate	online / community (Golden Age directory)		listed; not confirmed	unknown	margateradio.co.uk	radiomargatehq@gmail.com	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Morley Radio	London	online / community (Golden Age directory)		listed; not confirmed	unknown	morleyradio.co.uk		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-NLive Radio	Northampton	online / community (Golden Age directory)		listed; not confirmed	unknown	nliveradio.com		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-One Jazz	London	online / community (Golden Age directory)		listed; not confirmed	unknown	onejazz.net		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Radio Sudd	Cardiff	online / community (Golden Age directory)		listed; not confirmed	unknown	radiosudd.co.uk	example@mail.com	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Radio West Norfolk	West Norfolk	online / community (Golden Age directory)		listed; not confirmed	unknown	radiowestnorfolk.co.uk	studio@radiowestnorfolk.co.uk	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-RadioReverb	Brighton	online / community (Golden Age directory)		listed; not confirmed	unknown	radioreverb.com		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Resonance Extra	London	online / community (Golden Age directory)		listed; not confirmed	unknown	extra.resonance.fm		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-ROVR	London	online / community (Golden Age directory)		listed; not confirmed	unknown	rovr.live	info@rovr.live	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Shoreditch Radio	London	online / community (Golden Age directory)		listed; not confirmed	unknown	shoreditchradio.co.uk	info@shoreditchradio.co.uk	unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Sine FM	Doncaster	online / community (Golden Age directory)		listed; not confirmed	unknown	sinefm.com		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Skylab Radio		online / community (Golden Age directory)		listed; not confirmed	unknown	skylabradio.com		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Soundart Radio	Totnes	online / community (Golden Age directory)		listed; not confirmed	unknown	soundartradio.org.uk		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Steam Radio	Manchester	online / community (Golden Age directory)		listed; not confirmed	unknown	steam-mcr.com/Home-Page		unchecked		radio.surfacepressure.net	none	2026-11-13
-The Cat	Cheshire	online / community (Golden Age directory)		listed; not confirmed	unknown	thecat.radio	studio@thecat.radio	unchecked		radio.surfacepressure.net	none	2026-11-13
-The Source	Falmouth	online / community (Golden Age directory)		listed; not confirmed	unknown	thesourcefm.co.uk	enquiries@thesourcefm.co.uk; simon@thesourcefm.co.uk; studio@thesourcefm.co.uk	unchecked		radio.surfacepressure.net	none	2026-11-13
-Totally Radio	Brighton	online / community (Golden Age directory)		listed; not confirmed	unknown	totallyradio.com		unchecked		radio.surfacepressure.net	none	2026-11-13
-Totally Wired Radio	London	online / community (Golden Age directory)		listed; not confirmed	unknown	totallywiredradio.com		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-Transient Radio		online / community (Golden Age directory)		listed; not confirmed	unknown	transientradio.net		unchecked		radio.surfacepressure.net	allowed	2026-11-13
-WCR	Warminster	online / community (Golden Age directory)		listed; not confirmed	unknown	wcrfm.org.uk	studio@wcrfm.org.uk	unchecked		radio.surfacepressure.net	none	2026-11-13
+Margate Radio	Margate	online / community (Golden Age directory)		listed; not confirmed	unknown	margateradio.co.uk	radiomargatehq@gmail.com	playlist pages found; to inspect		radio.surfacepressure.net	allowed	2026-11-13
+Morley Radio	London	online / community (Golden Age directory)		listed; not confirmed	unknown	morleyradio.co.uk		radio.co: now-playing only		radio.surfacepressure.net	allowed	2026-11-13
+NLive Radio	Northampton	online / community (Golden Age directory)		listed; not confirmed	unknown	nliveradio.com		programme/schedule pages only; no tracks seen		radio.surfacepressure.net	allowed	2026-11-13
+One Jazz	London	online / community (Golden Age directory)		listed; not confirmed	unknown	onejazz.net		playlist pages found; to inspect		radio.surfacepressure.net	allowed	2026-11-13
+Radio Sudd	Cardiff	online / community (Golden Age directory)		listed; not confirmed	unknown	radiosudd.co.uk	example@mail.com	programme posts via WordPress API; no tracks seen		radio.surfacepressure.net	allowed	2026-11-13
+Radio West Norfolk	West Norfolk	online / community (Golden Age directory)		listed; not confirmed	unknown	radiowestnorfolk.co.uk	studio@radiowestnorfolk.co.uk	programme posts via WordPress API; no tracks seen		radio.surfacepressure.net	allowed	2026-11-13
+RadioReverb	Brighton	online / community (Golden Age directory)		listed; not confirmed	unknown	radioreverb.com		programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	allowed	2026-11-13
+Resonance Extra	London	online / community (Golden Age directory)		listed; not confirmed	unknown	extra.resonance.fm		programme/schedule pages only; no tracks seen		radio.surfacepressure.net	allowed	2026-11-13
+ROVR	London	online / community (Golden Age directory)		listed; not confirmed	unknown	rovr.live	info@rovr.live	programme/schedule pages only; no tracks seen		radio.surfacepressure.net	allowed	2026-11-13
+Shoreditch Radio	London	online / community (Golden Age directory)		listed; not confirmed	unknown	shoreditchradio.co.uk	info@shoreditchradio.co.uk	playlist pages found; to inspect		radio.surfacepressure.net	allowed	2026-11-13
+Sine FM	Doncaster	online / community (Golden Age directory)		listed; not confirmed	unknown	sinefm.com		programme posts via WordPress API; no tracks seen		radio.surfacepressure.net	allowed	2026-11-13
+Skylab Radio		online / community (Golden Age directory)		listed; not confirmed	unknown	skylabradio.com		playlist pages found; to inspect		radio.surfacepressure.net	allowed	2026-11-13
+Soundart Radio	Totnes	online / community (Golden Age directory)		listed; not confirmed	unknown	soundartradio.org.uk		playlist pages found; to inspect		radio.surfacepressure.net	allowed	2026-11-13
+Steam Radio	Manchester	online / community (Golden Age directory)		listed; not confirmed	unknown	steam-mcr.com/Home-Page		programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	none	2026-11-13
+The Cat	Cheshire	online / community (Golden Age directory)		listed; not confirmed	unknown	thecat.radio	studio@thecat.radio	AzuraCast: now-playing API (current track only)		radio.surfacepressure.net	none	2026-11-13
+The Source	Falmouth	online / community (Golden Age directory)		listed; not confirmed	unknown	thesourcefm.co.uk	enquiries@thesourcefm.co.uk; simon@thesourcefm.co.uk; studio@thesourcefm.co.uk	AzuraCast: now-playing API (current track only)		radio.surfacepressure.net	none	2026-11-13
+Totally Radio	Brighton	online / community (Golden Age directory)		listed; not confirmed	unknown	totallyradio.com		programme/schedule pages only; no tracks seen		radio.surfacepressure.net	none	2026-11-13
+Totally Wired Radio	London	online / community (Golden Age directory)		listed; not confirmed	unknown	totallywiredradio.com		programmes on Mixcloud; its API disallows bots (decision needed)		radio.surfacepressure.net	allowed	2026-11-13
+Transient Radio		online / community (Golden Age directory)		listed; not confirmed	unknown	transientradio.net		playlist pages found; to inspect		radio.surfacepressure.net	allowed	2026-11-13
+WCR	Warminster	online / community (Golden Age directory)		listed; not confirmed	unknown	wcrfm.org.uk	studio@wcrfm.org.uk	AzuraCast: now-playing API (current track only)		radio.surfacepressure.net	none	2026-11-13

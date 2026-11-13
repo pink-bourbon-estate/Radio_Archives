@@ -111,3 +111,17 @@ the list of stations and the article.
 * Artists are listed in `independent/data/artists.tsv` and get MusicBrainz IDs from `tools/musicbrainz.py`
   (same exact-match rule as Jazz FM).
 * Next stations: check each one's robots.txt, find how it publishes tracks, and add a collector.
+
+## What the stations publish (probe, 13 Nov 2026)
+
+`tools/probe.py` (workflow "Independent stations probe") looked at 55 stations whose robots.txt allows
+us. Results are in `independent/probe.tsv`; `track_data` in `stations.tsv` summarises them.
+
+* Almost no small station publishes a track log of its own. Noods Radio is the exception (full tracklists).
+* Most put their shows on Mixcloud. Mixcloud's public API could give programme lists (and tracklists where
+  uploaders added them) for dozens of stations with one collector, but `api.mixcloud.com/robots.txt`
+  disallows bots, so by the project rule it is marked and waits for a decision (the Jazz FM route, or not).
+* A few have playlist pages worth inspecting: Shoreditch Radio, One Jazz, Skylab Radio, Fuse FM,
+  Soundart Radio, Rinse FM, Margate Radio.
+* Some sites answer 200 for any path, so "/playlist exists" in the probe is not proof of a playlist.
+* Ofcom's community radio list page (static.ofcom.org.uk) disallows bots, so it is not used.
