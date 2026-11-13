@@ -68,6 +68,10 @@ route, still on the roadmap, is to ask Bauer Media for permission or an official
 ## What the data is, and is not
 
 - Artist, title and play time. No audio, artwork, album, genre or ISRC.
+- Each artist's **MusicBrainz ID** is added by the daily "MusicBrainz IDs" workflow
+  (`tools/musicbrainz.py`): from the 6 Music data where the same artist appears there, otherwise
+  from an exact, unambiguous MusicBrainz search match. Joint credits such as "A and B" are left
+  without an ID rather than guessed. The site shows the ID and a MusicBrainz link on every artist.
 - The API does not say which show was on; the show is derived from Jazz FM's usual weekly
   timetable (`stations/jazz-fm/src/show.rs`) and can be wrong for special programmes.
 - The first week (6 to 13 November 2026) was collected by hand and typed in by screenshot

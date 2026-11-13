@@ -664,9 +664,13 @@ pub fn run(args: &Args) -> Res<()> {
             ts.sort_by(|&x, &y| tracks[y as usize].plays.cmp(&tracks[x as usize].plays).then(x.cmp(&y)));
             let tops: Vec<(&str, u32)> = ts.iter().take(15).map(|&t| (tracks[t as usize].title.as_str(), tracks[t as usize].plays)).collect();
             let mut facts = format!("<dt>Plays</dt><dd>{} plays of {} different tracks</dd><dt>First / last played</dt><dd>{} / {}</dd>", thou(ar.plays as u64), thou(ar.tracks as u64), iso(ar.first), iso(ar.last));
-            if brand.no_genres {
-            } else if ar.mbid.is_empty() {
-                facts.push_str("<dt>MusicBrainz ID</dt><dd>Not supplied by the BBC for this artist</dd>");
+            // The MusicBrainz ID is shown for every station; only genres depend on the brand.
+            if ar.mbid.is_empty() {
+                facts.push_str(if brand.no_genres {
+                    "<dt>MusicBrainz ID</dt><dd>Not matched on MusicBrainz yet</dd>"
+                } else {
+                    "<dt>MusicBrainz ID</dt><dd>Not supplied by the BBC for this artist</dd>"
+                });
             } else {
                 facts.push_str(&format!("<dt>MusicBrainz ID</dt><dd><code>{0}</code> <a href=\"https://musicbrainz.org/artist/{0}\" rel=\"noopener\">View on MusicBrainz</a></dd>", esc(&ar.mbid)));
             }

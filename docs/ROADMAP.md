@@ -15,8 +15,9 @@ The plan, in the order it should happen. Nothing here needs ads, trackers or a p
 ## 2. One catalogue of artists and tracks
 
 **Started** in `catalogue/`: IDs come from the normalised name (no lookup needed), stored as
-`artists.tsv` and `tracks.tsv`. Still to do: move 6 Music onto it, and fill in MusicBrainz IDs
-and ISRC codes lazily. The text below is the original plan; the one change is that IDs are always
+`artists.tsv` and `tracks.tsv`. Artist MusicBrainz IDs are now filled in daily
+(`tools/musicbrainz.py`). Still to do: move 6 Music onto it, recording MusicBrainz IDs and ISRC
+codes for tracks, and splitting joint credits ("A and B") so each artist gets its own ID. The text below is the original plan; the one change is that IDs are always
 name-based and MusicBrainz IDs are attributes, so an ID never changes once issued.
 
 Today each station keeps its own artist and track lists, so a song played on two stations is

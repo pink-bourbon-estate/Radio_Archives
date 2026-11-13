@@ -370,7 +370,7 @@
     const rows = await getJSON('artists/' + letter + '.json');
     const q = pendingQuery; pendingQuery = '';
     setPage('Artists ' + letter.toUpperCase(), ...head, dataTable({
-      cols: [{ label: 'Artist', value: (r) => r.name, cell: (r) => artistLink(r.name, letter, r.id) }, ...(NOGENRES ? [] : [{ label: 'MusicBrainz', value: (r) => r.mbid, cell: (r) => (r.mbid ? mbLink(r.mbid) : '') }]),
+      cols: [{ label: 'Artist', value: (r) => r.name, cell: (r) => artistLink(r.name, letter, r.id) }, { label: 'MusicBrainz', value: (r) => r.mbid, cell: (r) => (r.mbid ? mbLink(r.mbid) : '') },
         { label: 'Plays', value: (r) => r.plays, num: true }, { label: 'Tracks', value: (r) => r.tracks, num: true }, { label: 'First played', value: (r) => r.first }, { label: 'Last played', value: (r) => r.last },
         ...(NOGENRES ? [] : [{ label: 'Genre (MusicBrainz)', value: (r) => r.genre }, { label: 'Country', value: (r) => r.country }])],
       rows, filename: 'artists-' + letter, sortCol: 2, filter: q, rank: false,
@@ -386,7 +386,7 @@
       h('dl', { class: 'facts' },
         h('dt', {}, 'Plays'), h('dd', {}, fmt(a.plays) + ' plays of ' + fmt(a.tracks) + ' different tracks'),
         h('dt', {}, 'First / last played'), h('dd', {}, fmtDate(a.first) + ' / ' + fmtDate(a.last)),
-        NOGENRES ? null : [h('dt', {}, 'MusicBrainz ID'), h('dd', {}, a.mbid ? [h('code', {}, a.mbid), '  ', h('a', { href: 'https://musicbrainz.org/artist/' + a.mbid, rel: 'noopener' }, 'View on MusicBrainz')] : 'Not supplied by the BBC for this artist')],
+        [h('dt', {}, 'MusicBrainz ID'), h('dd', {}, a.mbid ? [h('code', {}, a.mbid), '  ', h('a', { href: 'https://musicbrainz.org/artist/' + a.mbid, rel: 'noopener' }, 'View on MusicBrainz')] : (NOGENRES ? 'Not matched on MusicBrainz yet' : 'Not supplied by the BBC for this artist'))],
         a.type ? [h('dt', {}, 'Type'), h('dd', {}, a.type)] : null,
         a.country ? [h('dt', {}, 'Country'), h('dd', {}, a.country)] : null,
         a.begin ? [h('dt', {}, 'Began'), h('dd', {}, a.begin)] : null,

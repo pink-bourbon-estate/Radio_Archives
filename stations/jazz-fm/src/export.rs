@@ -26,18 +26,22 @@ pub fn write(plays: &[(String, String, String)], cat: &Catalogue, out: &Path) ->
     let dir = out.join("plays");
     let _ = fs::remove_dir_all(&dir);
     fs::create_dir_all(&dir)?;
-    let name_of = |tid: &str| -> Option<(String, String)> {
-        cat.tracks.get(tid).map(|t| (cat.artist_name(&t.artist_id).to_string(), t.title.clone()))
+    // (artist, title, artist's MusicBrainz ID or "")
+    let name_of = |tid: &str| -> Option<(String, String, String)> {
+        cat.tracks.get(tid).map(|t| {
+            let mbid = cat.artists.get(&t.artist_id).map(|a| a.mbid.clone()).unwrap_or_default();
+            (cat.artist_name(&t.artist_id).to_string(), t.title.clone(), mbid)
+        })
     };
 
     let mut by_year: std::collections::BTreeMap<String, String> = Default::default();
     let mut position: HashMap<String, u32> = HashMap::new();
-    let mut plain = String::from("played_at_utc,show,artist,title\n");
+    let mut plain = String::from("played_at_utc,show,artist,title,artist_musicbrainz_id\n");
     let mut n = 0;
     let mut sorted: Vec<&(String, String, String)> = plays.iter().collect();
     sorted.sort_by(|a, b| a.0.cmp(&b.0));
     for (at, tid, show) in sorted {
-        let Some((artist, title)) = name_of(tid) else { continue };
+        let Some((artist, title, mbid)) = name_of(tid) else { continue };
         let Some((utc, _)) = parse_time(at) else { continue };
         let local = utc_to_london(utc);
         let show = if show.is_empty() { show_for(local).to_string() } else { show.clone() };
@@ -51,14 +55,15 @@ pub fn write(plays: &[(String, String, String)], cat: &Catalogue, out: &Path) ->
         let offset = local.rem_euclid(86_400) - slot * 60;
         let episode = format!("{}/{}/{}", &date[8..10], &date[5..7], &date[..4]);
         let row = format!(
-            "{date},{time},{},{episode},,{pos},{},{},{},,,,,\n",
+            "{date},{time},{},{episode},,{pos},{},{},{},,,,,{}\n",
             q(&show),
             offset.max(0),
             q(&artist),
-            q(&title)
+            q(&title),
+            q(&mbid)
         );
         by_year.entry(date[..4].to_string()).or_insert_with(|| HEADER.to_string()).push_str(&row);
-        plain.push_str(&format!("{at},{},{},{}\n", q(&show), q(&artist), q(&title)));
+        plain.push_str(&format!("{at},{},{},{},{}\n", q(&show), q(&artist), q(&title), q(&mbid)));
         n += 1;
     }
     for (year, text) in by_year {

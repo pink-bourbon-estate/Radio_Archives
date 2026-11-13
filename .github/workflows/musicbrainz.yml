@@ -1,0 +1,47 @@
+name: MusicBrainz IDs
+
+# Once a day, between the Jazz FM collector (05:17 UTC) and the website build (06:17 UTC), gives
+# artists in the shared catalogue their MusicBrainz artist ID: first from the 6 Music data, which
+# already has most of them, then from the MusicBrainz search API at most once every 1.1 seconds,
+# accepting only exact, unambiguous matches. Every station that uses the catalogue (Jazz FM and the
+# Independent Archive stations) shows the ID and a link to musicbrainz.org. See tools/musicbrainz.py.
+on:
+  schedule:
+    - cron: "47 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jazz-fm-collector   # shares catalogue/data with the collector, so never run together
+  cancel-in-progress: false
+
+jobs:
+  ids:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch the 6 Music data (public repository, data folder only)
+        uses: actions/checkout@v4
+        with:
+          repository: pink-bourbon-estate/BBC-Radio-6-Music-Collection
+          path: _bbc6
+          sparse-checkout: data
+          sparse-checkout-cone-mode: true
+      - name: Fill in MusicBrainz IDs and commit them
+        run: |
+          git config user.name "radio-archives-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            python3 tools/musicbrainz.py --bbc6 _bbc6/data --max 3000
+            git add catalogue/data
+            if git diff --cached --quiet; then echo "No new IDs."; exit 0; fi
+            git commit -m "Catalogue: MusicBrainz IDs $(date -u +%Y-%m-%d)"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Push rejected (attempt $attempt); starting again from the latest main."
+          done
+          exit 1

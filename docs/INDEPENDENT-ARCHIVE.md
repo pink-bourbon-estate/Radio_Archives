@@ -52,6 +52,14 @@ and a combined view answers questions like "which local bands got played this we
 Local bands are the point, so the catalogue should record an artist's home town when a station
 or the artist supplies it.
 
+## Artists: always with their MusicBrainz ID
+
+Every artist any station plays goes into the shared catalogue, and every catalogue artist gets
+its MusicBrainz artist ID as soon as one can be matched with certainty (`tools/musicbrainz.py`,
+run daily). Pages always show the ID and a link to musicbrainz.org. This matters most for small
+local artists: a MusicBrainz ID is a stable, shared reference that outlives any one station's
+website, and anyone can add a missing artist to MusicBrainz so the archive can link them.
+
 ## The rule (decided by the project owner, 13 Nov 2026)
 
 Independent and community stations are closing, and an archive is worth more the sooner it
