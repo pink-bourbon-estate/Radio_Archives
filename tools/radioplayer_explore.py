@@ -29,19 +29,28 @@ def main():
         pg.on("response", on)
         pg.goto("https://play.radioplayer.org/en/search", wait_until="networkidle", timeout=60000)
         pg.wait_for_timeout(3000)
-        for label in ("Discover stations", "Bristol"):
+        info = {"buttons": pg.eval_on_selector_all("button,a,input", "els=>els.map(e=>[e.tagName,(e.innerText||e.placeholder||e.getAttribute('aria-label')||'').slice(0,50),e.getAttribute('href')||e.type||''])")[:60]}
+        steps = []
+        for label in ("Discover stations", "Live"):
             try:
-                pg.get_by_text(label, exact=False).first.click(timeout=4000)
-                pg.wait_for_timeout(3000)
-            except Exception:
-                pass
-        try:
-            box = pg.get_by_role("searchbox").first
-            box.fill("Bristol")
-            pg.wait_for_timeout(4000)
-        except Exception:
-            pass
-        out = {"final_url": pg.url, "text": pg.inner_text("body")[:3000], "responses": seen}
+                pg.get_by_text(label, exact=True).first.click(timeout=5000)
+                pg.wait_for_timeout(5000)
+                steps.append({"clicked": label, "url": pg.url, "text": pg.inner_text("body")[:1500],
+                              "links": pg.eval_on_selector_all("a", "els=>els.map(e=>[e.innerText.slice(0,40),e.href]).slice(0,40)")})
+                pg.goto("https://play.radioplayer.org/en/search", wait_until="networkidle", timeout=60000)
+            except Exception as e:  # noqa: BLE001
+                steps.append({"clicked": label, "error": str(e)[:100]})
+        for q in ("Bristol",):
+            try:
+                inp = pg.locator("input").first
+                inp.fill(q)
+                inp.press("Enter")
+                pg.wait_for_timeout(5000)
+                steps.append({"search": q, "url": pg.url, "text": pg.inner_text("body")[:1500]})
+            except Exception as e:  # noqa: BLE001
+                steps.append({"search": q, "error": str(e)[:100]})
+        pg.screenshot(path="independent/data/radioplayer/_screen.png")
+        out = {"final_url": pg.url, "info": info, "steps": steps, "responses": seen}
         os.makedirs("independent/data/radioplayer", exist_ok=True)
         json.dump(out, open("independent/data/radioplayer/_explore.json", "w"), indent=1, ensure_ascii=False)
         print(len(seen), "JSON responses;", [s["url"][:90] for s in seen][:20])
