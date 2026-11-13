@@ -33,21 +33,36 @@ and a combined view answers questions like "which local bands got played this we
 Local bands are the point, so the catalogue should record an artist's home town when a station
 or the artist supplies it.
 
-## A different rule for small stations
+## The rule (decided by the project owner, 13 Nov 2026)
 
-Jazz FM is a large commercial network, and its collector is documented in `docs/JAZZ-FM.md`.
-Small volunteer stations are not the same: their servers are small and their goodwill is the
-whole project. Recommended for the Independent Archive:
+Independent and community stations are closing, and an archive is worth more the sooner it
+starts, so collection does not wait for replies. For every station with a website:
 
-- **Ask first.** Contact each station, explain the project, and collect only with a yes.
-- **Prefer what they offer**: a log export, a feed they point us to, or a share of their data.
-- **Poll gently** and follow their robots.txt, since a friendly relationship is worth more than
-  any dataset.
-- Provide a clear way to be removed.
+1. **Check `robots.txt` first** (`tools/survey.py`, run by the "Independent stations survey"
+   workflow). The result is stored in `independent/stations.tsv`:
+   `allowed`, `blocked`, `none` (no robots.txt) or `unknown`.
+2. **Allowed or none: collect.** Use the station's public feed or pages, politely.
+3. **Blocked: mark it and find a contact email** (stored as `contact_email`), then collect the
+   same way as Jazz FM (see `docs/JAZZ-FM.md`): the lightest possible requests, honestly
+   identified as `RadioArchivesBot`, and a plain statement that the station's `robots.txt` is
+   not followed.
+4. **Once every station has been surveyed, send one blanket email** to all of them, saying what
+   the project is, what is being collected and how to stop it, and go from there.
+
+Limits that apply to every station, whatever the survey says:
+- Requests are spread out and as few as possible; small volunteer servers are never hammered.
+- A request to stop or to remove a station's data is honoured immediately, and the station is
+  marked `opted_out` in the registry.
+- The bot always identifies itself and links to this repository.
+
+## Registry columns added by the survey
+
+`robots` (allowed / blocked / none / unknown), `contact_email`, `checked_on`. A station with no
+website yet is skipped until one is added.
 
 ## Next steps
 
-1. Confirm which Bristol stations are still on air and find websites for the blanks.
-2. For each, check how it publishes tracks (the four cases above) and update `track_data`.
-3. Ask the friend which station they meant, and ask that station first.
+1. Confirm which Bristol stations are still on air and find websites for the blanks, then run the survey workflow.
+2. For each station, check how it publishes tracks (the four cases above) and update `track_data`.
+3. Ask the friend which station they meant, so it can be surveyed first.
 4. Build the first collector for the station with the cleanest data.
