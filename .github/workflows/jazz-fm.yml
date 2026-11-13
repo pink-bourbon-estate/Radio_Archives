@@ -1,0 +1,67 @@
+name: Jazz FM collector
+
+# Reads Jazz FM's public playlist page twice a day and adds new plays to the archive.
+# The station only shows about a week of history, so this must keep running; two runs a day
+# leaves a wide safety margin without being a burden on the site.
+on:
+  schedule:
+    - cron: "41 5,17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: jazz-fm-collector
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rust toolchain
+        run: rustup toolchain install stable --profile minimal && rustup default stable
+
+      - name: Test
+        run: cargo test --locked -p catalogue -p jazzfm
+
+      - name: Collect new plays
+        run: |
+          cargo run --release --locked -p jazzfm -- scrape \
+            --data stations/jazz-fm/data --catalogue catalogue/data --dump scrape-debug.html
+
+      # If the page layout changes the step above fails; this keeps the page for fixing the reader.
+      - name: Keep the page that failed to read
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrape-debug
+          path: scrape-debug.html
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Commit new data
+        id: commit
+        run: |
+          git config user.name "radio-archives-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalogue/data stations/jazz-fm/data
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No new plays."
+          else
+            git commit -m "Jazz FM: add plays $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase origin main
+            git push origin HEAD:main
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Pushes made with the built-in token do not start other workflows, so ask for a site rebuild.
+      - name: Rebuild the website
+        if: steps.commit.outputs.changed == 'true'
+        run: gh workflow run pages.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}

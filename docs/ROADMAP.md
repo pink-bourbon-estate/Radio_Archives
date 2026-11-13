@@ -5,7 +5,8 @@ The plan, in the order it should happen. Nothing here needs ads, trackers or a p
 ## 1. Stations
 
 - [x] BBC Radio 6 Music (copied here; the original repository still collects the data).
-- [ ] **Jazz FM.** Its public playlist page (`hellorayo.co.uk/jazz-fm/playlist`) lists about
+- [x] **Jazz FM** (collector, archive and a first site are in; the reader has only been tested
+  on a made-up page, so check the first live run and then remove `SITE_NOINDEX`). Notes: Its public playlist page (`hellorayo.co.uk/jazz-fm/playlist`) lists about
   8 days of plays with title, artist and time. The data is embedded in the page itself, so a
   daily job can read it politely (identify the bot, a couple of requests a day). There is no
   show, album, label or MusicBrainz ID per play: the show comes from the schedule by time.
@@ -13,6 +14,11 @@ The plan, in the order it should happen. Nothing here needs ads, trackers or a p
   few days or plays are lost.
 
 ## 2. One catalogue of artists and tracks
+
+**Started** in `catalogue/`: IDs come from the normalised name (no lookup needed), stored as
+`artists.tsv` and `tracks.tsv`. Still to do: move 6 Music onto it, and fill in MusicBrainz IDs
+and ISRC codes lazily. The text below is the original plan; the one change is that IDs are always
+name-based and MusicBrainz IDs are attributes, so an ID never changes once issued.
 
 Today each station keeps its own artist and track lists, so a song played on two stations is
 stored twice and cannot be compared. Plan: one shared catalogue that every station references

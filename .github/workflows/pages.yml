@@ -3,6 +3,7 @@ name: Website
 # Builds the radio station archives and publishes them to GitHub Pages.
 #   /                          the landing page listing every station
 #   /bbc-radio-6-music/        BBC Radio 6 Music (built from the 6 Music repository's data)
+#   /jazz-fm/                  Jazz FM (built from the data this repository collects)
 # The daily schedule runs after the 6 Music data refresh (05:23 UTC) has finished.
 on:
   push:
@@ -58,6 +59,17 @@ jobs:
         env:
           # This is a second copy of a site that already exists, so keep it out of search results
           # until the original is retired (otherwise the two would compete).
+          SITE_NOINDEX: "1"
+
+      - name: Test the shared catalogue and Jazz FM
+        run: cargo test --locked -p catalogue -p jazzfm
+
+      - name: Build Jazz FM
+        run: |
+          cargo build --release --locked -p jazzfm
+          ./target/release/jazzfm site --data stations/jazz-fm/data --catalogue catalogue/data --out public/jazz-fm
+        env:
+          # Keep it out of search results until the reader has been checked against the live page.
           SITE_NOINDEX: "1"
 
       - name: Landing page

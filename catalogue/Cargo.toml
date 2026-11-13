@@ -1,0 +1,8 @@
+[package]
+name = "catalogue"
+version = "0.1.0"
+edition = "2021"
+description = "One shared catalogue of artists and tracks, referenced by ID from every radio station archive"
+license = "MIT"
+
+[dependencies]

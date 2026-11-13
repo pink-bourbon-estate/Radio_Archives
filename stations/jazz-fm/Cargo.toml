@@ -1,0 +1,11 @@
+[package]
+name = "jazzfm"
+version = "0.1.0"
+edition = "2021"
+description = "Archive of every track played on Jazz FM, collected politely from its public playlist page"
+license = "MIT"
+
+[dependencies]
+catalogue = { path = "../../catalogue" }
+serde_json = "1.0.154"
+ureq = "2"
