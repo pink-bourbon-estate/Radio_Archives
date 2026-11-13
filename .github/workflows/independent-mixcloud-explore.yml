@@ -1,0 +1,33 @@
+name: Independent Mixcloud explore
+
+# Run by hand. One-off look at what the public Mixcloud API returns for stations that put shows on Mixcloud.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: independent-mixcloud-explore
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Explore
+        run: python3 -u tools/mixcloud_explore.py
+      - name: Commit the result
+        run: |
+          git config user.name "radio-archives-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add independent/data/mixcloud
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Independent stations: mixcloud explore $(date -u +%Y-%m-%d)"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
