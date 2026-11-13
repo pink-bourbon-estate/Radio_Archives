@@ -6,7 +6,7 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Embedded history size and API addresses in the scripts
+      - name: Look at the playlist address the page declares
         run: |
           UA="RadioArchivesBot/0.1 (+https://github.com/pink-bourbon-estate/Radio_Archives; unofficial non-commercial archive; one-off check)"
           curl -sS -A "$UA" -o page.html https://www.hellorayo.co.uk/jazz-fm/playlist
@@ -14,17 +14,17 @@ jobs:
           import re, json
           h = open("page.html", encoding="utf-8").read()
           d = json.loads(re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', h, re.S).group(1))
-          hist = d["props"]["initialState"]["station"]["data"]["stationPlayHistory"]
-          print("EMBEDDED_HISTORY", len(hist), hist[0]["nowPlayingTime"], "->", hist[-1]["nowPlayingTime"])
-          print("ITEM_KEYS", list(hist[0].keys()))
-          print("STATION", {k: v for k, v in d["props"]["initialState"]["station"]["data"].items() if isinstance(v, (str, int)) and len(str(v)) < 80})
-          print("PLAYLIST_STATE", json.dumps(d["props"]["initialState"]["playlist"])[:300])
-          print("RUNTIME_CONFIG", json.dumps(d.get("runtimeConfig"))[:600] if d.get("runtimeConfig") else None)
-          print("ENV-LIKE", [m for m in set(re.findall(r'https?://[A-Za-z0-9./_-]*(?:api|listen)[A-Za-z0-9./_-]*', json.dumps(d)))][:20])
+          s = d["props"]["initialState"]["station"]["data"]
+          print("PLAYLIST_URL", s.get("stationPlaylistUrl"))
+          print("OTHER_URLS", {k: v for k, v in s.items() if isinstance(v, str) and v.startswith("http") and "playlist" in k.lower() or "api" in k.lower()})
+          open("purl.txt", "w").write(s.get("stationPlaylistUrl") or "")
           PY
-          sleep 2
-          curl -sS -A "$UA" -o app.js "https://www.hellorayo.co.uk/_next/static/chunks/pages/_app-71213e65cbc096d9.js"
-          echo "APP_URLS"
-          grep -oE "https?://[A-Za-z0-9.-]*(planetradio|bauer|hellorayo|listenapi)[A-Za-z0-9./_?=&{}\$-]*" app.js | sort | uniq -c | sort -rn | head -30
-          echo "PLAYLIST_FETCH"
-          grep -oE ".{200}(fetchPlaylist|playlistHistory|stations_playhistory|playhistory|tracklistById).{300}" app.js | head -4
+          echo "--- robots.txt of listenapi.planetradio.co.uk"
+          curl -sS -A "$UA" -w "\nstatus %{http_code}\n" https://listenapi.planetradio.co.uk/robots.txt | head -20
+          U=$(cat purl.txt)
+          if [ -n "$U" ]; then
+            sleep 2
+            echo "--- one request to the declared playlist address"
+            curl -sS -A "$UA" -D - -o body.txt "$U" | head -12
+            echo "size: $(wc -c < body.txt)"; head -c 1500 body.txt; echo
+          fi
