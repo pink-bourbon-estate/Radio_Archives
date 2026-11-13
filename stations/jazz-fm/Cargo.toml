@@ -2,7 +2,7 @@
 name = "jazzfm"
 version = "0.1.0"
 edition = "2021"
-description = "Archive of every track played on Jazz FM, collected weekly from the public JSON play-history API"
+description = "Archive of every track played on Jazz FM, collected daily from the public JSON play-history API"
 license = "MIT"
 
 [dependencies]

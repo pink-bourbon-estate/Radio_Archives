@@ -5,7 +5,7 @@ Open archives of what radio stations play. Free, readable, no ads, no tracking.
 | Station | Site | Status |
 |---|---|---|
 | BBC Radio 6 Music | `/bbc-radio-6-music/` | Live as a copy. The original, still the main one, is [BBC-Radio-6-Music-Collection](https://github.com/pink-bourbon-estate/BBC-Radio-6-Music-Collection) |
-| Jazz FM | `/jazz-fm/` | Collected weekly from the JSON API behind the station's playlist page; history from 6 Nov 2026 (the first week was typed in by hand). Site is `noindex` |
+| Jazz FM | `/jazz-fm/` | Collected daily from the JSON API behind the station's playlist page; history from 6 Nov 2026 (the first week was typed in by hand). Site is `noindex` |
 
 ## How it fits together
 
@@ -28,9 +28,9 @@ docs/                   the roadmap and design notes
 - **Jazz FM** (`stations/jazz-fm/`) is collected **directly from the JSON API** that the
   station's own playlist page calls when you press "View more":
   `https://listenapi.planetradio.co.uk/api9.2/events/jaz/{cursor}/{count}`. It does not read or
-  scrape the web page. Once a week a GitHub workflow asks for the plays since the last run, 48
-  per request, walking backwards from now with a 0.25 s pause (about 40 requests, about 100 KB
-  in all) and stops as soon as it reaches plays it already has. It identifies itself honestly as
+  scrape the web page. Once a day a GitHub workflow asks for the plays since the last run, 48
+  per request, walking backwards from now with a 0.25 s pause (about 6 requests, about 17 KB
+  a day) and stops as soon as it reaches plays it already has. It identifies itself honestly as
   `RadioArchivesBot` with a link to this repository. **It does not obey the `robots.txt` of
   that API host** (a blanket `Disallow: /`); that is a deliberate decision, explained in full in
   [docs/JAZZ-FM.md](docs/JAZZ-FM.md). Run `cargo run -p jazzfm -- collect` to collect.

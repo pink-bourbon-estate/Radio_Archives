@@ -77,7 +77,7 @@ fn newest_stored(a: &Args) -> Option<i64> {
         .max()
 }
 
-/// Fetch whatever is newer than the archive holds and add it. Run weekly: the API keeps about a
+/// Fetch whatever is newer than the archive holds and add it. Run daily: the API keeps about a
 /// week of history, so each run asks only for the plays since the previous one.
 fn collect(a: &Args) {
     let now = now_utc();

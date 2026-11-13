@@ -21,7 +21,7 @@ GET https://listenapi.planetradio.co.uk/api9.2/events/jaz/{cursor}/{count}
 
 **We call this API directly. We do not load, render or scrape the web page.**
 
-Once a week (Monday, 06:17 UTC, `.github/workflows/jazz-fm.yml`) `jazzfm collect`:
+Once a day (06:17 UTC, `.github/workflows/jazz-fm.yml`) `jazzfm collect`:
 
 1. Finds the newest play already stored.
 2. Walks backwards from now, 48 plays per request, pausing 0.25 s between requests.
@@ -29,10 +29,11 @@ Once a week (Monday, 06:17 UTC, `.github/workflows/jazz-fm.yml`) `jazzfm collect
    the API has no earlier plays, or at a hard limit of 400 requests.
 4. Adds the new plays to `stations/jazz-fm/data/plays/YYYY-MM.tsv` and the shared catalogue.
 
-A week of history is about 40 requests of about 2.8 KB each, roughly 100 KB in total, taking
-about 10 seconds. The API keeps roughly a week or more of history, so a weekly run overlaps the
-previous one and leaves no gap. If a run is missed, run the workflow by hand within the next few
-days.
+A day of history is about 6 requests of about 2.8 KB each, roughly 17 KB in total, taking
+about 2 seconds (about 42 requests and 120 KB a week). The API keeps roughly a week or more of
+history, so each run overlaps the previous one, and a missed run is filled in by the next one:
+there are about six runs of slack before anything could be lost. Each run that finds new plays
+makes one commit.
 
 It identifies itself as `RadioArchivesBot/0.2 (+https://github.com/pink-bourbon-estate/Radio_Archives; ...)`.
 It does not send browser headers (no browser `User-Agent`, `Origin` or `Referer`) and does not
@@ -53,11 +54,11 @@ project **does not obey it for this host**, and says so openly. The reasons:
    public playlist page. The endpoint is unauthenticated and publicly cacheable (its responses
    carry `cache-control: max-age=3600, public` and are served through Cloudflare).
 2. **Load.** Polling the full page every 15 minutes means 672 page loads a week, each with
-   scripts, styles and layout. This approach is about 40 JSON requests a week, about 100 KB in
-   total, 0.25 s apart, mostly answered from cache. It puts close to no load on the origin.
+   scripts, styles and layout. This approach is about 42 JSON requests a week (6 a day), about
+   120 KB in total, 0.25 s apart, mostly answered from cache. It puts close to no load on the origin.
 3. **Nature of the data.** There is no paywall or login to bypass, no personal data (it is song
-   titles, artist names and broadcast times), no degradation of the service (about 10 seconds
-   of requests, once a week), and no commercial redistribution. It is a non-commercial archive
+   titles, artist names and broadcast times), no degradation of the service (about 2 seconds
+   of requests, once a day), and no commercial redistribution. It is a non-commercial archive
    for personal listening and research.
 4. **Honesty.** The decision is stated in the README, on the site's About page and here, rather
    than hidden. Anyone can see exactly what the program does by reading `stations/jazz-fm/src/api.rs`.
@@ -85,7 +86,7 @@ route, still on the roadmap, is to ask Bauer Media for permission or an official
 | `stations/jazz-fm/src/extract.rs` | reading a JSON reply into plays; UK local time to UTC |
 | `stations/jazz-fm/src/store.rs` | monthly `plays/YYYY-MM.tsv` files, merged and de-duplicated |
 | `stations/jazz-fm/src/show.rs` | the show for a time, from the weekly timetable |
-| `.github/workflows/jazz-fm.yml` | the weekly run |
+| `.github/workflows/jazz-fm.yml` | the daily run |
 
 Commands: `jazzfm collect [--days N] [--json FILE]`, `import`, `export`, `stats`.
 `--json FILE` reads a saved API reply instead of calling the network, for testing.

@@ -1,16 +1,16 @@
-name: Jazz FM weekly collector
+name: Jazz FM daily collector
 
-# Once a week, fetches the latest Jazz FM play history straight from the JSON API behind the
+# Once a day, fetches the latest Jazz FM play history straight from the JSON API behind the
 # public playlist page (listenapi.planetradio.co.uk) and appends the plays not yet stored.
 #
-# One run is about 6 requests a day of history at 48 plays each (roughly 40 small JSON replies,
-# about 100 KB in total, 0.25 s apart) and never touches the web page itself. The API keeps about
-# a week of history, so a weekly run overlaps the previous one and leaves no gaps; a missed run
-# can be fixed by running this workflow by hand within the following days. Full explanation,
+# One run asks for the last day of plays: about 6 requests at 48 plays each (about 17 KB in all,
+# 0.25 s apart), and never touches the web page itself. The API keeps about a week of history, so
+# a missed run is filled in by the next one (about six runs of slack). Full explanation,
 # including the robots.txt decision: docs/JAZZ-FM.md. The website picks the data up in its daily build.
+on: docs/JAZZ-FM.md. The website picks the data up in its daily build.
 on:
   schedule:
-    - cron: "17 6 * * 1"
+    - cron: "17 6 * * *"
   workflow_dispatch:
 
 permissions:

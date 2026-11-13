@@ -12,7 +12,7 @@ use std::time::Duration;
 
 const BASE: &str = "https://listenapi.planetradio.co.uk/api9.2/events/jaz";
 const USER_AGENT: &str = "RadioArchivesBot/0.2 (+https://github.com/pink-bourbon-estate/Radio_Archives; \
-                          unofficial non-commercial archive; one small batch of requests per week)";
+                          unofficial non-commercial archive; one small batch of requests per day)";
 /// Plays per request. The site itself asks for 24; larger sizes are accepted by the API.
 pub const BATCH: usize = 48;
 /// Pause between requests.

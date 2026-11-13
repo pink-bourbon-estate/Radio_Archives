@@ -6,8 +6,8 @@ The plan, in the order it should happen. Nothing here needs ads, trackers or a p
 
 - [x] BBC Radio 6 Music (copied here; the original repository still collects the data).
 - [x] **Jazz FM** (collector, archive and site are in). Approach changed on 13 Nov 2026: it
-  now reads the JSON play-history API directly (about a week of history per request series)
-  instead of the playlist page, which only ever held the latest 5 plays. One weekly run fills
+  now reads the JSON play-history API directly (about a week of history is available)
+  instead of the playlist page, which only ever held the latest 5 plays. One small daily run fills
   the archive with no gaps, so nothing needs to run every 15 minutes. The decision, the
   `robots.txt` position and the justification are in [JAZZ-FM.md](JAZZ-FM.md). The show is
   derived from the weekly schedule by time. Still worth doing: ask Bauer Media for permission
