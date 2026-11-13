@@ -2,6 +2,7 @@ name: Website
 
 # Builds the radio station archives and publishes them to GitHub Pages.
 #   /                          the landing page listing every station
+#   /independent/              the Independent Archive (article and station list)
 #   /bbc-radio-6-music/        BBC Radio 6 Music (built from the 6 Music repository's data)
 #   /jazz-fm/                  Jazz FM (built from the data this repository collects)
 # The daily schedule runs after the 6 Music data refresh (05:23 UTC) has finished.
@@ -83,7 +84,9 @@ jobs:
           SITE_NOINDEX: "1"
 
       - name: Landing page
-        run: cp landing/index.html public/index.html
+        run: |
+          cp landing/index.html public/index.html
+          python3 tools/build_independent.py public/independent
 
       - name: Make sure no email address slipped into the site
         run: |
