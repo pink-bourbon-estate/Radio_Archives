@@ -1,0 +1,47 @@
+name: Probe (temporary)
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trawl for the two-week playlist
+        run: |
+          UA="RadioArchivesBot/0.1 (+https://github.com/pink-bourbon-estate/Radio_Archives; unofficial non-commercial archive; one-off site check)"
+          B=https://www.hellorayo.co.uk
+          echo "=== ROBOTS"; curl -sS -A "$UA" $B/robots.txt | head -40
+          sleep 2
+          echo "=== SITEMAPS"
+          for sm in $(curl -sS -A "$UA" $B/robots.txt | grep -i '^sitemap:' | awk '{print $2}' | head -4); do
+            echo "-- $sm"; sleep 2
+            curl -sS -A "$UA" "$sm" -o sm.xml; wc -c < sm.xml
+            grep -oE "<loc>[^<]+</loc>" sm.xml | sed 's/<[^>]*>//g' > locs.txt; wc -l < locs.txt
+            grep -iE "jazz-fm" locs.txt | grep -iE "playlist|tracklist|history|recent|show" | head -15
+            grep -E "sitemap" locs.txt | head -8
+          done
+          sleep 2
+          curl -sS -A "$UA" -o page.html $B/jazz-fm/playlist
+          echo "=== LINKS ON THE PLAYLIST PAGE"
+          grep -oE 'href="[^"]*"' page.html | sort -u | grep -iE "playlist|tracklist|history|date|day|archive" | head -30
+          echo "=== NEXT DATA: anything date/day related"
+          python3 - <<'PY'
+          import re, json
+          h = open("page.html", encoding="utf-8").read()
+          d = json.loads(re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', h, re.S).group(1))
+          print("query:", d.get("query"), "page:", d.get("page"))
+          hits = set()
+          def walk(o, path=""):
+              if isinstance(o, dict):
+                  for k, v in o.items():
+                      if re.search(r"playlist|history|tracklist|archive|datepick|calendar", k, re.I):
+                          hits.add((path + "." + k)[:140] + " = " + json.dumps(v)[:160])
+                      walk(v, path + "." + k)
+              elif isinstance(o, list):
+                  for i, v in enumerate(o[:2]): walk(v, f"{path}[{i}]")
+          walk(d)
+          for x in sorted(hits)[:25]: print(x)
+          PY
+          sleep 2
+          echo "=== PLAYLIST PAGE SCRIPT"
+          curl -sS -A "$UA" "$B/_next/static/chunks/pages/%5BstationId%5D/playlist-60abb22929f09c01.js" | head -c 4000; echo
