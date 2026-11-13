@@ -4,8 +4,9 @@ them. Run by the "Independent stations: import lists" workflow (my own sandbox c
 sites). Sources:
 
   1. Wikipedia, "List of community radio stations in the United Kingdom" (follows Ofcom's
-     community licences), read through the MediaWiki API. Each station's website comes from the
-     infobox of its own Wikipedia article, fetched 50 at a time.
+     community licences), read as raw wikitext from /wiki/...?action=raw (Wikipedia's robots.txt
+     disallows /w/, where the API lives). Each station's website comes from the infobox of its own
+     article, one request per article.
   2. "The Golden Age of Community Radio" directory, UK page (radio.surfacepressure.net), mostly
      online-only stations. Each station page is read for its website.
 
@@ -14,14 +15,14 @@ itself. Stations already in the registry (same normalised name) are not duplicat
 website on an existing row is filled in. The raw pages are saved in independent/sources/ so the
 parsing can be checked and fixed.
 """
-import csv, html, json, os, re, sys, time, urllib.parse, urllib.request, urllib.robotparser
+import csv, html, os, re, sys, time, urllib.parse, urllib.request, urllib.robotparser
 
 UA = ("RadioArchivesBot/0.2 (+https://github.com/pink-bourbon-estate/Radio_Archives; "
       "unofficial non-commercial archive)")
 PAUSE = 1.5
 REG = "independent/stations.tsv"
 SRC = "independent/sources"
-WIKI_API = "https://en.wikipedia.org/w/api.php"
+WIKI = "https://en.wikipedia.org/wiki/"
 WIKI_LIST = "List of community radio stations in the United Kingdom"
 GA_UK = "https://radio.surfacepressure.net/location/uk/"
 SKIP_HOSTS = re.compile(r"(surfacepressure|facebook|instagram|twitter|x\.com|mixcloud|soundcloud|"
@@ -110,45 +111,40 @@ def wiki_rows(text):
     return out
 
 
-def wiki_websites(titles):
-    found = {}
-    titles = [t for t in dict.fromkeys(titles) if t]
-    for i in range(0, len(titles), 50):
-        q = urllib.parse.urlencode({"action": "query", "prop": "revisions", "rvprop": "content",
-                                    "rvslots": "main", "format": "json", "formatversion": "2",
-                                    "redirects": "1", "titles": "|".join(titles[i:i + 50])})
-        body = get(f"{WIKI_API}?{q}")
-        if not body:
-            continue
-        data = json.loads(body)["query"]
-        back = {r["to"]: r["from"] for r in data.get("redirects", [])}
-        for p in data.get("pages", []):
-            try:
-                text = p["revisions"][0]["slots"]["main"]["content"]
-            except (KeyError, IndexError):
-                continue
-            m = re.search(r"\|\s*website\s*=\s*([^\n]+)", text, flags=re.I)
-            if not m:
-                continue
-            v = m.group(1)
-            u = re.search(r"\{\{\s*url\s*\|\s*([^|}]+)", v, flags=re.I) or re.search(r"(https?://[^\s\]|}]+)", v) \
-                or re.search(r"([a-z0-9-]+(?:\.[a-z0-9-]+)+\.[a-z]{2,}[^\s\]|}]*)", v, flags=re.I)
-            if u:
-                found[back.get(p["title"], p["title"])] = site(u.group(1))
-    return found
+def wiki_raw(title):
+    """The wikitext of an article from /wiki/<title>?action=raw (robots.txt allows /wiki/, not /w/),
+    following one redirect."""
+    for _ in range(2):
+        text = get(WIKI + urllib.parse.quote(title.replace(" ", "_")) + "?action=raw")
+        m = re.match(r"\s*#redirect\s*\[\[([^\]#|]+)", text, flags=re.I)
+        if not m:
+            return text
+        title = m.group(1)
+    return ""
+
+
+def website_in(text):
+    m = re.search(r"\|\s*website\s*=\s*([^\n]+)", text, flags=re.I)
+    if not m:
+        return ""
+    v = m.group(1)
+    u = re.search(r"\{\{\s*url\s*\|\s*([^|}]+)", v, flags=re.I) or re.search(r"(https?://[^\s\]|}]+)", v) \
+        or re.search(r"([a-z0-9-]+(?:\.[a-z0-9-]+)+\.[a-z]{2,}[^\s\]|}]*)", v, flags=re.I)
+    return site(u.group(1)) if u else ""
 
 
 def from_wikipedia():
-    q = urllib.parse.urlencode({"action": "parse", "page": WIKI_LIST, "prop": "wikitext",
-                                "format": "json", "formatversion": "2"})
-    body = get(f"{WIKI_API}?{q}")
-    if not body:
+    text = wiki_raw(WIKI_LIST)
+    if not text:
         return []
-    text = json.loads(body)["parse"]["wikitext"]
     open(f"{SRC}/wikipedia-community-list.wikitext", "w").write(text)
     rows = wiki_rows(text)
     print(f"Wikipedia: {len(rows)} rows in the list")
-    sites = wiki_websites([r[1] for r in rows])
+    sites = {}
+    for t in dict.fromkeys(r[1] for r in rows if r[1]):
+        w = website_in(wiki_raw(t))
+        if w:
+            sites[t] = w
     print(f"Wikipedia: websites found for {len(sites)} stations")
     return [{"station": n, "city": place or sec, "kind": "Ofcom community (Wikipedia list)",
              "website": sites.get(t, ""), "source": "wikipedia.org list of UK community radio"}
