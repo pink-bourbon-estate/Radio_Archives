@@ -15,6 +15,11 @@ Two steps, cheapest first:
      less certain is recorded as "ambiguous" or "none" and left empty: a wrong ID is worse than
      no ID. Those are tried again after 90 days.
 
+musicbrainz.org's robots.txt disallows /ws/ (its API) for crawlers, while its API documentation
+invites programs to use it at one request per second with an identifying User-Agent. This tool
+follows the API rules exactly; the decision is the same as for Jazz FM (docs/JAZZ-FM.md) and is
+stated in the README.
+
 Every lookup is written to catalogue/data/musicbrainz_lookups.tsv so it is never repeated
 needlessly. Usage: tools/musicbrainz.py [--bbc6 DIR] [--max N] [--offline]
 """
@@ -89,16 +94,16 @@ def choose(name, results):
 def search(name):
     q = urllib.parse.urlencode({"query": f'artist:"{name}"', "fmt": "json", "limit": "5"})
     req = urllib.request.Request(f"{API}?{q}", headers={"User-Agent": UA, "Accept": "application/json"})
-    for attempt in range(3):
+    for wait in (10, 20, 40, 60, 90):
         try:
             with urllib.request.urlopen(req, timeout=30) as r:
                 return json.load(r).get("artists", [])
         except urllib.error.HTTPError as e:
-            if e.code == 503:  # MusicBrainz's "slow down"
-                time.sleep(5 * (attempt + 1))
+            if e.code in (503, 429):  # MusicBrainz's "slow down": back off and try again
+                time.sleep(wait)
                 continue
             raise
-    raise RuntimeError("MusicBrainz kept answering 503")
+    raise RuntimeError("MusicBrainz kept answering 'slow down'")
 
 
 def main(argv):
@@ -141,6 +146,7 @@ def main(argv):
         print(f"MusicBrainz: {len(todo)} artists to look up (doing at most {limit})")
         counts = {}
         last = 0.0
+        failures = 0
         for a in todo[:limit]:
             wait = GAP - (time.time() - last)
             if wait > 0:
@@ -149,8 +155,14 @@ def main(argv):
             try:
                 res, mbid, score = choose(a["name"], search(a["name"]))
             except Exception as e:
-                print(f"  {a['name']}: {e}; stopping here")
-                break
+                failures += 1
+                print(f"  {a['name']}: {e}")
+                if failures >= 5:
+                    print("  five failures in a row; stopping until the next run")
+                    break
+                time.sleep(30)
+                continue
+            failures = 0
             counts[res] = counts.get(res, 0) + 1
             if mbid:
                 a["mbid"] = mbid

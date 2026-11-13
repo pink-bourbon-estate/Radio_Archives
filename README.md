@@ -29,7 +29,10 @@ docs/                   the roadmap and design notes
 - **Every artist carries its MusicBrainz ID** wherever one can be found with certainty, and every
   artist page and artist table links to musicbrainz.org. The "MusicBrainz IDs" workflow fills
   them in daily: first from the 6 Music data, then from the MusicBrainz search API (one request
-  per 1.1 s, exact and unambiguous matches only; see `tools/musicbrainz.py`).
+  per 1.1 s, exact and unambiguous matches only; see `tools/musicbrainz.py`). musicbrainz.org's
+  `robots.txt` disallows its API path for crawlers while its API documentation invites programs
+  that keep to one request per second and identify themselves; this follows the API rules, the
+  same deliberate decision as for Jazz FM.
 - **Jazz FM** (`stations/jazz-fm/`) is collected **directly from the JSON API** that the
   station's own playlist page calls when you press "View more":
   `https://listenapi.planetradio.co.uk/api9.2/events/jaz/{cursor}/{count}`. It does not read or
