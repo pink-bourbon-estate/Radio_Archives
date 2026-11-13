@@ -1,6 +1,183 @@
 {
- "final_url": "https://play.radioplayer.org/en/search",
- "text": "About Radioplayer\nListen Live\nBroadcaster login\nHome\nLive\nPodcasts\nSearch\nEnglish\nradioplayer.org\nHome\nSearch\nSettings\nDiscover\nExplore radio and unique podcasts for every genre\nRecent Search History\nDiscover stations\nDiscover podcasts",
+ "final_url": "https://play.radioplayer.org/en/search/Bristol",
+ "info": {
+  "buttons": [
+   [
+    "A",
+    "About Radioplayer",
+    "https://about.radioplayer.org"
+   ],
+   [
+    "A",
+    "Broadcaster login",
+    "https://radioplayer.org/portal"
+   ],
+   [
+    "A",
+    "",
+    "/en"
+   ],
+   [
+    "A",
+    "Home",
+    "/en"
+   ],
+   [
+    "A",
+    "Live",
+    "/en/live"
+   ],
+   [
+    "A",
+    "Podcasts",
+    "/en/show"
+   ],
+   [
+    "A",
+    "Search",
+    "/en/search"
+   ],
+   [
+    "A",
+    "English",
+    "/en/settings/language"
+   ],
+   [
+    "INPUT",
+    "Search for stations and podcasts…",
+    "text"
+   ],
+   [
+    "A",
+    "Settings",
+    "/en/settings"
+   ],
+   [
+    "INPUT",
+    "Search for stations and podcasts…",
+    "text"
+   ],
+   [
+    "A",
+    "",
+    "#"
+   ],
+   [
+    "A",
+    "",
+    "#"
+   ]
+  ]
+ },
+ "steps": [
+  {
+   "clicked": "Discover stations",
+   "url": "https://play.radioplayer.org/en/search",
+   "text": "About Radioplayer\nListen Live\nBroadcaster login\nHome\nLive\nPodcasts\nSearch\nEnglish\nradioplayer.org\nHome\nSearch\nSettings\nDiscover\nExplore radio and unique podcasts for every genre\nRecent Search History\nDiscover stations\nDiscover podcasts",
+   "links": [
+    [
+     "About Radioplayer",
+     "https://about.radioplayer.org/"
+    ],
+    [
+     "Broadcaster login",
+     "https://radioplayer.org/portal"
+    ],
+    [
+     "",
+     "https://play.radioplayer.org/en"
+    ],
+    [
+     "Home",
+     "https://play.radioplayer.org/en"
+    ],
+    [
+     "Live",
+     "https://play.radioplayer.org/en/live"
+    ],
+    [
+     "Podcasts",
+     "https://play.radioplayer.org/en/show"
+    ],
+    [
+     "Search",
+     "https://play.radioplayer.org/en/search"
+    ],
+    [
+     "English",
+     "https://play.radioplayer.org/en/settings/language"
+    ],
+    [
+     "Settings",
+     "https://play.radioplayer.org/en/settings"
+    ],
+    [
+     "",
+     "https://play.radioplayer.org/en/search#"
+    ],
+    [
+     "",
+     "https://play.radioplayer.org/en/search#"
+    ]
+   ]
+  },
+  {
+   "clicked": "Live",
+   "url": "https://play.radioplayer.org/en/live",
+   "text": "About Radioplayer\nListen Live\nBroadcaster login\nHome\nLive\nPodcasts\nSearch\nEnglish\nradioplayer.org\nHome\nLive\nSettings",
+   "links": [
+    [
+     "About Radioplayer",
+     "https://about.radioplayer.org/"
+    ],
+    [
+     "Broadcaster login",
+     "https://radioplayer.org/portal"
+    ],
+    [
+     "",
+     "https://play.radioplayer.org/en"
+    ],
+    [
+     "Home",
+     "https://play.radioplayer.org/en"
+    ],
+    [
+     "Live",
+     "https://play.radioplayer.org/en/live"
+    ],
+    [
+     "Podcasts",
+     "https://play.radioplayer.org/en/show"
+    ],
+    [
+     "Search",
+     "https://play.radioplayer.org/en/search"
+    ],
+    [
+     "English",
+     "https://play.radioplayer.org/en/settings/language"
+    ],
+    [
+     "Settings",
+     "https://play.radioplayer.org/en/settings"
+    ],
+    [
+     "",
+     "https://play.radioplayer.org/en/live#"
+    ],
+    [
+     "",
+     "https://play.radioplayer.org/en/live#"
+    ]
+   ]
+  },
+  {
+   "search": "Bristol",
+   "url": "https://play.radioplayer.org/en/search/Bristol",
+   "text": "About Radioplayer\nListen Live\nBroadcaster login\nHome\nLive\nPodcasts\nSearch\nEnglish\nradioplayer.org\nHome\nSearch\nBristol\nSettings\nTop Results\nWhat are you looking for ?\nRecent Search History\nAll\nStations\nPodcasts\nEpisodes\nNo results found\nDiscover\nExplore radio and unique podcasts for every genre\nStations\nPodcasts"
+  }
+ ],
  "responses": [
   {
    "url": "https://play.radioplayer.org/api/languages?locale=en",
