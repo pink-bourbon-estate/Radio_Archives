@@ -60,7 +60,9 @@ def emails_on(base):
     for path in ("/", "/contact", "/about"):
         status, html = fetch(base + path)
         if status == 200:
-            for m in EMAIL.findall(urllib.parse.unquote(html)):
+            # JSON in pages escapes "<" and ">" as \u003c / \u003e; undo that before matching.
+            text = re.sub(r"\\?u003[ce]", " ", urllib.parse.unquote(html), flags=re.I)
+            for m in EMAIL.findall(text):
                 m = m.lower().strip(".")
                 if not JUNK.search(m) and m not in found:
                     found.append(m)
@@ -83,8 +85,10 @@ def survey(path):
         base = base_url(site)
         r["robots"] = robots_status(base)
         time.sleep(PAUSE)
-        mails = emails_on(base)
-        r["contact_email"] = "; ".join(mails)
+        # Keep addresses already in the registry (found by hand) and add new ones.
+        mails = [m.strip() for m in (r.get("contact_email") or "").split(";") if m.strip()]
+        mails += [m for m in emails_on(base) if m not in mails]
+        r["contact_email"] = "; ".join(mails[:4])
         r["checked_on"] = today
         print(f"{r['station']}: robots={r['robots']} emails={r['contact_email'] or '-'}")
     with open(path, "w", newline="", encoding="utf-8") as f:
