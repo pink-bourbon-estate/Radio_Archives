@@ -7,6 +7,9 @@ name: Jazz FM collector
 # are therefore collected from the day this was switched on, and a delayed or skipped run
 # (GitHub does not guarantee schedule timing) can leave a gap. It runs on GitHub's servers, so
 # nothing needs to stay switched on at home. The website picks up the data in its daily build.
+#
+# GitHub's schedule is best-effort, so an external scheduler can also start this workflow on time
+# through workflow_dispatch: see docs/SCHEDULER.md. Overlapping runs are harmless.
 on:
   schedule:
     - cron: "7,22,37,52 * * * *"
