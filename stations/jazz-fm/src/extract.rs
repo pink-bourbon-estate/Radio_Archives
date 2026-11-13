@@ -219,14 +219,27 @@ fn last_sunday(y: i64, m: i64) -> i64 {
     31 - weekday
 }
 
-/// Convert a UK wall-clock time (given as if it were UTC seconds) to real UTC. UK summer time
-/// runs from 01:00 UTC on the last Sunday of March to 01:00 UTC on the last Sunday of October.
-pub fn london_to_utc(local: i64) -> i64 {
-    let (y, _, _) = civil_from_days(local.div_euclid(86_400));
+/// UK summer time runs from 01:00 UTC on the last Sunday of March to 01:00 UTC on the last
+/// Sunday of October. Returns that range, in Unix seconds, for a year.
+fn summer_time(y: i64) -> (i64, i64) {
     let start = days_from_civil(y, 3, last_sunday(y, 3)) * 86_400 + 3600;
     let end = days_from_civil(y, 10, last_sunday(y, 10)) * 86_400 + 3600;
+    (start, end)
+}
+
+/// Convert a UK wall-clock time (given as if it were UTC seconds) to real UTC.
+pub fn london_to_utc(local: i64) -> i64 {
+    let (y, _, _) = civil_from_days(local.div_euclid(86_400));
+    let (start, end) = summer_time(y);
     let as_summer = local - 3600;
     if as_summer >= start && as_summer < end { as_summer } else { local }
+}
+
+/// The reverse: real UTC to UK wall-clock time, as seconds.
+pub fn utc_to_london(t: i64) -> i64 {
+    let (y, _, _) = civil_from_days(t.div_euclid(86_400));
+    let (start, end) = summer_time(y);
+    if t >= start && t < end { t + 3600 } else { t }
 }
 
 // ---- robots.txt ------------------------------------------------------------------------

@@ -34,7 +34,7 @@ fn top(counts: HashMap<String, usize>, n: usize) -> Vec<(String, usize)> {
     v
 }
 
-pub fn build(plays: &[(String, String)], cat: &Catalogue, out: &Path, noindex: bool) -> io::Result<()> {
+pub fn build(plays: &[(String, String, String)], cat: &Catalogue, out: &Path, noindex: bool) -> io::Result<()> {
     fs::create_dir_all(out)?;
     let name_of = |tid: &str| -> (String, String) {
         match cat.tracks.get(tid) {
@@ -44,17 +44,21 @@ pub fn build(plays: &[(String, String)], cat: &Catalogue, out: &Path, noindex: b
     };
 
     // CSV of everything
-    let mut c = String::from("played_at_utc,artist,title\n");
-    for (at, tid) in plays {
+    let mut c = String::from("played_at_utc,show,artist,title\n");
+    for (at, tid, show) in plays {
         let (a, t) = name_of(tid);
-        c.push_str(&format!("{at},{},{}\n", csv(&a), csv(&t)));
+        c.push_str(&format!("{at},{},{},{}\n", csv(show), csv(&a), csv(&t)));
     }
     fs::write(out.join("plays.csv"), c)?;
 
     let mut per_day: BTreeMap<&str, usize> = BTreeMap::new();
     let mut artists: HashMap<String, usize> = HashMap::new();
     let mut tracks: HashMap<String, usize> = HashMap::new();
-    for (at, tid) in plays {
+    let mut shows: HashMap<String, usize> = HashMap::new();
+    for (at, tid, show) in plays {
+        if !show.is_empty() {
+            *shows.entry(show.clone()).or_default() += 1;
+        }
         *per_day.entry(&at[..10]).or_default() += 1;
         *tracks.entry(tid.clone()).or_default() += 1;
         if let Some(t) = cat.tracks.get(tid) {
@@ -98,16 +102,21 @@ pub fn build(plays: &[(String, String)], cat: &Catalogue, out: &Path, noindex: b
         }
         h.push_str("</table></div></div>\n");
 
+        h.push_str("<h2>Plays by show</h2><p class=\"meta\">Worked out from the weekly timetable, so it may be wrong after a schedule change.</p><table>\n");
+        for (name, n) in top(shows, 30) {
+            h.push_str(&format!("<tr><td>{}</td><td class=\"n\">{n}</td></tr>\n", esc(&name)));
+        }
+        h.push_str("</table>\n");
         h.push_str("<h2>Plays per day</h2><p class=\"meta\">The first and last days may be partial.</p><table>\n");
         for (d, n) in per_day.iter().rev().take(30) {
             h.push_str(&format!("<tr><td>{d}</td><td class=\"n\">{n}</td></tr>\n"));
         }
         h.push_str("</table>\n<h2>Latest plays</h2><table>\n");
-        for (at, tid) in plays.iter().rev().take(100) {
+        for (at, tid, show) in plays.iter().rev().take(100) {
             let (a, t) = name_of(tid);
             h.push_str(&format!(
-                "<tr><td>{}</td><td>{}</td><td>{}</td></tr>\n",
-                esc(at.replace('T', " ").trim_end_matches('Z')), esc(&a), esc(&t)
+                "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>\n",
+                esc(at.replace('T', " ").trim_end_matches('Z')), esc(&a), esc(&t), esc(show)
             ));
         }
         h.push_str("</table>\n");

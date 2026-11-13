@@ -1,10 +1,12 @@
 //! jazzfm: collect Jazz FM's public playlist into a growing archive.
 //!
 //!   jazzfm scrape [--html FILE] [--url URL] [--data DIR] [--catalogue DIR] [--dump FILE]
+//!   jazzfm import FILE [--data DIR] [--catalogue DIR]   (tab-separated plays collected by hand)
 //!   jazzfm site   [--data DIR] [--catalogue DIR] [--out DIR]
 //!   jazzfm stats  [--data DIR] [--catalogue DIR]
 
 mod extract;
+mod show;
 mod site;
 mod store;
 
@@ -27,6 +29,7 @@ struct Args {
     catalogue: PathBuf,
     dump: Option<PathBuf>,
     out: PathBuf,
+    file: Option<PathBuf>,
 }
 
 fn parse_args() -> Args {
@@ -40,6 +43,7 @@ fn parse_args() -> Args {
         catalogue: "catalogue/data".into(),
         dump: None,
         out: "public/jazz-fm".into(),
+        file: None,
     };
     while let Some(flag) = it.next() {
         let mut val = || it.next().unwrap_or_else(|| die(&format!("{flag} needs a value")));
@@ -50,6 +54,7 @@ fn parse_args() -> Args {
             "--catalogue" => a.catalogue = val().into(),
             "--dump" => a.dump = Some(val().into()),
             "--out" => a.out = val().into(),
+            other if !other.starts_with("--") && a.file.is_none() => a.file = Some(other.into()),
             other => die(&format!("unknown option {other}")),
         }
     }
@@ -123,7 +128,10 @@ fn scrape(a: &Args) {
     let mut skipped = 0;
     for p in &ex.plays {
         match cat.intern(&p.artist, &p.title) {
-            Some((_, tid)) => rows.push((p.at, tid)),
+            Some((_, tid)) => {
+                let show = show::show_for(extract::utc_to_london(p.at)).to_string();
+                rows.push((p.at, tid, show));
+            }
             None => skipped += 1,
         }
     }
@@ -141,7 +149,101 @@ fn scrape(a: &Args) {
     );
 }
 
-fn load(a: &Args) -> (Vec<(String, String)>, Catalogue) {
+fn unescape(s: &str) -> String {
+    s.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#39;", "'")
+}
+
+/// Import plays collected by hand: tab-separated `Date, Time_24h, Time_12h, Show, Track, Artist`,
+/// with UK local times. Rows for the same track less than 3 minutes apart are one play (the
+/// source lists many tracks twice about a minute apart); the later row is kept.
+fn import(a: &Args) {
+    let path = a.file.as_ref().unwrap_or_else(|| die("import needs a file: jazzfm import FILE"));
+    let text = fs::read_to_string(path).unwrap_or_else(|e| die(&format!("{}: {e}", path.display())));
+    let text = text.trim_start_matches('\u{feff}');
+    let mut cat = Catalogue::load(&a.catalogue).unwrap_or_else(|e| die(&format!("catalogue: {e}")));
+    let (artists_before, tracks_before) = (cat.artists.len(), cat.tracks.len());
+
+    // (utc, track id, show in the file)
+    let mut rows: Vec<(i64, String, String)> = Vec::new();
+    let (mut read, mut bad) = (0, 0);
+    for line in text.lines().filter(|l| !l.starts_with("Date\t") && !l.trim().is_empty()) {
+        read += 1;
+        let f: Vec<&str> = line.split('\t').collect();
+        let parsed = (|| {
+            if f.len() < 6 {
+                return None;
+            }
+            let date = f[0].get(..10)?;
+            let (t, _) = extract::parse_time(&format!("{date} {:0>8}", f[1].trim()))?;
+            let (artist, title) = (unescape(f[5]), unescape(f[4]));
+            let (_, tid) = cat.intern(&artist, &title)?;
+            Some((extract::london_to_utc(t), tid, f[3].trim().to_string()))
+        })();
+        match parsed {
+            Some(r) => rows.push(r),
+            None => bad += 1,
+        }
+    }
+    rows.sort();
+    let mut kept: Vec<(i64, String, String)> = Vec::new();
+    let mut last: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    let mut collapsed = 0;
+    for r in rows {
+        if let Some(&i) = last.get(&r.1) {
+            if r.0 - kept[i].0 <= 180 {
+                kept[i] = r.clone();
+                collapsed += 1;
+                continue;
+            }
+        }
+        last.insert(r.1.clone(), kept.len());
+        kept.push(r);
+    }
+
+    // Check the timetable against the shows named in the file.
+    let mut mismatch: std::collections::BTreeMap<(String, String), usize> = Default::default();
+    for (t, _, file_show) in &kept {
+        let ours = show::show_for(extract::utc_to_london(*t));
+        if ours != file_show {
+            *mismatch.entry((ours.to_string(), file_show.clone())).or_default() += 1;
+        }
+    }
+    let with_ours: Vec<(i64, String, String)> = kept
+        .iter()
+        .map(|(t, id, file_show)| {
+            let show = if file_show.is_empty() { show::show_for(extract::utc_to_london(*t)).to_string() } else { file_show.clone() };
+            (*t, id.clone(), show)
+        })
+        .collect();
+    let added = store::merge(&a.data, &with_ours).unwrap_or_else(|e| die(&format!("store: {e}")));
+    cat.save(&a.catalogue).unwrap_or_else(|e| die(&format!("catalogue: {e}")));
+
+    println!(
+        "read {read} rows ({bad} unreadable); {collapsed} repeats within 3 minutes merged; {} plays; {added} new (the rest were already stored)",
+        kept.len()
+    );
+    println!(
+        "{} to {}; catalogue +{} artists +{} tracks",
+        kept.first().map_or(String::new(), |r| extract::fmt_utc(r.0)),
+        kept.last().map_or(String::new(), |r| extract::fmt_utc(r.0)),
+        cat.artists.len() - artists_before,
+        cat.tracks.len() - tracks_before
+    );
+    println!("shows in the file that differ from the built-in timetable: {}", mismatch.values().sum::<usize>());
+    for ((ours, theirs), n) in mismatch.iter().take(15) {
+        println!("  {n:>4}  timetable \"{ours}\"  file \"{theirs}\"");
+    }
+    let mut gaps = 0;
+    for w in kept.windows(2) {
+        if w[1].0 - w[0].0 > 1200 {
+            gaps += 1;
+            println!("  gap over 20 minutes: {} -> {}", extract::fmt_utc(w[0].0), extract::fmt_utc(w[1].0));
+        }
+    }
+    println!("{gaps} gaps over 20 minutes");
+}
+
+fn load(a: &Args) -> (Vec<(String, String, String)>, Catalogue) {
     let plays = store::load_all(&a.data).unwrap_or_else(|e| die(&format!("store: {e}")));
     let cat = Catalogue::load(&a.catalogue).unwrap_or_else(|e| die(&format!("catalogue: {e}")));
     (plays, cat)
@@ -151,6 +253,7 @@ fn main() {
     let a = parse_args();
     match a.cmd.as_str() {
         "scrape" => scrape(&a),
+        "import" => import(&a),
         "site" => {
             let (plays, cat) = load(&a);
             let noindex = std::env::var("SITE_NOINDEX").is_ok_and(|v| !v.is_empty() && v != "0");
