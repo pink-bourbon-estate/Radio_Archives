@@ -15,7 +15,100 @@ use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-pub const SITE_NAME: &str = "BBC Radio 6 Music Collection";
+/// Names and links that differ between stations. The default is BBC Radio 6 Music, so the
+/// original site is unchanged; another station passes `--brand brand.json`:
+/// `{"name": "...", "station": "...", "short": "...", "source": "...", "repo": "...", "downloads": "plays.csv"}`.
+#[derive(Clone)]
+pub struct Brand {
+    /// Site name, e.g. "BBC Radio 6 Music Collection".
+    pub name: String,
+    /// Station name, e.g. "BBC Radio 6 Music".
+    pub station: String,
+    /// Short station name, e.g. "6 Music".
+    pub short: String,
+    /// Who the data comes from, e.g. "the BBC".
+    pub source: String,
+    /// Source code address.
+    pub repo: String,
+    /// When set, the Downloads page offers just this one file from the site root.
+    pub downloads: String,
+    /// True for a station with no genre or country data: hides the MusicBrainz columns and notes.
+    pub no_genres: bool,
+    /// Extra `[from, to]` wording swaps, applied last.
+    pub replace: Vec<(String, String)>,
+}
+
+pub const DEFAULT_REPO: &str = "https://github.com/pink-bourbon-estate/bbc-radio-6-music-collection";
+
+impl Brand {
+    pub fn bbc6() -> Self {
+        Brand {
+            name: "BBC Radio 6 Music Collection".into(),
+            station: "BBC Radio 6 Music".into(),
+            short: "6 Music".into(),
+            source: "the BBC".into(),
+            repo: DEFAULT_REPO.into(),
+            downloads: String::new(),
+            no_genres: false,
+            replace: Vec::new(),
+        }
+    }
+
+    pub fn load(path: Option<&str>) -> Res<Self> {
+        let mut b = Brand::bbc6();
+        let Some(path) = path else { return Ok(b) };
+        let text = fs::read_to_string(path).map_err(err(&format!("cannot read brand file {path}")))?;
+        let v: Value = serde_json::from_str(&text).map_err(err("brand file is not valid JSON"))?;
+        let get = |k: &str, to: &mut String| {
+            if let Some(x) = v[k].as_str() {
+                *to = x.to_string();
+            }
+        };
+        get("name", &mut b.name);
+        get("station", &mut b.station);
+        get("short", &mut b.short);
+        get("source", &mut b.source);
+        get("repo", &mut b.repo);
+        get("downloads", &mut b.downloads);
+        b.no_genres = v["no_genres"].as_bool().unwrap_or(false);
+        if let Some(list) = v["replace"].as_array() {
+            for pair in list {
+                if let (Some(a), Some(c)) = (pair[0].as_str(), pair[1].as_str()) {
+                    b.replace.push((a.to_string(), c.to_string()));
+                }
+            }
+        }
+        Ok(b)
+    }
+
+    /// Swap the 6 Music wording in a page or script for this brand's. A no-op for 6 Music.
+    pub fn apply(&self, s: &str) -> String {
+        let (cap, plain) = (capitalise(&self.source), self.source.as_str());
+        let mut out = s
+            .replace("BBC Radio 6 Music Collection", &self.name)
+            .replace("BBC Radio 6 Music", &self.station)
+            .replace("to reach 6 Music", &format!("to reach {}", self.short))
+            .replace(DEFAULT_REPO, &self.repo)
+            .replace("BBC episode ID", &format!("{} episode ID", self.source.strip_prefix("the ").unwrap_or(&self.source)))
+            .replace("The BBC", &cap)
+            .replace("the BBC", plain)
+            .replace("{{DOWNLOADS}}", &self.downloads)
+            .replace("{{STATION}}", &self.station)
+            .replace("{{NOGENRES}}", if self.no_genres { "1" } else { "" });
+        for (a, c) in &self.replace {
+            out = out.replace(a.as_str(), c);
+        }
+        out
+    }
+}
+
+fn capitalise(s: &str) -> String {
+    let mut c = s.chars();
+    match c.next() {
+        Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
+        None => String::new(),
+    }
+}
 
 /// HTML-escape text.
 pub fn esc(s: &str) -> String {
@@ -72,10 +165,11 @@ pub struct Emitter {
     urls: Vec<String>,
     /// Set SITE_NOINDEX=1 for a copy of a site that must not compete with the original in search.
     noindex: bool,
+    brand: Brand,
 }
 
 impl Emitter {
-    pub fn new(src: &Path, out: &Path, origin: &str, base: &str, asof: &str) -> Res<Self> {
+    pub fn new(src: &Path, out: &Path, origin: &str, base: &str, asof: &str, brand: &Brand) -> Res<Self> {
         let tpl = fs::read_to_string(src.join("index.html")).map_err(err("cannot read the site template index.html"))?;
         let mut base = base.to_string();
         if !base.starts_with('/') {
@@ -95,8 +189,8 @@ impl Emitter {
             }
         }
         // copy assets
-        copy_dir(&src.join("assets"), &out.join("assets"))?;
-        Ok(Emitter { tpl, out: out.to_path_buf(), origin: origin.trim_end_matches('/').to_string(), base, asof: asof.to_string(), verify, urls: Vec::new(), noindex: std::env::var("SITE_NOINDEX").map(|v| v == "1").unwrap_or(false) })
+        copy_dir(&src.join("assets"), &out.join("assets"), brand)?;
+        Ok(Emitter { brand: brand.clone(), tpl, out: out.to_path_buf(), origin: origin.trim_end_matches('/').to_string(), base, asof: asof.to_string(), verify, urls: Vec::new(), noindex: std::env::var("SITE_NOINDEX").map(|v| v == "1").unwrap_or(false) })
     }
 
     /// Site-relative address, e.g. `u("show/x/")` is `/Repo/show/x/`.
@@ -109,14 +203,16 @@ impl Emitter {
     }
 
     fn fill(&self, path: &str, title: &str, desc: &str, main_attr: &str, body: &str, ld: Option<&Value>, noindex: bool) -> String {
-        let full = if title.is_empty() { "BBC Radio 6 Music Collection - every track played on BBC Radio 6 Music".to_string() } else { format!("{title} - {SITE_NAME}") };
+        let full = if title.is_empty() { format!("{} - every track played on {}", self.brand.name, self.brand.station) } else { format!("{title} - {}", self.brand.name) };
         let canon = format!("{}{}{}", self.origin, self.base, path);
         let ld = ld
             .map(|v| format!("<script type=\"application/ld+json\">{}</script>\n", serde_json::to_string(v).unwrap_or_default().replace("</", "<\\/")))
             .unwrap_or_default();
-        self.tpl
-            .replace("{{TITLE}}", &esc(&full))
-            .replace("{{DESC}}", &esc(desc))
+        let tpl = self.brand.apply(&self.tpl);
+        let body = &self.brand.apply(body);
+        let (full, desc, ld) = (self.brand.apply(&full), self.brand.apply(desc), self.brand.apply(&ld));
+        tpl.replace("{{TITLE}}", &esc(&full))
+            .replace("{{DESC}}", &esc(&desc))
             .replace("{{CANON}}", &esc(&canon))
             .replace("{{ROBOTS}}", if noindex { "<meta name=\"robots\" content=\"noindex\">\n" } else { "" })
             .replace("{{VERIFY}}", &self.verify)
@@ -218,12 +314,15 @@ impl Emitter {
     }
 }
 
-fn copy_dir(from: &Path, to: &Path) -> Res<()> {
+fn copy_dir(from: &Path, to: &Path, brand: &Brand) -> Res<()> {
     fs::create_dir_all(to).map_err(err("cannot create folder"))?;
     for entry in fs::read_dir(from).map_err(err(&format!("cannot read {}", from.display())))?.flatten() {
         let (p, t) = (entry.path(), to.join(entry.file_name()));
         if p.is_dir() {
-            copy_dir(&p, &t)?;
+            copy_dir(&p, &t, brand)?;
+        } else if matches!(p.extension().and_then(|e| e.to_str()), Some("js" | "svg" | "css")) {
+            let text = fs::read_to_string(&p).map_err(err("cannot read asset"))?;
+            fs::write(&t, brand.apply(&text)).map_err(err("cannot write asset"))?;
         } else {
             fs::copy(&p, &t).map_err(err("cannot copy asset"))?;
         }
@@ -247,5 +346,17 @@ mod tests {
         assert!(l.contains("youtube.com/results?search_query=The%20Fall%20Hit%20the%20North"));
         assert!(l.contains("noopener noreferrer nofollow"));
         assert!(!l.contains("<script") && !l.contains("<iframe"));
+    }
+
+    #[test]
+    fn default_brand_changes_nothing_and_a_custom_one_swaps_the_names() {
+        let text = "BBC Radio 6 Music Collection | BBC Radio 6 Music | the BBC | to reach 6 Music";
+        assert_eq!(Brand::bbc6().apply(text), text);
+        let mut b = Brand::bbc6();
+        b.name = "Jazz FM Archive".into();
+        b.station = "Jazz FM".into();
+        b.short = "Jazz FM".into();
+        b.source = "Jazz FM".into();
+        assert_eq!(b.apply(text), "Jazz FM Archive | Jazz FM | Jazz FM | to reach Jazz FM");
     }
 }

@@ -14,6 +14,7 @@
 (() => {
   'use strict';
 
+  const NOGENRES = '{{NOGENRES}}' === '1';
   const REPO = 'https://github.com/pink-bourbon-estate/bbc-radio-6-music-collection';
   const main = document.getElementById('main');
   /* the folder the site lives in, e.g. "/" or "/BBC-Radio-6-Music-Collection/" */
@@ -252,7 +253,7 @@
         section('Busiest shows', barList({ filename: 'top-shows', head: ['Show', 'Plays'], items: summary.top_shows.slice(0, 15).map((s) => ({ label: s[0], value: s[2], href: '#/show/' + s[1] })) })),
         section('Day of the week', barChart({ title: 'Tracks played by weekday', filename: 'plays-by-weekday', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d, i) => ({ label: d, value: summary.weekday[i] })) }))),
       section('Time of day', barChart({ title: 'Tracks played by the hour the programme starts', filename: 'plays-by-hour', data: summary.hour.map((v, i) => ({ label: String(i).padStart(2, '0'), value: v })) })),
-      section('Genres (from MusicBrainz, use with care)',
+      NOGENRES ? null : section('Genres (from MusicBrainz, use with care)',
         h('p', { class: 'note' }, 'Genre labels come from MusicBrainz user tags, and only about ' + summary.genre_coverage_pct + '% of plays belong to an artist that has one. Treat these as a rough guide. Every artist page links to its MusicBrainz entry, so you can check or improve it.'),
         barList({ filename: 'plays-by-genre', head: ['Genre group', 'Plays'], items: summary.genre_buckets.slice(0, 18).map((g) => ({ label: g[0], value: g[1] })) })),
     );
@@ -362,16 +363,16 @@
     if (!letter) {
       const a = await getJSON('artists_top.json');
       return setPage('Artists', ...head, dataTable({
-        cols: [{ label: 'Artist', value: (r) => r[0], cell: (r) => artistLink(r[0], r[2], r[1]) }, { label: 'Plays', value: (r) => r[3], num: true }, { label: 'Tracks', value: (r) => r[4], num: true }, { label: 'Genre (MusicBrainz)', value: (r) => r[5] }, { label: 'Country', value: (r) => r[6] }],
+        cols: [{ label: 'Artist', value: (r) => r[0], cell: (r) => artistLink(r[0], r[2], r[1]) }, { label: 'Plays', value: (r) => r[3], num: true }, { label: 'Tracks', value: (r) => r[4], num: true }, ...(NOGENRES ? [] : [{ label: 'Genre (MusicBrainz)', value: (r) => r[5] }, { label: 'Country', value: (r) => r[6] }])],
         rows: a, filename: 'top-artists', sortCol: 1,
       }));
     }
     const rows = await getJSON('artists/' + letter + '.json');
     const q = pendingQuery; pendingQuery = '';
     setPage('Artists ' + letter.toUpperCase(), ...head, dataTable({
-      cols: [{ label: 'Artist', value: (r) => r.name, cell: (r) => artistLink(r.name, letter, r.id) }, { label: 'MusicBrainz', value: (r) => r.mbid, cell: (r) => (r.mbid ? mbLink(r.mbid) : '') },
+      cols: [{ label: 'Artist', value: (r) => r.name, cell: (r) => artistLink(r.name, letter, r.id) }, ...(NOGENRES ? [] : [{ label: 'MusicBrainz', value: (r) => r.mbid, cell: (r) => (r.mbid ? mbLink(r.mbid) : '') }]),
         { label: 'Plays', value: (r) => r.plays, num: true }, { label: 'Tracks', value: (r) => r.tracks, num: true }, { label: 'First played', value: (r) => r.first }, { label: 'Last played', value: (r) => r.last },
-        { label: 'Genre (MusicBrainz)', value: (r) => r.genre }, { label: 'Country', value: (r) => r.country }],
+        ...(NOGENRES ? [] : [{ label: 'Genre (MusicBrainz)', value: (r) => r.genre }, { label: 'Country', value: (r) => r.country }])],
       rows, filename: 'artists-' + letter, sortCol: 2, filter: q, rank: false,
     }));
   }
@@ -385,14 +386,14 @@
       h('dl', { class: 'facts' },
         h('dt', {}, 'Plays'), h('dd', {}, fmt(a.plays) + ' plays of ' + fmt(a.tracks) + ' different tracks'),
         h('dt', {}, 'First / last played'), h('dd', {}, fmtDate(a.first) + ' / ' + fmtDate(a.last)),
-        h('dt', {}, 'MusicBrainz ID'), h('dd', {}, a.mbid ? [h('code', {}, a.mbid), '  ', h('a', { href: 'https://musicbrainz.org/artist/' + a.mbid, rel: 'noopener' }, 'View on MusicBrainz')] : 'Not supplied by the BBC for this artist'),
+        NOGENRES ? null : [h('dt', {}, 'MusicBrainz ID'), h('dd', {}, a.mbid ? [h('code', {}, a.mbid), '  ', h('a', { href: 'https://musicbrainz.org/artist/' + a.mbid, rel: 'noopener' }, 'View on MusicBrainz')] : 'Not supplied by the BBC for this artist')],
         a.type ? [h('dt', {}, 'Type'), h('dd', {}, a.type)] : null,
         a.country ? [h('dt', {}, 'Country'), h('dd', {}, a.country)] : null,
         a.begin ? [h('dt', {}, 'Began'), h('dd', {}, a.begin)] : null,
         genres.length ? [h('dt', {}, 'Genres (MusicBrainz tags)'), h('dd', {}, genres.join(', '))] : null),
       h('p', {}, a.mbid ? [h('a', { href: 'https://musicbrainz.org/artist/' + a.mbid, rel: 'noopener' }, 'Official website and profiles on MusicBrainz'), ' · '] : null,
         h('a', { href: 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(a.name + ' musician'), rel: 'noopener noreferrer nofollow' }, 'Wikipedia search'), '  ', listenLinks(a.name, '')),
-      genres.length ? null : h('p', { class: 'note' }, 'MusicBrainz has no genre for this artist yet. If you know them, adding one there will improve every site that uses it.'),
+      genres.length || NOGENRES ? null : h('p', { class: 'note' }, 'MusicBrainz has no genre for this artist yet. If you know them, adding one there will improve every site that uses it.'),
       section('Most played tracks', dataTable({ cols: [{ label: 'Track', value: (r) => r[0] }, { label: 'Plays', value: (r) => r[1], num: true }, { label: 'Listen', value: () => '', cell: (r) => listenLinks(a.name, r[0]), nodl: true }], rows: a.top, filename: 'artist-' + id.slice(0, 40), sortCol: 1 })));
   }
 
@@ -431,6 +432,14 @@
 
   async function downloads() {
     const meta = await getJSON('meta.json');
+    const ONLYFILE = '{{DOWNLOADS}}';
+    if (ONLYFILE) {
+      return setPage('Downloads', h('h1', {}, 'Downloads'),
+        h('p', { class: 'lede' }, 'Every play is in one plain CSV file, free to use for personal, non-commercial purposes (as of ' + fmtDate(meta.as_of) + ').'),
+        section('The dataset', h('p', {}, h('a', { class: 'btn', href: BASE + ONLYFILE }, 'Download ' + ONLYFILE))),
+        section('Download a chart', h('p', {}, 'Every table and chart on this site has CSV and TXT buttons that download exactly what is on screen. For example:'),
+          h('ul', {}, h('li', {}, h('a', { href: '#/most-played/week' }, 'Most played this week')), h('li', {}, h('a', { href: '#/most-played/all' }, 'Most played of all time')), h('li', {}, h('a', { href: '#/years' }, 'Plays per year, and a top 100 for each year')), h('li', {}, h('a', { href: '#/shows' }, 'Every show; open one for a playlist of everything it has played')))));
+    }
     const raw = (f) => REPO + '/raw/main/data/' + f;
     const files = [
       ['tracks_unique.csv', 'Every distinct track with its plays, first and last played, album, label and MusicBrainz artist ID', '46 MB'],

@@ -65,6 +65,17 @@ pub fn show_for(local: i64) -> &'static str {
     }
 }
 
+/// Minute of the UK day at which the show on air at `local` started (slots begin on the half hour).
+pub fn slot_start_minute(local: i64) -> i64 {
+    let day = local.div_euclid(86_400) * 86_400;
+    let mut m = local.rem_euclid(86_400) / 60 / 30 * 30;
+    let name = show_for(local);
+    while m >= 30 && show_for(day + (m - 30) * 60) == name {
+        m -= 30;
+    }
+    m
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -95,5 +106,12 @@ mod tests {
             let utc = london_to_utc(local);
             assert_eq!(utc_to_london(utc), local, "{s}");
         }
+    }
+
+    #[test]
+    fn slot_start_is_the_start_of_the_show() {
+        assert_eq!(slot_start_minute(parse_time("2026-11-13T07:45:00").unwrap().0), 390); // Fri Breakfast starts 06:30
+        assert_eq!(slot_start_minute(parse_time("2026-11-13T00:10:00").unwrap().0), 0);
+        assert_eq!(slot_start_minute(parse_time("2026-11-13T23:59:00").unwrap().0), 22 * 60);
     }
 }

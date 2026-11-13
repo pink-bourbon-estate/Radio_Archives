@@ -2,12 +2,12 @@
 //!
 //!   jazzfm scrape [--html FILE] [--url URL] [--data DIR] [--catalogue DIR] [--dump FILE]
 //!   jazzfm import FILE [--data DIR] [--catalogue DIR]   (tab-separated plays collected by hand)
-//!   jazzfm site   [--data DIR] [--catalogue DIR] [--out DIR]
+//!   jazzfm export [--data DIR] [--catalogue DIR] [--out DIR]   (plays in the shared site generator's format)
 //!   jazzfm stats  [--data DIR] [--catalogue DIR]
 
 mod extract;
 mod show;
-mod site;
+mod export;
 mod store;
 
 use catalogue::Catalogue;
@@ -254,11 +254,10 @@ fn main() {
     match a.cmd.as_str() {
         "scrape" => scrape(&a),
         "import" => import(&a),
-        "site" => {
+        "export" => {
             let (plays, cat) = load(&a);
-            let noindex = std::env::var("SITE_NOINDEX").is_ok_and(|v| !v.is_empty() && v != "0");
-            site::build(&plays, &cat, &a.out, noindex).unwrap_or_else(|e| die(&format!("site: {e}")));
-            println!("wrote {} ({} plays)", a.out.display(), plays.len());
+            let n = export::write(&plays, &cat, &a.out).unwrap_or_else(|e| die(&format!("export: {e}")));
+            println!("wrote {n} plays to {}", a.out.display());
         }
         "stats" => {
             let (plays, cat) = load(&a);
@@ -271,6 +270,6 @@ fn main() {
                 cat.tracks.len()
             );
         }
-        _ => die("usage: jazzfm scrape|site|stats [options]"),
+        _ => die("usage: jazzfm scrape|import|export|stats [options]"),
     }
 }

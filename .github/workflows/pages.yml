@@ -67,9 +67,19 @@ jobs:
       - name: Build Jazz FM
         run: |
           cargo build --release --locked -p jazzfm
-          ./target/release/jazzfm site --data stations/jazz-fm/data --catalogue catalogue/data --out public/jazz-fm
+          ./target/release/jazzfm export --data stations/jazz-fm/data --catalogue catalogue/data --out _jazz_data
+          # the same generator and look as the 6 Music site, with Jazz FM's wording
+          ./stations/bbc-radio-6-music/target/release/bbc6 site --data _jazz_data \
+            --src stations/bbc-radio-6-music/site \
+            --brand stations/jazz-fm/site/brand.json --about stations/jazz-fm/site/about.html \
+            --out public/jazz-fm \
+            --origin "https://${{ github.repository_owner }}.github.io" \
+            --base "/${{ github.event.repository.name }}/jazz-fm/"
+          cp _jazz_data/plays.csv public/jazz-fm/plays.csv
+          node --check public/jazz-fm/assets/app.js
+          test -f public/jazz-fm/data/meta.json
         env:
-          # Keep it out of search results until the reader has been checked against the live page.
+          # Keep it out of search results until the data has been checked for a while.
           SITE_NOINDEX: "1"
 
       - name: Landing page

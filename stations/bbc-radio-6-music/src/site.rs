@@ -23,7 +23,7 @@
 //! your computer, because the data only ever ends on the last day that was scraped.
 
 use crate::derive::plays_files;
-use crate::pages::{esc, listen_links, Emitter};
+use crate::pages::{esc, listen_links, Brand, Emitter};
 use crate::playlists::classify;
 use crate::util::*;
 use serde_json::{json, Value};
@@ -34,7 +34,6 @@ use std::path::{Path, PathBuf};
 const ARTIST_PAGES: usize = 5000;
 /// Rows kept for each year of the crate dive, spread evenly across that year.
 const CRATE_ROWS: usize = 1000;
-const REPO: &str = "https://github.com/pink-bourbon-estate/bbc-radio-6-music-collection";
 
 /// One play, stored compactly (everything is an index into a table).
 struct Row {
@@ -198,6 +197,8 @@ pub fn run(args: &Args) -> Res<()> {
     let out = root.join("data");
     let origin = args.str_or("origin", "https://example.github.io");
     let base = args.str_or("base", "/");
+    let brand = Brand::load(args.get("brand"))?;
+    let repo = brand.repo.as_str();
     let files = plays_files(&data, true);
     if files.is_empty() {
         return Err(format!("no plays files in {}/plays", data.display()));
@@ -317,7 +318,7 @@ pub fn run(args: &Args) -> Res<()> {
     aorder.sort_by(|&a, &b| artists[b as usize].plays.cmp(&artists[a as usize].plays).then(a.cmp(&b)));
     // the artists that get their own pre-built page (the app opens every other artist too)
     let page_ids: HashSet<String> = aorder.iter().take(ARTIST_PAGES).map(|&a| artists[a as usize].id.clone()).collect();
-    let mut em = Emitter::new(&src, &root, &origin, &base, &iso(latest))?;
+    let mut em = Emitter::new(&src, &root, &origin, &base, &iso(latest), &brand)?;
 
     // a track row for tables: [artist, title, plays, artist id, artist letter]
     let trow = |ti: u32, plays: u32| -> Value {
@@ -663,7 +664,8 @@ pub fn run(args: &Args) -> Res<()> {
             ts.sort_by(|&x, &y| tracks[y as usize].plays.cmp(&tracks[x as usize].plays).then(x.cmp(&y)));
             let tops: Vec<(&str, u32)> = ts.iter().take(15).map(|&t| (tracks[t as usize].title.as_str(), tracks[t as usize].plays)).collect();
             let mut facts = format!("<dt>Plays</dt><dd>{} plays of {} different tracks</dd><dt>First / last played</dt><dd>{} / {}</dd>", thou(ar.plays as u64), thou(ar.tracks as u64), iso(ar.first), iso(ar.last));
-            if ar.mbid.is_empty() {
+            if brand.no_genres {
+            } else if ar.mbid.is_empty() {
                 facts.push_str("<dt>MusicBrainz ID</dt><dd>Not supplied by the BBC for this artist</dd>");
             } else {
                 facts.push_str(&format!("<dt>MusicBrainz ID</dt><dd><code>{0}</code> <a href=\"https://musicbrainz.org/artist/{0}\" rel=\"noopener\">View on MusicBrainz</a></dd>", esc(&ar.mbid)));
@@ -754,8 +756,8 @@ pub fn run(args: &Args) -> Res<()> {
             "url": home_url, "isAccessibleForFree": true, "inLanguage": "en-GB",
             "temporalCoverage": format!("{}/{}", iso(earliest), iso(latest)),
             "keywords": ["BBC Radio 6 Music", "playlist", "tracklist", "radio", "music"],
-            "distribution": [{"@type": "DataDownload", "encodingFormat": "text/csv", "contentUrl": format!("{REPO}/releases/tag/data-latest")}],
-            "sameAs": [REPO]
+            "distribution": [{"@type": "DataDownload", "encodingFormat": "text/csv", "contentUrl": format!("{repo}/releases/tag/data-latest")}],
+            "sameAs": [repo]
         });
         em.page("", "", desc, &body, Some(ld), false)?;
     }
@@ -895,13 +897,19 @@ pub fn run(args: &Args) -> Res<()> {
     }
 
     // downloads and about
+    let dl_body = if brand.downloads.is_empty() {
+        format!("<h1>Downloads</h1><p class=\"lede\">The whole dataset is plain CSV. See the <a href=\"{repo}/tree/main/data\">data folder</a> and the <a href=\"{repo}/releases/tag/data-latest\">latest daily build</a>. Every table on this site also has CSV and TXT buttons.</p>")
+    } else {
+        format!("<h1>Downloads</h1><p class=\"lede\">Every play as one CSV file: <a href=\"{}{}\">{}</a>. Every table on this site also has CSV and TXT buttons.</p>", em.u(""), brand.downloads, brand.downloads)
+    };
     em.page(
         "downloads/", "Downloads",
         "Download the BBC Radio 6 Music play-by-play dataset as CSV: tracks, artists, shows and episodes. Free for personal, non-commercial use.",
-        &format!("<h1>Downloads</h1><p class=\"lede\">The whole dataset is plain CSV. See the <a href=\"{REPO}/tree/main/data\">data folder</a> and the <a href=\"{REPO}/releases/tag/data-latest\">latest daily build</a>. Every table on this site also has CSV and TXT buttons.</p>"),
+        &dl_body,
         None, false,
     )?;
-    let about = fs::read_to_string(src.join("about.html")).map_err(err("cannot read about.html"))?;
+    let about_path = args.get("about").map(PathBuf::from).unwrap_or_else(|| src.join("about.html"));
+    let about = fs::read_to_string(&about_path).map_err(err("cannot read about.html"))?;
     em.page("about/", "About", "How this unofficial BBC Radio 6 Music archive is made, kept up to date and collected politely, and what its data can and cannot tell you.", &about, None, true)?;
 
     let pages_written = em.count() + 1;
