@@ -1,0 +1,83 @@
+name: Website
+
+# Builds the radio station archives and publishes them to GitHub Pages.
+#   /                          the landing page listing every station
+#   /bbc-radio-6-music/        BBC Radio 6 Music (built from the 6 Music repository's data)
+# The daily schedule runs after the 6 Music data refresh (05:23 UTC) has finished.
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # The 6 Music scraper keeps running in its own repository; this site only reads its data.
+      - name: Fetch the 6 Music data (public repository, data folder only)
+        uses: actions/checkout@v4
+        with:
+          repository: pink-bourbon-estate/BBC-Radio-6-Music-Collection
+          path: _bbc6
+          sparse-checkout: data
+          sparse-checkout-cone-mode: true
+
+      - name: Rust toolchain
+        run: rustup toolchain install stable --profile minimal && rustup default stable
+
+      - name: Check the site script parses
+        run: node --check stations/bbc-radio-6-music/site/assets/app.js
+
+      - name: Test
+        working-directory: stations/bbc-radio-6-music
+        run: cargo test --locked
+
+      - name: Build BBC Radio 6 Music
+        working-directory: stations/bbc-radio-6-music
+        run: |
+          cargo build --release --locked
+          ./target/release/bbc6 site --data ../../_bbc6/data --src site --out ../../public/bbc-radio-6-music \
+            --origin "https://${{ github.repository_owner }}.github.io" \
+            --base "/${{ github.event.repository.name }}/bbc-radio-6-music/"
+        env:
+          # This is a second copy of a site that already exists, so keep it out of search results
+          # until the original is retired (otherwise the two would compete).
+          SITE_NOINDEX: "1"
+
+      - name: Landing page
+        run: cp landing/index.html public/index.html
+
+      - name: Make sure no email address slipped into the site
+        run: |
+          python3 - <<'PY'
+          import glob, re, sys
+          pat = re.compile(rb"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+          bad = [p for p in glob.glob("public/**/*.*", recursive=True) if pat.search(open(p, "rb").read())]
+          print("files with an email address:", bad)
+          sys.exit(1 if bad else 0)
+          PY
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

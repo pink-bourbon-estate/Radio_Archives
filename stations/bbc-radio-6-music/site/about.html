@@ -1,0 +1,41 @@
+<h1>About this site</h1>
+<div class="prose">
+<p class="lede">An unofficial, non-commercial archive of what BBC Radio 6 Music has played, built for curiosity and personal research.</p>
+<h3>What this is, and is not</h3>
+<p>It lists facts that the BBC publishes for every programme: the show, the date and time, and the tracks played with artist, title, album and label. There is no audio, no artwork and no programme descriptions. It is not made, endorsed or checked by the BBC.</p>
+<h3>Finding a song to listen to</h3>
+<p>If you are trying to find a song you do not remember the name of, the tracklists show what was played and when. This site does not host or stream any music. To help you hear a track, each one has plain links (YT, SP, SC, BC) that open a search for it on YouTube, Spotify, SoundCloud and Bandcamp, and each episode links back to its page on the BBC, where Sounds may have the programme. Nothing from those sites is loaded or embedded here, so the no-tracking promise below still holds: they only see you if you choose to click. Each show and episode also has a playlist download (a CSV of artist and title) that playlist-transfer services such as Tune My Music or Soundiiz can import, so you can make your own playlist in the service you already use. The site never asks you to sign in to anything.</p>
+<h3>How the data was collected</h3>
+<ol>
+<li>For each day, the program reads the BBC's public schedule page for 6 Music to learn which episodes aired.</li>
+<li>For each episode it reads the public tracklist (the "segments" feed that the BBC's own programme pages use).</li>
+<li>Each artist's MusicBrainz ID comes from the BBC's own data. Genre, country and start year come from MusicBrainz, matched by that ID.</li>
+<li>Everything is stored as plain CSV and rebuilt from the play-by-play files, so any number on the site can be checked.</li>
+</ol>
+<h3>Collecting it politely</h3>
+<ul>
+<li>Slow: a few requests per second at most while catching up, and a daily update needs only a few dozen requests.</li>
+<li>Nothing is fetched twice: finished episodes are recorded and skipped, and every response is cached.</li>
+<li>The daily update checks the BBC's robots.txt first and stops if the pages it needs are not allowed.</li>
+<li>The program identifies itself with the name of this project and a link to its code, so the BBC can see who is asking and get in touch.</li>
+<li>Only factual metadata is kept. No accounts, no logins, no personal data of listeners.</li>
+<li>If the BBC, an artist or a rights holder asks for something to be changed or removed, it will be, promptly. The place to ask is an issue on the <a href="https://github.com/pink-bourbon-estate/bbc-radio-6-music-collection/issues" rel="noopener">source code page</a>.</li>
+</ul>
+<h3>Privacy</h3>
+<p>This website sets no cookies, runs no analytics, shows no adverts and loads nothing from other sites (no web fonts, no libraries). Searches and filters happen in your browser. Real email addresses occasionally appear inside BBC tracklist text, and are replaced with "[email removed]" before anything is published.</p>
+<h3>How it is made and kept up to date</h3>
+<p>A small program written in Rust, called bbc6, does the collecting, the maths and the building of this site: the data files and a plain HTML page for every show, year, chart and the most played artists, so that search engines can read them. The interactive tables are plain JavaScript with no framework. A scheduled GitHub Actions job runs every day: it checks the BBC feeds, adds the new episodes, rebuilds the data and publishes the site. Every change is scanned for secrets and personal email addresses before it is accepted, and the song database is rebuilt from the raw plays and compared with the published copy to catch mistakes.</p>
+<p>Everything, including the code and the daily history of changes, is in the <a href="https://github.com/pink-bourbon-estate/bbc-radio-6-music-collection" rel="noopener">source repository</a> and can be reused under the MIT licence.</p>
+<h3>Limits you should know about</h3>
+<ul>
+<li>Tracklists only exist from mid-2008, are patchy until 2010, and are never perfect: if the presenter does not log a track, it is not here.</li>
+<li>The BBC logs theme tunes and jingles as tracks, so some of the most-played entries are not records.</li>
+<li>"Today", "this week" and so on end on the last day in the data. The data is updated once a day, so they lag the radio by about a day.</li>
+<li>Tracks are matched by artist and title ignoring case and spacing, so the same song under two spellings is counted twice.</li>
+<li>Genre is the weakest part. It comes from MusicBrainz user tags, and many artists have none. That is why every artist is shown with its MusicBrainz ID: you can check it, correct it, or improve it at the source. MusicBrainz also lists an artist's official website and profiles.</li>
+<li>Shows are grouped by the name in the BBC schedule. When a show is renamed or has guest presenters, its history can be split across names.</li>
+<li>The search links are plain searches by artist and title, so they can land on the wrong version of a song.</li>
+</ul>
+<h3>Credits</h3>
+<p>Broadcast information: BBC. Artist identifiers and tags: <a href="https://musicbrainz.org" rel="noopener">MusicBrainz</a> and its contributors. The layout is inspired by the quiet, typographic archive style of architecture sites such as Divisare.</p>
+</div>

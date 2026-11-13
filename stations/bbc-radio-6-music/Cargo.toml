@@ -1,0 +1,19 @@
+[package]
+name = "bbc6"
+version = "0.2.0"
+edition = "2021"
+description = "Build an offline database of every track played on BBC Radio 6 Music (or any BBC station)"
+license = "MIT"
+
+[dependencies]
+csv = "1.4.0"
+flate2 = "1.1.11"
+serde_json = "1.0.154"
+ureq = "2"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

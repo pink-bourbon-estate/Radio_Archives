@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESC}}">
+<link rel="canonical" href="{{CANON}}">
+{{ROBOTS}}<meta property="og:type" content="website">
+<meta property="og:site_name" content="BBC Radio 6 Music Collection">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESC}}">
+<meta property="og:url" content="{{CANON}}">
+<meta name="twitter:card" content="summary">
+{{VERIFY}}{{JSONLD}}<link rel="icon" href="{{BASE}}assets/favicon.svg" type="image/svg+xml">
+<script src="{{BASE}}assets/theme.js"></script>
+<link rel="stylesheet" href="{{BASE}}assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<header class="top">
+  <a class="mark" href="{{BASE}}" aria-label="BBC Radio 6 Music Collection, home">BBC Radio 6 Music <span>Collection</span></a>
+  <nav aria-label="Main">
+    <a href="{{BASE}}most-played/">Most played</a>
+    <a href="{{BASE}}crate-dive/">Crate dive</a>
+    <a href="{{BASE}}latest/">Latest</a>
+    <a href="{{BASE}}shows/">Shows</a>
+    <a href="{{BASE}}artists/">Artists</a>
+    <a href="{{BASE}}years/">Years</a>
+    <a href="{{BASE}}downloads/">Downloads</a>
+    <a href="{{BASE}}about/">About</a>
+  </nav>
+  <form class="find" role="search" id="find">
+    <label class="sr" for="q">Search shows and artists</label>
+    <input id="q" type="search" placeholder="Search shows and artists" autocomplete="off">
+  </form>
+</header>
+<main id="main" tabindex="-1" {{MAINATTR}}>{{MAIN}}</main>
+<footer class="foot">
+  <p>An unofficial, non-commercial archive of broadcast metadata. Not made, endorsed or checked by the BBC. No cookies, no tracking, no adverts.</p>
+  <p>Part of <a href="https://pink-bourbon-estate.github.io/">Pink Bourbon Estate</a>: free, open, readable tools. <a href="https://pink-bourbon-estate.github.io/privacy/">Privacy and licence</a></p>
+  <p>Artist IDs and genre data from <a href="https://musicbrainz.org" rel="noopener">MusicBrainz</a>. <a href="{{BASE}}about/">About this site</a> · <a id="repo" href="https://github.com/pink-bourbon-estate/bbc-radio-6-music-collection" rel="noopener">Source code</a></p>
+</footer>
+<script src="{{BASE}}assets/app.js"></script>
+</body>
+</html>
