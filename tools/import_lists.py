@@ -4,9 +4,9 @@ them. Run by the "Independent stations: import lists" workflow (my own sandbox c
 sites). Sources:
 
   1. Wikipedia, "List of community radio stations in the United Kingdom" (follows Ofcom's
-     community licences), read as raw wikitext from /wiki/...?action=raw (Wikipedia's robots.txt
-     disallows /w/, where the API lives). Each station's website comes from the infobox of its own
-     article, one request per article.
+     community licences), read from the ordinary article page (Wikipedia's robots.txt turns
+     bots away from the API and the ?action=raw text, but not from article pages). Each
+     station's website comes from the infobox of its own article, one request per article.
   2. "The Golden Age of Community Radio" directory, UK page (radio.surfacepressure.net), mostly
      online-only stations. Each station page is read for its website.
 
@@ -15,6 +15,7 @@ itself. Stations already in the registry (same normalised name) are not duplicat
 website on an existing row is filled in. The raw pages are saved in independent/sources/ so the
 parsing can be checked and fixed.
 """
+from html.parser import HTMLParser
 import csv, html, os, re, sys, time, urllib.parse, urllib.request, urllib.robotparser
 
 UA = ("RadioArchivesBot/0.2 (+https://github.com/pink-bourbon-estate/Radio_Archives; "
@@ -74,80 +75,80 @@ def site(url):
 
 # ---- Wikipedia ------------------------------------------------------------------------------
 
-def strip_wiki(t):
-    t = re.sub(r"<ref[^>]*/>|<ref[^>]*>.*?</ref>", "", t, flags=re.S)
-    t = re.sub(r"\{\{[^{}]*\}\}", "", t)
-    t = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", t)
-    t = re.sub(r"\[https?://\S+ ([^\]]*)\]", r"\1", t)
-    t = re.sub(r"<[^>]+>|'''?", "", t)
-    return html.unescape(t).strip()
+class WikiTables(HTMLParser):
+    """Rows of every wikitable in a rendered Wikipedia page: (cells as text, first link in the
+    first cell, the latest h2/h3 heading)."""
+
+    def __init__(self):
+        super().__init__()
+        self.rows, self.heading = [], ""
+        self.in_table = self.in_cell = self.in_head = 0
+        self.row = self.link = None
+        self.buf = ""
+
+    def handle_starttag(self, tag, a):
+        a = dict(a)
+        if tag in ("h2", "h3"):
+            self.in_head, self.buf = 1, ""
+        elif tag == "table" and "wikitable" in (a.get("class") or ""):
+            self.in_table += 1
+        elif self.in_table and tag == "tr":
+            self.row, self.link = [], None
+        elif self.in_table and tag in ("td", "th") and self.row is not None:
+            self.in_cell, self.buf = 1, ""
+        elif self.in_cell and tag == "a" and not self.row and self.link is None:
+            h = a.get("href", "")
+            if h.startswith("/wiki/") and ":" not in h:
+                self.link = urllib.parse.unquote(h[6:]).replace("_", " ")
+        elif self.in_cell and tag in ("sup", "style"):
+            self.in_cell = 2  # skip reference marks
+
+    def handle_endtag(self, tag):
+        if tag in ("h2", "h3") and self.in_head:
+            self.heading, self.in_head = self.buf.replace("[edit]", "").strip(), 0
+        elif tag in ("sup", "style") and self.in_cell == 2:
+            self.in_cell = 1
+        elif tag in ("td", "th") and self.in_cell:
+            self.row.append(" ".join(self.buf.split()))
+            self.in_cell = 0
+        elif tag == "tr" and self.row is not None:
+            if len(self.row) >= 2:
+                self.rows.append((self.row, self.link, self.heading))
+            self.row = None
+        elif tag == "table" and self.in_table:
+            self.in_table -= 1
+
+    def handle_data(self, d):
+        if self.in_head or self.in_cell == 1:
+            self.buf += d
 
 
-def wiki_rows(text):
-    """(name, article title or '', place, section) for each table row whose first cell links."""
-    out, section, cells = [], "", []
-
-    def flush():
-        if len(cells) >= 2:
-            m = re.search(r"\[\[([^|\]#]+)(?:\|([^\]]*))?\]\]", cells[0])
-            name = strip_wiki(cells[0])
-            if name and name.lower() not in {"station", "name"}:
-                out.append((name, m.group(1).strip() if m else "", strip_wiki(cells[1]), section))
-        cells.clear()
-
-    for line in text.split("\n"):
-        h = re.match(r"^==+\s*(.*?)\s*==+\s*$", line)
-        if h:
-            flush()
-            section = strip_wiki(h.group(1))
-        elif line.startswith(("|-", "|}", "{|")):
-            flush()
-        elif line.startswith("|") and not line.startswith("|+"):
-            for c in line[1:].split("||"):
-                if re.match(r'^\s*(style|align|rowspan|colspan|class|scope|bgcolor)=', c) and "|" in c:
-                    c = c.split("|", 1)[1]
-                cells.append(c.strip())
-    flush()
-    return out
-
-
-def wiki_raw(title):
-    """The wikitext of an article from /wiki/<title>?action=raw (robots.txt allows /wiki/, not /w/),
-    following one redirect."""
-    for _ in range(2):
-        text = get(WIKI + urllib.parse.quote(title.replace(" ", "_")) + "?action=raw")
-        m = re.match(r"\s*#redirect\s*\[\[([^\]#|]+)", text, flags=re.I)
-        if not m:
-            return text
-        title = m.group(1)
-    return ""
-
-
-def website_in(text):
-    m = re.search(r"\|\s*website\s*=\s*([^\n]+)", text, flags=re.I)
-    if not m:
-        return ""
-    v = m.group(1)
-    u = re.search(r"\{\{\s*url\s*\|\s*([^|}]+)", v, flags=re.I) or re.search(r"(https?://[^\s\]|}]+)", v) \
-        or re.search(r"([a-z0-9-]+(?:\.[a-z0-9-]+)+\.[a-z]{2,}[^\s\]|}]*)", v, flags=re.I)
+def website_in(page):
+    """The website in a rendered article's infobox."""
+    m = re.search(r'<th[^>]*>\s*Website\s*</th>\s*<td[^>]*>(.*?)</td>', page, flags=re.S | re.I)
+    u = re.search(r'href="(https?://[^"]+)"', m.group(1)) if m else None
     return site(u.group(1)) if u else ""
 
 
 def from_wikipedia():
-    text = wiki_raw(WIKI_LIST)
-    if not text:
+    page = get(WIKI + urllib.parse.quote(WIKI_LIST.replace(" ", "_")))
+    if not page:
         return []
-    open(f"{SRC}/wikipedia-community-list.wikitext", "w").write(text)
-    rows = wiki_rows(text)
+    open(f"{SRC}/wikipedia-community-list.html", "w").write(page)
+    p = WikiTables()
+    p.feed(page)
+    rows = [(c[0], link, c[1], h) for c, link, h in p.rows
+            if c[0] and c[0].lower() not in {"station", "name", "station name"}]
     print(f"Wikipedia: {len(rows)} rows in the list")
     sites = {}
     for t in dict.fromkeys(r[1] for r in rows if r[1]):
-        w = website_in(wiki_raw(t))
+        w = website_in(get(WIKI + urllib.parse.quote(t.replace(" ", "_"))))
         if w:
             sites[t] = w
     print(f"Wikipedia: websites found for {len(sites)} stations")
-    return [{"station": n, "city": place or sec, "kind": "Ofcom community (Wikipedia list)",
-             "website": sites.get(t, ""), "source": "wikipedia.org list of UK community radio"}
+    return [{"station": re.sub(r"\[\d+\]", "", n).strip(), "city": place or sec,
+             "kind": "Ofcom community (Wikipedia list)", "website": sites.get(t, ""),
+             "source": "wikipedia.org list of UK community radio"}
             for n, t, place, sec in rows]
 
 
