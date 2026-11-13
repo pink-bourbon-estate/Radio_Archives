@@ -6,19 +6,15 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Trawl 2
+      - name: Read how the pickers fetch plays
         run: |
           UA="RadioArchivesBot/0.1 (+https://github.com/pink-bourbon-estate/Radio_Archives; unofficial non-commercial archive; one-off site check)"
           B=https://www.hellorayo.co.uk
-          echo "=== SITEMAP BODY"; curl -sS -A "$UA" -L https://hellorayo.co.uk/sitemap_index.xml | head -c 600; echo
-          sleep 2
-          curl -sS -A "$UA" -o page.html $B/jazz-fm/playlist
-          echo "=== ALL INTERNAL LINKS"
-          grep -oE 'href="/[^"]*"' page.html | sort -u | head -80
-          echo "=== JAZZ-FM LINKS IN NEXT DATA"
-          grep -oE '"(/jazz-fm/[^"]*|https://[a-z.]*hellorayo.co.uk/jazz-fm/[^"]*)"' page.html | sort -u | head -60
-          sleep 2
-          echo "=== STATION HOME"
-          curl -sS -A "$UA" -o home.html -w "%{http_code}\n" $B/jazz-fm
-          grep -oE 'href="/jazz-fm[^"]*"' home.html | sort -u | head -40
-          grep -oE '"/jazz-fm/[a-z0-9/_-]*"' home.html | sort -u | head -40
+          curl -sS -A "$UA" -o app.js "$B/_next/static/chunks/pages/_app-71213e65cbc096d9.js"
+          echo "=== api9.2 contexts"
+          grep -oE ".{250}api9\.2.{350}" app.js | head -3
+          echo "=== recently played / before contexts"
+          grep -oE ".{200}(Recently Played|recentlyPlayed|beforeTime|before_time|playlistDate|hourFilter).{300}" app.js | head -4
+          echo "=== listenapi path builders"
+          grep -oE "[\"'\`]/?(stations_)?(nowplaying|playhistory|playlist|events|tracklist)[A-Za-z_/{}\$-]*[\"'\`]" app.js | sort | uniq -c | sort -rn | head -15
+          grep -oE ".{150}(playlist/|tracklist/|playhistory).{250}" app.js | head -4
