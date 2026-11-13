@@ -79,7 +79,7 @@ pub fn build(plays: &[(String, String)], cat: &Catalogue, out: &Path, noindex: b
         let last = &plays[plays.len() - 1].0;
         h.push_str(&format!(
             "<p class=\"meta\">{} plays of {} tracks by {} artists, collected from {} to {} (UTC). \
-             The station only publishes about a week of history, so this archive starts on the first day it was collected. \
+             The station's page only shows its latest few plays, so this archive has gaps unless it is collected often, and it starts on the day collection began. \
              <a href=\"plays.csv\">Download everything as CSV</a>.</p>\n",
             plays.len(), tracks.len(), artists.len(), &first[..10], &last[..10]
         ));
