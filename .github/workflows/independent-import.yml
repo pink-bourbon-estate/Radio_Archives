@@ -1,0 +1,39 @@
+name: Independent stations import
+
+# Run by hand. Adds UK stations from public lists (Wikipedia's list of community radio stations,
+# which follows Ofcom's licences, and the "Golden Age of Community Radio" directory), finds each
+# station's website, then runs the robots.txt and contact-email survey on every station. See
+# tools/import_lists.py and docs/INDEPENDENT-ARCHIVE.md. Takes roughly 15 to 30 minutes because
+# every request is spaced out.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: independent-survey
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Import station lists
+        run: python3 tools/import_lists.py
+      - name: Survey every station (robots.txt and contact email)
+        run: python3 tools/survey.py independent/stations.tsv
+      - name: Commit the result
+        run: |
+          git config user.name "radio-archives-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add independent
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Independent stations: import and survey $(date -u +%Y-%m-%d)"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
