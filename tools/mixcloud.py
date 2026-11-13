@@ -13,7 +13,9 @@ identified as RadioArchivesBot with a link, non-commercial, removal on request. 
 
 Writes independent/data/mixcloud/<account>.jsonl, one line per show:
   {"key", "url", "title", "date", "tags", "seconds", "sections": [...raw...]}
-Usage: tools/mixcloud.py [--max-details 400] [--max-minutes 20]
+Every new show is listed (title, date, tags, link: one request per 100 shows). Only a few shows per account per run
+are opened to look for a tracklist, because most small stations do not enter one.
+Usage: tools/mixcloud.py [--max-details 400] [--details-per-account 12] [--max-minutes 20]
 """
 import argparse, csv, json, os, sys, time, urllib.parse, urllib.request
 
@@ -43,6 +45,7 @@ def get(url):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-details", type=int, default=400)
+    ap.add_argument("--details-per-account", type=int, default=12)
     ap.add_argument("--max-minutes", type=float, default=20)
     a = ap.parse_args()
     t0 = time.time()
@@ -58,9 +61,10 @@ def main():
             have = {json.loads(l)["key"] for l in open(path, encoding="utf-8") if l.strip()}
         url = f"{API}/{urllib.parse.quote(user)}/cloudcasts/?limit=100"
         new = withsec = pages = 0
+        mine = 0  # detail requests for this account this run
         status = "ok"
         with open(path, "a", encoding="utf-8") as out:
-            while url and used < a.max_details and time.time() - t0 < a.max_minutes * 60 and pages < 80:
+            while url and time.time() - t0 < a.max_minutes * 60 and pages < 80:
                 lst = get(url)
                 pages += 1
                 if "error" in lst:
@@ -69,13 +73,15 @@ def main():
                 data = lst.get("data", [])
                 fresh = [d for d in data if d["key"] not in have]
                 for d in fresh:
-                    if used >= a.max_details or time.time() - t0 > a.max_minutes * 60:
+                    if time.time() - t0 > a.max_minutes * 60:
                         break
-                    det = get(API + d["key"])
-                    if "error" in det:
-                        continue
-                    used += 1
-                    secs = det.get("sections") or []
+                    secs = None  # None = detail not looked at; [] = looked at, no tracklist
+                    if mine < a.details_per_account and used < a.max_details:
+                        det = get(API + d["key"])
+                        if "error" not in det:
+                            secs = det.get("sections") or []
+                            mine += 1
+                            used += 1
                     rec = {"key": d["key"], "url": d.get("url", ""), "title": d.get("name", ""),
                            "date": (d.get("created_time") or "")[:10], "tags": [t.get("name", "") for t in d.get("tags", [])],
                            "seconds": d.get("audio_length", 0), "sections": secs}
@@ -88,7 +94,7 @@ def main():
                     break  # this whole page was already stored; older pages will be too
                 url = (lst.get("paging") or {}).get("next")
         stats.append((acc["station"], user, status, new, withsec))
-        print(f"{acc['station']} ({user}): {status}, {new} new shows, {withsec} with tracklists", flush=True)
+        print(f"{acc['station']} ({user}): {status}, {new} new shows listed, {mine} looked at in detail, {withsec} with tracklists", flush=True)
     print(f"{used} show details requested in {time.time() - t0:.0f}s")
 
 
