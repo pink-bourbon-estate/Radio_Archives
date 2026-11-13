@@ -1,15 +1,16 @@
-name: Jazz FM collector
+name: Jazz FM weekly collector
 
-# Reads Jazz FM's public playlist page every 15 minutes and adds new plays to the archive.
+# Once a week, fetches the latest Jazz FM play history straight from the JSON API behind the
+# public playlist page (listenapi.planetradio.co.uk) and appends the plays not yet stored.
 #
-# The page only embeds the latest 5 plays (about 12-25 minutes of music), and the API the site
-# uses for older plays disallows automated access in its robots.txt, so it is not used. Plays
-# are therefore collected from the day this was switched on, and a delayed or skipped run
-# (GitHub does not guarantee schedule timing) can leave a gap. It runs on GitHub's servers, so
-# nothing needs to stay switched on at home. The website picks up the data in its daily build.
+# One run is about 6 requests a day of history at 48 plays each (roughly 40 small JSON replies,
+# about 100 KB in total, 0.25 s apart) and never touches the web page itself. The API keeps about
+# a week of history, so a weekly run overlaps the previous one and leaves no gaps; a missed run
+# can be fixed by running this workflow by hand within the following days. Full explanation,
+# including the robots.txt decision: docs/JAZZ-FM.md. The website picks the data up in its daily build.
 on:
   schedule:
-    - cron: "7,22,37,52 * * * *"
+    - cron: "17 6 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -28,7 +29,7 @@ jobs:
       - name: Rust toolchain
         run: rustup toolchain install stable --profile minimal && rustup default stable
 
-      # Tests run in the website workflow; here a cached build keeps each run to a few seconds.
+      # Tests run in the website workflow; the cache keeps the build short.
       - uses: actions/cache@v4
         with:
           path: |
@@ -39,18 +40,8 @@ jobs:
 
       - name: Collect new plays
         run: |
-          cargo run --release --locked -p jazzfm -- scrape \
-            --data stations/jazz-fm/data --catalogue catalogue/data --dump scrape-debug.html
-
-      # If the page layout changes the step above fails; this keeps the page for fixing the reader.
-      - name: Keep the page that failed to read
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: scrape-debug
-          path: scrape-debug.html
-          if-no-files-found: ignore
-          retention-days: 7
+          cargo run --release --locked -p jazzfm -- collect \
+            --data stations/jazz-fm/data --catalogue catalogue/data
 
       - name: Commit new data
         run: |

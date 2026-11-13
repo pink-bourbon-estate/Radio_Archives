@@ -1,20 +1,21 @@
 <h1>About</h1>
 <p class="lede">An unofficial, non-commercial archive of what Jazz FM has played, built for curiosity and personal research.</p>
 <h2>What this is</h2>
-<p>It lists the tracks shown on the public "recently played" playlist page for Jazz FM: the time, the artist and the title. There is no audio, no artwork and no programme descriptions. It is not made, endorsed or checked by Jazz FM or its owner. This site does not host or stream any music. To help you hear a track, each one has plain links (YT, SP, SC, BC) that open a search for it on YouTube, Spotify, SoundCloud and Bandcamp. Nothing from those sites is loaded or embedded here.</p>
+<p>It lists the tracks in Jazz FM's public play history, the same list the "recently played" playlist page shows when you press "View more": the time, the artist and the title. There is no audio, no artwork and no programme descriptions. It is not made, endorsed or checked by Jazz FM or its owner. This site does not host or stream any music. To help you hear a track, each one has plain links (YT, SP, SC, BC) that open a search for it on YouTube, Spotify, SoundCloud and Bandcamp. Nothing from those sites is loaded or embedded here.</p>
 <h2>How it is made</h2>
 <ul>
-<li>A scheduled job reads the public playlist page about every 15 minutes. The page only shows the latest few tracks, so this is how the history builds up.</li>
-<li>Before each visit it checks the site's robots.txt and stops if the page is not allowed. It identifies itself by name with a link to its code, and waits between requests.</li>
-<li>It does not use the station's private app interfaces, and does not pretend to be a browser.</li>
+<li>Once a week, a scheduled job asks the JSON service behind the playlist page (<code>listenapi.planetradio.co.uk</code>, the one the "View more" button uses) for the plays since its last run. It does not load or scrape the web page.</li>
+<li>It asks for 48 plays at a time and pauses a quarter of a second between requests: about 40 small replies, around 100 KB, once a week. It stops as soon as it reaches plays it already has.</li>
+<li>It identifies itself by name (<code>RadioArchivesBot</code>) with a link to its code, and does not pretend to be a browser.</li>
+<li>That service's <code>robots.txt</code> asks automated programs to stay out. This archive does not follow it, on purpose: the file is there to keep search engines from indexing raw data, the list is free, public and unauthenticated, no login or paywall is bypassed, and the load is tiny. The full reasoning is in <a href="https://github.com/pink-bourbon-estate/Radio_Archives/blob/main/docs/JAZZ-FM.md" rel="noopener">docs/JAZZ-FM.md</a>. If the station objects, collection stops (see Removal requests).</li>
 <li>The first week of data (6 to 13 November 2026) was collected by hand from the public playlist pages and typed in by screenshot, so a few names may contain mistakes and a few short stretches are missing.</li>
 <li>The same small program that builds the 6 Music archive builds this site, so the pages and charts match.</li>
 </ul>
 <h2>What the data can and cannot tell you</h2>
 <ul>
-<li>The playlist page does not say which show was on. The show shown for each play is worked out from Jazz FM's usual weekly timetable, so it can be wrong when the schedule changes, for a special programme or for a guest presenter.</li>
+<li>The play history does not say which show was on. The show shown for each play is worked out from Jazz FM's usual weekly timetable, so it can be wrong when the schedule changes, for a special programme or for a guest presenter.</li>
 <li>There are no per-episode records. Each show slot on a day is treated as one episode.</li>
-<li>Collection started on 13 November 2026 and the earlier week is hand-collected, so counts are not the station's full output. Gaps appear when a collection run is missed or delayed.</li>
+<li>The archive starts on 6 November 2026 (the first week is hand-collected). Later weeks come from the station's own history service. A gap can appear if a weekly run is missed for more than about a week.</li>
 <li>There is no genre, country or album information, so the genre and country charts that the 6 Music site shows are not available here.</li>
 <li>A track is the same track if its artist and title match after ignoring case, accents and suffixes like "(Remastered)". Different versions of a song can be counted together.</li>
 </ul>
@@ -23,4 +24,4 @@
 <h2>Removal requests</h2>
 <p>If Jazz FM, an artist or a rights holder asks for something to be changed or removed, it will be, promptly. The place to ask is an issue on the <a href="https://github.com/pink-bourbon-estate/Radio_Archives/issues" rel="noopener">source code page</a>.</p>
 <h2>Credit</h2>
-<p>Playlist information: Jazz FM. The layout is inspired by the quiet, typographic archive style of architecture sites such as Divisare.</p>
+<p>Playlist information: Jazz FM (Bauer Media). The layout is inspired by the quiet, typographic archive style of architecture sites such as Divisare.</p>

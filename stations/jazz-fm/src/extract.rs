@@ -1,11 +1,11 @@
-//! Reading plays out of the playlist page, and the small date and robots.txt helpers it needs.
+//! Reading plays out of the JSON the Planet Radio listen API returns, plus the small date helpers
+//! that needs.
 //!
-//! The page is a Next.js page with its data in `<script id="__NEXT_DATA__">`. The plays are in
-//! `props.initialState.station.data.stationPlayHistory`, a list of
-//! `{nowPlayingArtist, nowPlayingTrack, nowPlayingTime, ...}`. The same JSON also carries the
-//! play histories of *related* stations, so only that one path is read, and only when the
-//! station is Jazz FM. The page embeds just the latest handful of plays (5 when checked).
-//! Times are local UK time without a zone, converted to UTC here.
+//! The API (`https://listenapi.planetradio.co.uk/api9.2/events/jaz/{cursor}/{count}`) answers
+//! with a JSON list of the `count` plays immediately before `cursor`, newest first. Each item has
+//! `nowPlayingArtist`, `nowPlayingTrack` and `nowPlayingTime`. Times are UK local time without a
+//! zone, converted to UTC here. The reply is either a bare list or an object wrapping the list
+//! under `data`, `events` or `items`; all of those are accepted.
 
 use serde_json::Value;
 
@@ -17,40 +17,25 @@ pub struct Play {
     pub title: String,
 }
 
-#[derive(Debug)]
-pub struct Extracted {
-    pub plays: Vec<Play>,
-}
-
-/// The JSON text inside `<script id="__NEXT_DATA__" ...>`.
-pub fn next_data(html: &str) -> Option<&str> {
-    let p = html.find("id=\"__NEXT_DATA__\"")?;
-    let start = html[p..].find('>')? + p + 1;
-    let end = html[start..].find("</script>")? + start;
-    Some(&html[start..end])
-}
-
 fn text(v: Option<&Value>) -> Option<String> {
     v?.as_str().map(|s| s.split_whitespace().collect::<Vec<_>>().join(" ")).filter(|s| !s.is_empty())
 }
 
-pub fn extract(json: &str) -> Result<Extracted, String> {
-    let v: Value = serde_json::from_str(json).map_err(|e| format!("page data is not valid JSON: {e}"))?;
-    let data = v
-        .pointer("/props/initialState/station/data")
-        .ok_or("no props.initialState.station.data in the page (has the site changed?)")?;
-    if data.get("stationCode").and_then(Value::as_str) != Some("jaz") {
-        return Err(format!(
-            "this page is for station {:?}, not Jazz FM (code \"jaz\")",
-            data.get("stationCode")
-        ));
-    }
-    let history = data
-        .get("stationPlayHistory")
-        .and_then(Value::as_array)
-        .ok_or("no stationPlayHistory list in the station data")?;
+/// The plays in one API reply. Items missing an artist, title or readable time are skipped.
+/// Sorted oldest first, without exact duplicates. Errors only when the reply is not JSON or has
+/// no list in it at all (which would mean the API has changed).
+pub fn plays_from_json(json: &str) -> Result<Vec<Play>, String> {
+    let v: Value = serde_json::from_str(json).map_err(|e| format!("reply is not valid JSON: {e}"))?;
+    let list = match &v {
+        Value::Array(a) => a,
+        Value::Object(o) => ["data", "events", "items"]
+            .iter()
+            .find_map(|k| o.get(*k).and_then(Value::as_array))
+            .ok_or("reply is an object with no data/events/items list (has the API changed?)")?,
+        _ => return Err("reply is neither a list nor an object".into()),
+    };
     let mut plays = Vec::new();
-    for item in history {
+    for item in list {
         let (Some(artist), Some(title), Some(time)) = (
             text(item.get("nowPlayingArtist")),
             text(item.get("nowPlayingTrack")),
@@ -64,59 +49,7 @@ pub fn extract(json: &str) -> Result<Extracted, String> {
     }
     plays.sort();
     plays.dedup();
-    Ok(Extracted { plays })
-}
-
-/// A short description of the JSON, for the error message when no plays were found.
-pub fn describe(json: &str) -> String {
-    fn keys(v: &Value, seen: &mut Vec<String>) {
-        match v {
-            Value::Object(o) => {
-                for (k, x) in o {
-                    if seen.len() < 80 && !seen.contains(k) {
-                        seen.push(k.clone());
-                    }
-                    keys(x, seen);
-                }
-            }
-            Value::Array(a) => a.iter().take(3).for_each(|x| keys(x, seen)),
-            _ => {}
-        }
-    }
-    // A sample of anything called "playlist" / "tracks" / "songs", which is where plays should be.
-    fn sample(v: &Value, out: &mut Vec<String>) {
-        match v {
-            Value::Object(o) => {
-                for (k, x) in o {
-                    let kl = k.to_lowercase();
-                    if out.len() < 3 && (kl.contains("playlist") || kl.contains("track") || kl.contains("song")) {
-                        let mut t = x.to_string();
-                        t.truncate(t.char_indices().nth(1500).map_or(t.len(), |(i, _)| i));
-                        out.push(format!("{k} = {t}"));
-                    } else {
-                        sample(x, out);
-                    }
-                }
-            }
-            Value::Array(a) => a.iter().take(3).for_each(|x| sample(x, out)),
-            _ => {}
-        }
-    }
-    match serde_json::from_str::<Value>(json) {
-        Ok(v) => {
-            let mut seen = Vec::new();
-            keys(&v, &mut seen);
-            let mut samples = Vec::new();
-            sample(&v, &mut samples);
-            format!(
-                "{} bytes of JSON; keys seen: {}\nSAMPLES:\n{}",
-                json.len(),
-                seen.iter().take(30).cloned().collect::<Vec<_>>().join(", "),
-                samples.join("\n")
-            )
-        }
-        Err(e) => format!("not JSON: {e}"),
-    }
+    Ok(plays)
 }
 
 // ---- dates -----------------------------------------------------------------------------
@@ -242,56 +175,9 @@ pub fn utc_to_london(t: i64) -> i64 {
     if t >= start && t < end { t + 3600 } else { t }
 }
 
-// ---- robots.txt ------------------------------------------------------------------------
-
-/// Whether `path` may be fetched by us, from a robots.txt body. Looks at the `*` group and any
-/// group naming `radioarchivesbot`; the longest matching rule wins and Allow wins a tie.
-pub fn robots_allows(robots: &str, path: &str) -> bool {
-    let mut applies = false;
-    let mut in_agents = false;
-    let mut best: (usize, bool) = (0, true);
-    for line in robots.lines() {
-        let line = line.split('#').next().unwrap_or("").trim();
-        let Some((k, v)) = line.split_once(':') else { continue };
-        let (k, v) = (k.trim().to_ascii_lowercase(), v.trim());
-        match k.as_str() {
-            "user-agent" => {
-                if !in_agents {
-                    applies = false;
-                }
-                in_agents = true;
-                let a = v.to_ascii_lowercase();
-                if a == "*" || a.contains("radioarchivesbot") {
-                    applies = true;
-                }
-            }
-            "allow" | "disallow" => {
-                in_agents = false;
-                if applies && !v.is_empty() && path.starts_with(v) {
-                    let allow = k == "allow";
-                    if v.len() > best.0 || (v.len() == best.0 && allow) {
-                        best = (v.len(), allow);
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-    best.1
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    fn page(history: &str) -> String {
-        format!(
-            r#"{{"props":{{"initialState":{{"station":{{"data":{{"stationId":375,"stationCode":"jaz",
-            "stationPlayHistory":{history},
-            "stationRelated":[{{"stationId":108,"stationCode":"abs","stationPlayHistory":[
-              {{"nowPlayingArtist":"Donna Summer","nowPlayingTrack":"Bad Girls","nowPlayingTime":"2026-11-13 11:53:07"}}]}}]}}}}}}}}}}"#
-        )
-    }
 
     #[test]
     fn times_parse_and_format() {
@@ -322,44 +208,24 @@ mod tests {
     }
 
     #[test]
-    fn next_data_is_cut_out() {
-        let html = r#"<html><script id="__NEXT_DATA__" type="application/json">{"a":1}</script></html>"#;
-        assert_eq!(next_data(html), Some(r#"{"a":1}"#));
-        assert_eq!(next_data("<html></html>"), None);
+    fn reads_a_bare_list_in_the_real_shape() {
+        let j = r#"[{"nowPlayingTrackId":534106,"nowPlayingTrack":"Laughter and Tears","nowPlayingArtist":"The Womack Sisters","nowPlayingTime":"2026-11-13 11:56:00"},
+                    {"nowPlayingTrack":"I Got It Bad ","nowPlayingArtist":"Oscar  Peterson and Ben Webster","nowPlayingTime":"2026-11-13 11:46:11"},
+                    {"nowPlayingTrack":"No Time","nowPlayingArtist":"Skipped"}]"#;
+        let p = plays_from_json(j).unwrap();
+        assert_eq!(p.len(), 2, "the incomplete item is left out");
+        assert_eq!(p[0].title, "I Got It Bad");
+        assert_eq!(p[0].artist, "Oscar Peterson and Ben Webster");
+        assert_eq!(fmt_utc(p[1].at), "2026-11-13T11:56:00Z");
     }
 
     #[test]
-    fn reads_only_jazz_fm_plays_in_the_real_shape() {
-        let j = page(
-            r#"[{"nowPlayingTrackId":534106,"nowPlayingTrack":"Laughter and Tears","nowPlayingArtist":"The Womack Sisters","nowPlayingTime":"2026-11-13 11:56:00","nowPlayingDuration":123},
-                {"nowPlayingTrackId":1,"nowPlayingTrack":"I Got It Bad ","nowPlayingArtist":"Oscar  Peterson and Ben Webster","nowPlayingTime":"2026-11-13 11:46:11"},
-                {"nowPlayingTrack":"No Time","nowPlayingArtist":"Skipped"}]"#,
-        );
-        let e = extract(&j).unwrap();
-        assert_eq!(e.plays.len(), 2, "the related station and the incomplete item are left out");
-        assert_eq!(e.plays[0].title, "I Got It Bad");
-        assert_eq!(e.plays[0].artist, "Oscar Peterson and Ben Webster");
-        assert_eq!(fmt_utc(e.plays[1].at), "2026-11-13T11:56:00Z");
-    }
-
-    #[test]
-    fn wrong_station_or_shape_is_an_error() {
-        let other = page("[]").replace("\"jaz\"", "\"abs\"");
-        assert!(extract(&other).unwrap_err().contains("not Jazz FM"));
-        assert!(extract(r#"{"props":{"menu":[]}}"#).is_err());
-        assert!(extract("{broken").is_err());
-        assert!(extract(&page("[]")).unwrap().plays.is_empty());
-        assert!(describe(r#"{"props":{"menu":[]}}"#).contains("props"));
-    }
-
-    #[test]
-    fn robots_rules() {
-        let r = "User-agent: *\nDisallow: /private\nAllow: /private/open\n\nUser-agent: other\nDisallow: /\n";
-        assert!(robots_allows(r, "/jazz-fm/playlist"));
-        assert!(!robots_allows(r, "/private/x"));
-        assert!(robots_allows(r, "/private/open/y"));
-        assert!(!robots_allows("User-agent: *\nDisallow: /\n", "/jazz-fm/playlist"));
-        assert!(!robots_allows("User-agent: RadioArchivesBot\nDisallow: /jazz-fm\n", "/jazz-fm/playlist"));
-        assert!(robots_allows("", "/anything"));
+    fn reads_a_wrapped_list_and_rejects_other_shapes() {
+        let w = r#"{"data":[{"nowPlayingTrack":"A","nowPlayingArtist":"B","nowPlayingTime":"2026-11-13 11:56:00"}]}"#;
+        assert_eq!(plays_from_json(w).unwrap().len(), 1);
+        assert!(plays_from_json("[]").unwrap().is_empty());
+        assert!(plays_from_json(r#"{"menu":[]}"#).is_err());
+        assert!(plays_from_json("{broken").is_err());
+        assert!(plays_from_json("42").is_err());
     }
 }

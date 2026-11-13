@@ -5,14 +5,13 @@ The plan, in the order it should happen. Nothing here needs ads, trackers or a p
 ## 1. Stations
 
 - [x] BBC Radio 6 Music (copied here; the original repository still collects the data).
-- [x] **Jazz FM** (reader, archive and a first site are in and checked against the live page).
-  What the live page turned out to hold: only the **latest 5 plays** (about 25 minutes), each
-  with artist, title, a local-time stamp, and no show, album or ISRC. The API behind the site's
-  "load more" is disallowed for robots, so it is not used. A complete archive needs a run every
-  15-20 minutes. Decision (13 Nov 2026): collect from now, every 15 minutes, from a scheduled
-GitHub workflow (nothing at home needs to run). No history before that date; there can be gaps
-when GitHub delays a run. The better long-term fix is still to ask Bauer for a feed or for
-permission to read the 8-day history. The show can be derived from the schedule by time later.
+- [x] **Jazz FM** (collector, archive and site are in). Approach changed on 13 Nov 2026: it
+  now reads the JSON play-history API directly (about a week of history per request series)
+  instead of the playlist page, which only ever held the latest 5 plays. One weekly run fills
+  the archive with no gaps, so nothing needs to run every 15 minutes. The decision, the
+  `robots.txt` position and the justification are in [JAZZ-FM.md](JAZZ-FM.md). The show is
+  derived from the weekly schedule by time. Still worth doing: ask Bauer Media for permission
+  or an official feed.
 
 ## 2. One catalogue of artists and tracks
 

@@ -1,10 +1,12 @@
-//! jazzfm: collect Jazz FM's public playlist into a growing archive.
+//! jazzfm: collect Jazz FM's play history into a growing archive, straight from the JSON API the
+//! public playlist page itself uses (see docs/JAZZ-FM.md).
 //!
-//!   jazzfm scrape [--html FILE] [--url URL] [--data DIR] [--catalogue DIR] [--dump FILE]
+//!   jazzfm collect [--days N] [--json FILE] [--data DIR] [--catalogue DIR]
 //!   jazzfm import FILE [--data DIR] [--catalogue DIR]   (tab-separated plays collected by hand)
 //!   jazzfm export [--data DIR] [--catalogue DIR] [--out DIR]   (plays in the shared site generator's format)
 //!   jazzfm stats  [--data DIR] [--catalogue DIR]
 
+mod api;
 mod extract;
 mod show;
 mod export;
@@ -15,19 +17,17 @@ use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
 use std::process::exit;
-use std::time::Duration;
+use std::time::{SystemTime, UNIX_EPOCH};
 
-const DEFAULT_URL: &str = "https://www.hellorayo.co.uk/jazz-fm/playlist";
-const USER_AGENT: &str = "RadioArchivesBot/0.1 (+https://github.com/pink-bourbon-estate/Radio_Archives; \
-                          unofficial non-commercial archive; low request rate)";
+/// How far back to go when nothing is stored yet, and the most a single run will ever go back.
+const DEFAULT_DAYS: i64 = 10;
 
 struct Args {
     cmd: String,
-    html: Option<PathBuf>,
-    url: String,
+    json: Option<PathBuf>,
+    days: i64,
     data: PathBuf,
     catalogue: PathBuf,
-    dump: Option<PathBuf>,
     out: PathBuf,
     file: Option<PathBuf>,
 }
@@ -37,22 +37,20 @@ fn parse_args() -> Args {
     let cmd = it.next().unwrap_or_default();
     let mut a = Args {
         cmd,
-        html: None,
-        url: DEFAULT_URL.into(),
+        json: None,
+        days: DEFAULT_DAYS,
         data: "stations/jazz-fm/data".into(),
         catalogue: "catalogue/data".into(),
-        dump: None,
         out: "public/jazz-fm".into(),
         file: None,
     };
     while let Some(flag) = it.next() {
         let mut val = || it.next().unwrap_or_else(|| die(&format!("{flag} needs a value")));
         match flag.as_str() {
-            "--html" => a.html = Some(val().into()),
-            "--url" => a.url = val(),
+            "--json" => a.json = Some(val().into()),
+            "--days" => a.days = val().parse().unwrap_or_else(|_| die("--days needs a whole number")),
             "--data" => a.data = val().into(),
             "--catalogue" => a.catalogue = val().into(),
-            "--dump" => a.dump = Some(val().into()),
             "--out" => a.out = val().into(),
             other if !other.starts_with("--") && a.file.is_none() => a.file = Some(other.into()),
             other => die(&format!("unknown option {other}")),
@@ -66,67 +64,46 @@ fn die(msg: &str) -> ! {
     exit(2)
 }
 
-fn host_and_path(url: &str) -> (String, String) {
-    let rest = url.split("://").nth(1).unwrap_or(url);
-    match rest.find('/') {
-        Some(i) => (rest[..i].to_string(), rest[i..].to_string()),
-        None => (rest.to_string(), "/".to_string()),
-    }
+fn now_utc() -> i64 {
+    SystemTime::now().duration_since(UNIX_EPOCH).map_or(0, |d| d.as_secs() as i64)
 }
 
-fn fetch(url: &str) -> String {
-    let agent = ureq::AgentBuilder::new()
-        .timeout(Duration::from_secs(30))
-        .user_agent(USER_AGENT)
-        .build();
-    // Be polite: honour robots.txt before asking for the page.
-    let (host, path) = host_and_path(url);
-    let scheme = if url.starts_with("http://") { "http" } else { "https" };
-    match agent.get(&format!("{scheme}://{host}/robots.txt")).call() {
-        Ok(r) => {
-            let body = r.into_string().unwrap_or_default();
-            if !extract::robots_allows(&body, &path) {
-                die(&format!("robots.txt on {host} disallows {path} for us; not fetching"));
-            }
-        }
-        Err(e) => eprintln!("note: could not read robots.txt ({e}); carrying on"),
-    }
-    std::thread::sleep(Duration::from_secs(2));
-    match agent.get(url).call() {
-        Ok(r) => r.into_string().unwrap_or_else(|e| die(&format!("could not read the page: {e}"))),
-        Err(e) => die(&format!("could not fetch {url}: {e}")),
-    }
+/// The newest play already stored, as Unix seconds (None when the archive is empty).
+fn newest_stored(a: &Args) -> Option<i64> {
+    store::load_all(&a.data)
+        .ok()?
+        .iter()
+        .filter_map(|p| extract::parse_time(&p.0).map(|t| t.0))
+        .max()
 }
 
-fn scrape(a: &Args) {
-    let html = match &a.html {
-        Some(p) => fs::read_to_string(p).unwrap_or_else(|e| die(&format!("{}: {e}", p.display()))),
-        None => fetch(&a.url),
-    };
-    let fail = |why: String| -> ! {
-        if let Some(d) = &a.dump {
-            let _ = fs::write(d, &html);
-            eprintln!("saved the page to {} for inspection", d.display());
+/// Fetch whatever is newer than the archive holds and add it. Run weekly: the API keeps about a
+/// week of history, so each run asks only for the plays since the previous one.
+fn collect(a: &Args) {
+    let now = now_utc();
+    let floor = now - a.days * 86_400;
+    // Overlap by an hour so a play stored a moment ago is never the boundary.
+    let stop_at = newest_stored(a).map_or(floor, |t| (t - 3600).max(floor));
+    let (plays, note) = match &a.json {
+        Some(p) => {
+            let text = fs::read_to_string(p).unwrap_or_else(|e| die(&format!("{}: {e}", p.display())));
+            (extract::plays_from_json(&text).unwrap_or_else(|e| die(&e)), format!("read from {}", p.display()))
         }
-        die(&why)
+        None => {
+            let c = api::collect(now, stop_at).unwrap_or_else(|e| die(&e));
+            (c.plays, format!("{} requests; {}", c.requests, c.stopped))
+        }
     };
-    let Some(json) = extract::next_data(&html) else {
-        fail("no __NEXT_DATA__ block in the page (has the site changed?)".into())
-    };
-    let ex = extract::extract(json).unwrap_or_else(|e| fail(e));
-    if ex.plays.is_empty() {
-        fail(format!("found no plays in the page data. {}", extract::describe(json)));
-    }
-    // The page only embeds the latest few plays, so plays are lost if this runs too rarely.
-    if ex.plays.len() < 3 {
-        eprintln!("warning: only {} plays found", ex.plays.len());
+    let plays: Vec<_> = plays.into_iter().filter(|p| p.at > floor).collect();
+    if plays.is_empty() {
+        die(&format!("found no plays ({note}); has the API changed?"));
     }
 
     let mut cat = Catalogue::load(&a.catalogue).unwrap_or_else(|e| die(&format!("catalogue: {e}")));
     let (artists_before, tracks_before) = (cat.artists.len(), cat.tracks.len());
     let mut rows = Vec::new();
     let mut skipped = 0;
-    for p in &ex.plays {
+    for p in &plays {
         match cat.intern(&p.artist, &p.title) {
             Some((_, tid)) => {
                 let show = show::show_for(extract::utc_to_london(p.at)).to_string();
@@ -138,14 +115,15 @@ fn scrape(a: &Args) {
     let added = store::merge(&a.data, &rows).unwrap_or_else(|e| die(&format!("store: {e}")));
     cat.save(&a.catalogue).unwrap_or_else(|e| die(&format!("catalogue: {e}")));
     println!(
-        "found {} plays ({} to {}); {} new; catalogue +{} artists +{} tracks; {} skipped",
-        ex.plays.len(),
-        extract::fmt_utc(ex.plays[0].at),
-        extract::fmt_utc(ex.plays[ex.plays.len() - 1].at),
+        "found {} plays ({} to {}); {} new; catalogue +{} artists +{} tracks; {} skipped; {}",
+        plays.len(),
+        extract::fmt_utc(plays[0].at),
+        extract::fmt_utc(plays[plays.len() - 1].at),
         added,
         cat.artists.len() - artists_before,
         cat.tracks.len() - tracks_before,
-        skipped
+        skipped,
+        note
     );
 }
 
@@ -252,7 +230,7 @@ fn load(a: &Args) -> (Vec<(String, String, String)>, Catalogue) {
 fn main() {
     let a = parse_args();
     match a.cmd.as_str() {
-        "scrape" => scrape(&a),
+        "collect" => collect(&a),
         "import" => import(&a),
         "export" => {
             let (plays, cat) = load(&a);
@@ -270,6 +248,6 @@ fn main() {
                 cat.tracks.len()
             );
         }
-        _ => die("usage: jazzfm scrape|import|export|stats [options]"),
+        _ => die("usage: jazzfm collect|import|export|stats [options]"),
     }
 }
