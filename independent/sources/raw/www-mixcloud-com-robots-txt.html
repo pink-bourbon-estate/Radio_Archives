@@ -1,0 +1,22 @@
+User-Agent: *
+Allow: /
+Disallow: /oauth/
+Disallow: /short/
+Disallow: /pigeon/
+Disallow: /share/chart/*/story.png
+
+# Chart cards are rendered on request. Link previews still read them.
+User-Agent: Googlebot-Image
+User-Agent: GPTBot
+Allow: /
+Disallow: /oauth/
+Disallow: /short/
+Disallow: /pigeon/
+Disallow: /share/chart/
+
+Sitemap: https://sitemaps.mixcloud.com/sitemap_userprofile_index.xml
+Sitemap: https://sitemaps.mixcloud.com/sitemap_cloudcast_index.xml
+Sitemap: https://sitemaps.mixcloud.com/sitemap_tag_index.xml
+Sitemap: https://sitemaps.mixcloud.com/sitemap_playlist_index.xml
+Sitemap: https://sitemaps.mixcloud.com/sitemap_static_index.xml
+Sitemap: https://www.mixcloud.com/blog/sitemap-index.xml
