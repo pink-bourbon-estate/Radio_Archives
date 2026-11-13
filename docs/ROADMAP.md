@@ -9,10 +9,10 @@ The plan, in the order it should happen. Nothing here needs ads, trackers or a p
   What the live page turned out to hold: only the **latest 5 plays** (about 25 minutes), each
   with artist, title, a local-time stamp, and no show, album or ISRC. The API behind the site's
   "load more" is disallowed for robots, so it is not used. A complete archive needs a run every
-  15-20 minutes, which is more traffic than first planned; the schedule is therefore **off**
-  until the project owner decides (a scheduled workflow, an always-on machine, or asking
-  Bauer for a data feed). Plays collected so far have gaps. The show can be derived from the
-  schedule by time later.
+  15-20 minutes. Decision (13 Nov 2026): collect from now, every 15 minutes, from a scheduled
+GitHub workflow (nothing at home needs to run). No history before that date; there can be gaps
+when GitHub delays a run. The better long-term fix is still to ask Bauer for a feed or for
+permission to read the 8-day history. The show can be derived from the schedule by time later.
 
 ## 2. One catalogue of artists and tracks
 

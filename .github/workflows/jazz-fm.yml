@@ -1,21 +1,19 @@
 name: Jazz FM collector
 
-# Reads Jazz FM's public playlist page and adds new plays to the archive.
+# Reads Jazz FM's public playlist page every 15 minutes and adds new plays to the archive.
 #
-# IMPORTANT: that page only embeds the latest 5 plays (about 25 minutes of music), and the API
-# the site uses for older plays disallows automated access in its robots.txt, so it is not used.
-# A complete archive therefore needs a run every ~15-20 minutes, which is far more traffic than
-# "a couple of requests a day". That is a decision for the project owner, so the schedule is OFF.
-# To collect more completely, uncomment a schedule (GitHub's shortest is every 5 minutes and
-# runs can be delayed) or run `jazzfm scrape` from a machine that is always on.
+# The page only embeds the latest 5 plays (about 12-25 minutes of music), and the API the site
+# uses for older plays disallows automated access in its robots.txt, so it is not used. Plays
+# are therefore collected from the day this was switched on, and a delayed or skipped run
+# (GitHub does not guarantee schedule timing) can leave a gap. It runs on GitHub's servers, so
+# nothing needs to stay switched on at home. The website picks up the data in its daily build.
 on:
-  # schedule:
-  #   - cron: "*/20 * * * *"
+  schedule:
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
-  actions: write
 
 concurrency:
   group: jazz-fm-collector
@@ -30,8 +28,14 @@ jobs:
       - name: Rust toolchain
         run: rustup toolchain install stable --profile minimal && rustup default stable
 
-      - name: Test
-        run: cargo test --locked -p catalogue -p jazzfm
+      # Tests run in the website workflow; here a cached build keeps each run to a few seconds.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            target
+          key: jazzfm-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'catalogue/src/**', 'stations/jazz-fm/src/**') }}
+          restore-keys: jazzfm-${{ runner.os }}-
 
       - name: Collect new plays
         run: |
@@ -49,24 +53,14 @@ jobs:
           retention-days: 7
 
       - name: Commit new data
-        id: commit
         run: |
           git config user.name "radio-archives-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add catalogue/data stations/jazz-fm/data
           if git diff --cached --quiet; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No new plays."
           else
             git commit -m "Jazz FM: add plays $(date -u +%Y-%m-%dT%H:%MZ)"
             git pull --rebase origin main
             git push origin HEAD:main
-            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
-
-      # Pushes made with the built-in token do not start other workflows, so ask for a site rebuild.
-      - name: Rebuild the website
-        if: steps.commit.outputs.changed == 'true'
-        run: gh workflow run pages.yml --ref main
-        env:
-          GH_TOKEN: ${{ github.token }}

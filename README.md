@@ -5,7 +5,7 @@ Open archives of what radio stations play. Free, readable, no ads, no tracking.
 | Station | Site | Status |
 |---|---|---|
 | BBC Radio 6 Music | `/bbc-radio-6-music/` | Live as a copy. The original, still the main one, is [BBC-Radio-6-Music-Collection](https://github.com/pink-bourbon-estate/BBC-Radio-6-Music-Collection) |
-| Jazz FM | `/jazz-fm/` | Reader verified against the live page; collection is manual until a schedule is chosen (the page shows only the latest 5 plays). Site is `noindex` |
+| Jazz FM | `/jazz-fm/` | Collecting every 15 minutes on GitHub (the page shows only the latest 5 plays, so there can be gaps; no history before 13 Nov 2026). Site is `noindex` |
 
 ## How it fits together
 
