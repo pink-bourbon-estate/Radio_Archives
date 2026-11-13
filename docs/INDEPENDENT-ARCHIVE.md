@@ -133,3 +133,21 @@ us. Results are in `independent/probe.tsv`; `track_data` in `stations.tsv` summa
 * Every programme links to the station's own website and, where used, its SoundCloud or Mixcloud page, so listeners are sent to the station.
 * The reason the project exists is the article "Keeping a record of small radio before it disappears" on the Pink Bourbon Estate site.
 * Mixcloud's API robots.txt disallows bots; by the project rule it is collected the Jazz FM way (public, unauthenticated, tiny, identified, removal on request).
+
+## Revised brief (13 Nov 2026): a directory and a programme record, with tracks where they exist
+
+What the stations publish (see "What the stations publish" above) means a track-level dashboard is only possible for a
+few (Noods Radio). The project is therefore broadened, and says so plainly on the site:
+
+* **A station directory:** name, town/city, website, stream/player, status (on air, at risk, closed), and where each
+  station's shows are found (Mixcloud, SoundCloud, its own site). Stations are found from public lists and from
+  Radioplayer's station search (its robots.txt disallows /api/; collected the Jazz FM way, one small pass, identified).
+* **A programme record:** the weekly timetable of each station (most publish one; about one small request a week per
+  station), the programmes and presenters, and guest artists named on show pages, with links to the station.
+* **Tracks only where a station publishes them** (Noods now; others if they start). If a station begins publishing
+  tracklists later, it already has a record to grow from.
+* **Said openly on the site:** because small stations rarely publish tracklists, this archive cannot list the tracks they
+  play, except where noted. It records who is on air, when and where, so the culture of independent radio is not lost.
+* Guest and artist names (e.g. Radio Buena Vida's guests, Resonance Extra and Totally Radio episode pages) can help with
+  obscure artists; record shops and venues that run radio events (e.g. Phonica Records) are a possible extra source.
+* Pages built in the browser (ROVR, Resonance Extra, Totally Radio) need a headless browser to read.
