@@ -113,6 +113,6 @@ pub fn build(plays: &[(String, String)], cat: &Catalogue, out: &Path, noindex: b
         h.push_str("</table>\n");
     }
     h.push_str("<footer><p>Unofficial and non-commercial. Not made, endorsed or checked by Jazz FM or Bauer. \
-                Built from the station's public playlist page, read politely a couple of times a day. No ads, no tracking.</p></footer>\n</body></html>\n");
+                Built from the station's public playlist page, read politely, with the site's robots.txt respected. No ads, no tracking.</p></footer>\n</body></html>\n");
     fs::write(out.join("index.html"), h)
 }

@@ -5,7 +5,7 @@ Open archives of what radio stations play. Free, readable, no ads, no tracking.
 | Station | Site | Status |
 |---|---|---|
 | BBC Radio 6 Music | `/bbc-radio-6-music/` | Live as a copy. The original, still the main one, is [BBC-Radio-6-Music-Collection](https://github.com/pink-bourbon-estate/BBC-Radio-6-Music-Collection) |
-| Jazz FM | `/jazz-fm/` | Collecting twice a day; site is `noindex` until the reader is checked against the live page |
+| Jazz FM | `/jazz-fm/` | Reader verified against the live page; collection is manual until a schedule is chosen (the page shows only the latest 5 plays). Site is `noindex` |
 
 ## How it fits together
 
@@ -25,8 +25,9 @@ docs/                   the roadmap and design notes
   from the normalised name ("The Beatles" and "Beatles", "Song" and "Song (Remastered 2011)"
   get the same ID). Stations store only `(time, track ID)`. MusicBrainz IDs and ISRC codes are
   attributes added later, never part of the ID. Jazz FM uses it now; 6 Music will move over.
-- **Jazz FM** (`stations/jazz-fm/`) reads the public playlist page twice a day, checks
-  `robots.txt` first, and identifies itself. Run `cargo run -p jazzfm -- scrape` to collect.
+- **Jazz FM** (`stations/jazz-fm/`) reads the public playlist page, checks
+  `robots.txt` first, and identifies itself. The page embeds only the latest 5 plays, so a
+  complete archive needs frequent runs (see the note in the workflow). Run `cargo run -p jazzfm -- scrape` to collect.
 - The site is plain HTML, CSS and JavaScript plus pre-built JSON. It sets no cookies and
   loads nothing from other sites.
 

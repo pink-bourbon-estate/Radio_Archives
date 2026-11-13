@@ -5,13 +5,14 @@ The plan, in the order it should happen. Nothing here needs ads, trackers or a p
 ## 1. Stations
 
 - [x] BBC Radio 6 Music (copied here; the original repository still collects the data).
-- [x] **Jazz FM** (collector, archive and a first site are in; the reader has only been tested
-  on a made-up page, so check the first live run and then remove `SITE_NOINDEX`). Notes: Its public playlist page (`hellorayo.co.uk/jazz-fm/playlist`) lists about
-  8 days of plays with title, artist and time. The data is embedded in the page itself, so a
-  daily job can read it politely (identify the bot, a couple of requests a day). There is no
-  show, album, label or MusicBrainz ID per play: the show comes from the schedule by time.
-  History can only start from the first day we collect, and the job must run at least every
-  few days or plays are lost.
+- [x] **Jazz FM** (reader, archive and a first site are in and checked against the live page).
+  What the live page turned out to hold: only the **latest 5 plays** (about 25 minutes), each
+  with artist, title, a local-time stamp, and no show, album or ISRC. The API behind the site's
+  "load more" is disallowed for robots, so it is not used. A complete archive needs a run every
+  15-20 minutes, which is more traffic than first planned; the schedule is therefore **off**
+  until the project owner decides (a scheduled workflow, an always-on machine, or asking
+  Bauer for a data feed). Plays collected so far have gaps. The show can be derived from the
+  schedule by time later.
 
 ## 2. One catalogue of artists and tracks
 

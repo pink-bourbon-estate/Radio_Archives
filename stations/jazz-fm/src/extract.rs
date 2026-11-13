@@ -1,9 +1,11 @@
 //! Reading plays out of the playlist page, and the small date and robots.txt helpers it needs.
 //!
-//! The playlist page is a Next.js page, so its data sits in a `<script id="__NEXT_DATA__">`
-//! JSON block. Its exact shape is not documented, so instead of hard-coding one path the
-//! extractor walks the whole JSON and accepts any object that has an artist, a title and a
-//! time under a handful of common key names. If nothing matches, the caller fails loudly.
+//! The page is a Next.js page with its data in `<script id="__NEXT_DATA__">`. The plays are in
+//! `props.initialState.station.data.stationPlayHistory`, a list of
+//! `{nowPlayingArtist, nowPlayingTrack, nowPlayingTime, ...}`. The same JSON also carries the
+//! play histories of *related* stations, so only that one path is read, and only when the
+//! station is Jazz FM. The page embeds just the latest handful of plays (5 when checked).
+//! Times are local UK time without a zone, converted to UTC here.
 
 use serde_json::Value;
 
@@ -15,10 +17,9 @@ pub struct Play {
     pub title: String,
 }
 
+#[derive(Debug)]
 pub struct Extracted {
     pub plays: Vec<Play>,
-    /// Some times had no time zone and were read as UTC.
-    pub assumed_utc: bool,
 }
 
 /// The JSON text inside `<script id="__NEXT_DATA__" ...>`.
@@ -29,102 +30,41 @@ pub fn next_data(html: &str) -> Option<&str> {
     Some(&html[start..end])
 }
 
-fn key(s: &str) -> String {
-    s.chars().filter(|c| c.is_alphanumeric()).collect::<String>().to_lowercase()
-}
-
-const ARTIST: &[&str] = &["artist", "artistname", "performer", "by"];
-const TITLE: &[&str] = &["title", "trackname", "track", "song", "songtitle", "name"];
-const TIME: &[&str] = &[
-    "playedat", "startedat", "starttime", "startdatetime", "start", "time", "timestamp",
-    "datetime", "date", "playtime", "onair", "starts",
-];
-const NESTED: &[&str] = &["track", "song", "item", "entry", "metadata", "music"];
-
-fn field<'a>(o: &'a serde_json::Map<String, Value>, aliases: &[&str]) -> Option<&'a Value> {
-    aliases
-        .iter()
-        .find_map(|a| o.iter().find(|(k, _)| key(k) == *a).map(|(_, v)| v))
-}
-
-fn text(v: &Value) -> Option<String> {
-    match v {
-        Value::String(s) => Some(s.trim().to_string()).filter(|s| !s.is_empty()),
-        Value::Object(o) => o.get("name").and_then(text),
-        _ => None,
-    }
-}
-
-fn to_epoch(v: &Value, assumed_utc: &mut bool) -> Option<i64> {
-    let from_number = |n: f64| -> i64 {
-        // milliseconds look like 1.7e12; seconds like 1.7e9
-        if n > 1e11 { (n / 1000.0) as i64 } else { n as i64 }
-    };
-    match v {
-        Value::Number(n) => n.as_f64().map(from_number),
-        Value::String(s) => {
-            let s = s.trim();
-            if !s.is_empty() && s.bytes().all(|b| b.is_ascii_digit()) {
-                return s.parse::<f64>().ok().map(from_number);
-            }
-            let (t, naive) = parse_time(s)?;
-            if naive {
-                *assumed_utc = true;
-            }
-            Some(t)
-        }
-        _ => None,
-    }
-}
-
-fn as_play(o: &serde_json::Map<String, Value>, assumed_utc: &mut bool) -> Option<Play> {
-    // The object itself, or a track object nested inside it.
-    let mut candidates: Vec<&serde_json::Map<String, Value>> = vec![o];
-    for (k, v) in o {
-        if let Value::Object(inner) = v {
-            if NESTED.contains(&key(k).as_str()) {
-                candidates.push(inner);
-            }
-        }
-    }
-    let (artist, title) = candidates.iter().find_map(|c| {
-        let a = field(c, ARTIST).and_then(text)?;
-        let t = field(c, TITLE).and_then(text)?;
-        Some((a, t))
-    })?;
-    let at = candidates
-        .iter()
-        .find_map(|c| field(c, TIME).and_then(|v| to_epoch(v, assumed_utc)))?;
-    Some(Play { at, artist, title })
-}
-
-fn walk(v: &Value, out: &mut Vec<Play>, assumed_utc: &mut bool) {
-    match v {
-        Value::Object(o) => {
-            if let Some(p) = as_play(o, assumed_utc) {
-                out.push(p);
-            }
-            for x in o.values() {
-                walk(x, out, assumed_utc);
-            }
-        }
-        Value::Array(a) => {
-            for x in a {
-                walk(x, out, assumed_utc);
-            }
-        }
-        _ => {}
-    }
+fn text(v: Option<&Value>) -> Option<String> {
+    v?.as_str().map(|s| s.split_whitespace().collect::<Vec<_>>().join(" ")).filter(|s| !s.is_empty())
 }
 
 pub fn extract(json: &str) -> Result<Extracted, String> {
     let v: Value = serde_json::from_str(json).map_err(|e| format!("page data is not valid JSON: {e}"))?;
+    let data = v
+        .pointer("/props/initialState/station/data")
+        .ok_or("no props.initialState.station.data in the page (has the site changed?)")?;
+    if data.get("stationCode").and_then(Value::as_str) != Some("jaz") {
+        return Err(format!(
+            "this page is for station {:?}, not Jazz FM (code \"jaz\")",
+            data.get("stationCode")
+        ));
+    }
+    let history = data
+        .get("stationPlayHistory")
+        .and_then(Value::as_array)
+        .ok_or("no stationPlayHistory list in the station data")?;
     let mut plays = Vec::new();
-    let mut assumed_utc = false;
-    walk(&v, &mut plays, &mut assumed_utc);
+    for item in history {
+        let (Some(artist), Some(title), Some(time)) = (
+            text(item.get("nowPlayingArtist")),
+            text(item.get("nowPlayingTrack")),
+            text(item.get("nowPlayingTime")),
+        ) else {
+            continue;
+        };
+        let Some((t, naive)) = parse_time(&time) else { continue };
+        let at = if naive { london_to_utc(t) } else { t };
+        plays.push(Play { at, artist, title });
+    }
     plays.sort();
     plays.dedup();
-    Ok(Extracted { plays, assumed_utc })
+    Ok(Extracted { plays })
 }
 
 /// A short description of the JSON, for the error message when no plays were found.
@@ -271,6 +211,24 @@ pub fn parse_time(s: &str) -> Option<(i64, bool)> {
     Some((days_from_civil(y, mo, d) * 86_400 + h * 3600 + mi * 60 + sec - off, naive))
 }
 
+
+/// Day of the month of the last Sunday in a 31-day month (March or October).
+fn last_sunday(y: i64, m: i64) -> i64 {
+    let days = days_from_civil(y, m, 31);
+    let weekday = (days + 4).rem_euclid(7); // 0 = Sunday (1970-01-01 was a Thursday)
+    31 - weekday
+}
+
+/// Convert a UK wall-clock time (given as if it were UTC seconds) to real UTC. UK summer time
+/// runs from 01:00 UTC on the last Sunday of March to 01:00 UTC on the last Sunday of October.
+pub fn london_to_utc(local: i64) -> i64 {
+    let (y, _, _) = civil_from_days(local.div_euclid(86_400));
+    let start = days_from_civil(y, 3, last_sunday(y, 3)) * 86_400 + 3600;
+    let end = days_from_civil(y, 10, last_sunday(y, 10)) * 86_400 + 3600;
+    let as_summer = local - 3600;
+    if as_summer >= start && as_summer < end { as_summer } else { local }
+}
+
 // ---- robots.txt ------------------------------------------------------------------------
 
 /// Whether `path` may be fetched by us, from a robots.txt body. Looks at the `*` group and any
@@ -313,6 +271,15 @@ pub fn robots_allows(robots: &str, path: &str) -> bool {
 mod tests {
     use super::*;
 
+    fn page(history: &str) -> String {
+        format!(
+            r#"{{"props":{{"initialState":{{"station":{{"data":{{"stationId":375,"stationCode":"jaz",
+            "stationPlayHistory":{history},
+            "stationRelated":[{{"stationId":108,"stationCode":"abs","stationPlayHistory":[
+              {{"nowPlayingArtist":"Donna Summer","nowPlayingTrack":"Bad Girls","nowPlayingTime":"2026-11-13 11:53:07"}}]}}]}}}}}}}}}}"#
+        )
+    }
+
     #[test]
     fn times_parse_and_format() {
         assert_eq!(fmt_utc(0), "1970-01-01T00:00:00Z");
@@ -323,9 +290,22 @@ mod tests {
         assert_eq!(fmt_utc(parse_time("2026-07-01T10:05:00+01:00").unwrap().0), "2026-07-01T09:05:00Z");
         assert_eq!(fmt_utc(parse_time("2026-07-01T10:05:00.250-0530").unwrap().0), "2026-07-01T15:35:00Z");
         assert_eq!(fmt_utc(parse_time("2024-02-29T23:59").unwrap().0), "2024-02-29T23:59:00Z");
-        assert!(parse_time("2026-07-01 10:05:00").unwrap().1, "no zone is reported");
+        assert!(parse_time("2026-11-13 11:56:00").unwrap().1, "no zone is reported");
         assert!(parse_time("not a date").is_none());
         assert!(parse_time("2026-13-01T10:05:00Z").is_none());
+    }
+
+    #[test]
+    fn uk_local_time_becomes_utc() {
+        let l = |s: &str| fmt_utc(london_to_utc(parse_time(s).unwrap().0));
+        assert_eq!(l("2026-11-13 11:56:00"), "2026-11-13T11:56:00Z"); // winter: same
+        assert_eq!(l("2026-07-01 12:00:00"), "2026-07-01T11:00:00Z"); // summer: one hour earlier
+        assert_eq!(l("2026-03-29 00:30:00"), "2026-03-29T00:30:00Z"); // before the clocks go forward
+        assert_eq!(l("2026-03-29 02:30:00"), "2026-03-29T01:30:00Z"); // after
+        assert_eq!(l("2026-10-25 00:30:00"), "2026-10-24T23:30:00Z"); // still summer time
+        assert_eq!(l("2026-10-25 02:30:00"), "2026-10-25T02:30:00Z"); // clocks have gone back
+        assert_eq!(last_sunday(2026, 3), 29);
+        assert_eq!(last_sunday(2026, 10), 25);
     }
 
     #[test]
@@ -336,37 +316,26 @@ mod tests {
     }
 
     #[test]
-    fn finds_plays_in_a_flat_list() {
-        let j = r#"{"props":{"pageProps":{"playlist":[
-            {"artist":"Miles Davis","title":"So What","playedAt":"2026-11-13T10:05:00Z"},
-            {"artist":"Nina Simone","title":"Feeling Good","playedAt":"2026-11-13T10:00:00Z"},
-            {"artist":"Nina Simone","title":"Feeling Good","playedAt":"2026-11-13T10:00:00Z"}
-        ]}}}"#;
-        let e = extract(j).unwrap();
-        assert_eq!(e.plays.len(), 2, "exact duplicates collapse");
-        assert_eq!(e.plays[0].artist, "Nina Simone");
-        assert!(!e.assumed_utc);
+    fn reads_only_jazz_fm_plays_in_the_real_shape() {
+        let j = page(
+            r#"[{"nowPlayingTrackId":534106,"nowPlayingTrack":"Laughter and Tears","nowPlayingArtist":"The Womack Sisters","nowPlayingTime":"2026-11-13 11:56:00","nowPlayingDuration":123},
+                {"nowPlayingTrackId":1,"nowPlayingTrack":"I Got It Bad ","nowPlayingArtist":"Oscar  Peterson and Ben Webster","nowPlayingTime":"2026-11-13 11:46:11"},
+                {"nowPlayingTrack":"No Time","nowPlayingArtist":"Skipped"}]"#,
+        );
+        let e = extract(&j).unwrap();
+        assert_eq!(e.plays.len(), 2, "the related station and the incomplete item are left out");
+        assert_eq!(e.plays[0].title, "I Got It Bad");
+        assert_eq!(e.plays[0].artist, "Oscar Peterson and Ben Webster");
+        assert_eq!(fmt_utc(e.plays[1].at), "2026-11-13T11:56:00Z");
     }
 
     #[test]
-    fn finds_plays_with_nested_tracks_and_other_key_names() {
-        let j = r#"{"x":{"items":[
-            {"startTime":1794564300,"track":{"name":"So What","artist":{"name":"Miles Davis"}}},
-            {"time":"2026-11-13 09:55:00","song":"Blue in Green","artist_name":"Bill Evans"},
-            {"startedAt":1794563700000,"trackName":"Naima","performer":"John Coltrane"}
-        ]}}"#;
-        let e = extract(j).unwrap();
-        assert_eq!(e.plays.len(), 3);
-        assert!(e.assumed_utc, "the time without a zone is flagged");
-        assert!(e.plays.iter().any(|p| p.title == "So What" && p.artist == "Miles Davis"));
-        assert!(e.plays.iter().any(|p| p.title == "Naima" && p.at == 1_794_563_700));
-    }
-
-    #[test]
-    fn unrelated_json_gives_no_plays() {
-        let e = extract(r#"{"props":{"menu":[{"title":"Home","link":"/"}]}}"#).unwrap();
-        assert!(e.plays.is_empty());
+    fn wrong_station_or_shape_is_an_error() {
+        let other = page("[]").replace("\"jaz\"", "\"abs\"");
+        assert!(extract(&other).unwrap_err().contains("not Jazz FM"));
+        assert!(extract(r#"{"props":{"menu":[]}}"#).is_err());
         assert!(extract("{broken").is_err());
+        assert!(extract(&page("[]")).unwrap().plays.is_empty());
         assert!(describe(r#"{"props":{"menu":[]}}"#).contains("props"));
     }
 

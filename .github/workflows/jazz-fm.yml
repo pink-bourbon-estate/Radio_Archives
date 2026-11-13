@@ -1,11 +1,16 @@
 name: Jazz FM collector
 
-# Reads Jazz FM's public playlist page twice a day and adds new plays to the archive.
-# The station only shows about a week of history, so this must keep running; two runs a day
-# leaves a wide safety margin without being a burden on the site.
+# Reads Jazz FM's public playlist page and adds new plays to the archive.
+#
+# IMPORTANT: that page only embeds the latest 5 plays (about 25 minutes of music), and the API
+# the site uses for older plays disallows automated access in its robots.txt, so it is not used.
+# A complete archive therefore needs a run every ~15-20 minutes, which is far more traffic than
+# "a couple of requests a day". That is a decision for the project owner, so the schedule is OFF.
+# To collect more completely, uncomment a schedule (GitHub's shortest is every 5 minutes and
+# runs can be delayed) or run `jazzfm scrape` from a machine that is always on.
 on:
-  schedule:
-    - cron: "41 5,17 * * *"
+  # schedule:
+  #   - cron: "*/20 * * * *"
   workflow_dispatch:
 
 permissions:

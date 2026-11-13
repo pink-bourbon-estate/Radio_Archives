@@ -17,7 +17,7 @@ use std::time::Duration;
 
 const DEFAULT_URL: &str = "https://www.hellorayo.co.uk/jazz-fm/playlist";
 const USER_AGENT: &str = "RadioArchivesBot/0.1 (+https://github.com/pink-bourbon-estate/Radio_Archives; \
-                          unofficial non-commercial archive; two requests a day)";
+                          unofficial non-commercial archive; low request rate)";
 
 struct Args {
     cmd: String,
@@ -112,11 +112,9 @@ fn scrape(a: &Args) {
     if ex.plays.is_empty() {
         fail(format!("found no plays in the page data. {}", extract::describe(json)));
     }
-    if ex.plays.len() < 20 {
-        eprintln!("warning: only {} plays found; the page normally lists many more", ex.plays.len());
-    }
-    if ex.assumed_utc {
-        eprintln!("warning: some play times had no time zone and were read as UTC");
+    // The page only embeds the latest few plays, so plays are lost if this runs too rarely.
+    if ex.plays.len() < 3 {
+        eprintln!("warning: only {} plays found", ex.plays.len());
     }
 
     let mut cat = Catalogue::load(&a.catalogue).unwrap_or_else(|e| die(&format!("catalogue: {e}")));
