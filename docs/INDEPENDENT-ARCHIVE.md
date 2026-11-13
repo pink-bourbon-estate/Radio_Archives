@@ -93,3 +93,21 @@ website yet is skipped until one is added.
 2. For each station, check how it publishes tracks (the four cases above) and update `track_data`.
 3. Ask the friend which station they meant, so it can be surveyed first.
 4. Build the first collector for the station with the cleanest data.
+
+
+## The dashboard and how stations feed it
+
+`/independent/` is the same dashboard as the 6 Music and Jazz FM archives (built by the same
+generator, `bbc6 site`, with `independent/site/brand.json` and `about.html`). Every programme is
+shown as "Station: programme", so one dashboard covers all stations. `/independent/stations/` is
+the list of stations and the article.
+
+* `tools/noods.py` (daily, `independent-collect.yml`) collects Noods Radio from its public JSON feed
+  (`panel.noodsradio.com`: residents, paginated shows, per-show tracklists). robots.txt allows everything.
+  Up to 400 shows a run, 0.4 s between requests, identified as RadioArchivesBot. Data goes to
+  `independent/data/noods/shows.jsonl`. SoundCloud was considered and not used: the feed has the full
+  history with structured tracklists already.
+* `tools/independent_export.py` turns the collected shows into the shared plays CSV format.
+* Artists are listed in `independent/data/artists.tsv` and get MusicBrainz IDs from `tools/musicbrainz.py`
+  (same exact-match rule as Jazz FM).
+* Next stations: check each one's robots.txt, find how it publishes tracks, and add a collector.

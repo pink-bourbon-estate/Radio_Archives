@@ -21,7 +21,7 @@ follows the API rules exactly; the decision is the same as for Jazz FM (docs/JAZ
 stated in the README.
 
 Every lookup is written to catalogue/data/musicbrainz_lookups.tsv so it is never repeated
-needlessly. Usage: tools/musicbrainz.py [--bbc6 DIR] [--max N] [--offline]
+needlessly. Usage: tools/musicbrainz.py [--bbc6 DIR] [--max N] [--offline] [--artists FILE --log FILE]
 """
 import csv, glob, json, os, re, sys, time, unicodedata, urllib.parse, urllib.request, urllib.robotparser
 from datetime import date, timedelta
@@ -107,6 +107,11 @@ def search(name):
 
 
 def main(argv):
+    global CAT, LOG
+    if "--artists" in argv:  # another artist list with the same columns, e.g. the Independent Archive's
+        CAT = argv[argv.index("--artists") + 1]
+    if "--log" in argv:
+        LOG = argv[argv.index("--log") + 1]
     bbc6 = argv[argv.index("--bbc6") + 1] if "--bbc6" in argv else None
     limit = int(argv[argv.index("--max") + 1]) if "--max" in argv else 2000
     offline = "--offline" in argv

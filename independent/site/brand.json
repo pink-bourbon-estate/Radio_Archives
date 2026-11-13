@@ -1,0 +1,43 @@
+{
+  "name": "Independent Archive",
+  "station": "UK independent radio",
+  "short": "Independent",
+  "source": "each station's own website",
+  "repo": "https://github.com/pink-bourbon-estate/Radio_Archives",
+  "downloads": "plays.csv",
+  "no_genres": true,
+  "replace": [
+    [
+      "<span>Collection</span>",
+      "<span>Archive</span>"
+    ],
+    [
+      "Each artist has a MusicBrainz ID where Jazz FM supplied one. ",
+      ""
+    ],
+    [
+      "Tracklists begin in mid-2008 and are complete from about 2010.",
+      "Each station joins when its tracklists have been collected; the first is Noods Radio."
+    ],
+    [
+      " again, and tracklists before about 2010 are incomplete.",
+      " again, and the archive grows as stations are added."
+    ],
+    [
+      "for every year since 2008",
+      "for every year"
+    ],
+    [
+      "counted year by year since 2008",
+      "counted year by year"
+    ],
+    [
+      "with play counts and MusicBrainz IDs.",
+      "with play counts."
+    ],
+    [
+      "Some of the most-played entries are programme theme tunes and jingles, which Jazz FM logs as tracks.",
+      "Programmes are shown as station: programme. Tracklists are written by the presenters, so formats and spellings vary."
+    ]
+  ]
+}

@@ -1,0 +1,20 @@
+<h1>About</h1>
+<p class="lede">An unofficial, non-commercial archive of what UK independent and community radio stations have played, built so that small shows and the artists on them are not lost when a station closes.</p>
+<h2>What this is</h2>
+<p>One archive for many small stations. It lists the tracks and programmes that stations publish on their own websites: the date, the programme, the artist and the title. There is no audio and this site does not host or stream any music. It is not made, endorsed or checked by any station. Each track has plain links (YT, SP, SC, BC) that open a search on YouTube, Spotify, SoundCloud and Bandcamp; nothing from those sites is loaded here. The <a href="stations/">list of stations</a> shows every station found so far, which of them publish tracklists, and which are most at risk. The charts and pages are the same as the 6 Music and Jazz FM archives.</p>
+<h2>How it is made</h2>
+<ul>
+<li>Before a station is collected, its <code>robots.txt</code> is checked. If bots are allowed, it is collected politely. If not, the station is marked, a contact address is found, and it is only collected the way Jazz FM is (public data, tiny load, identified bot), with one email to every station afterwards. Any station that asks to be removed is removed at once.</li>
+<li>Noods Radio (Bristol) is the first station collected. Its website loads shows and tracklists from a public JSON feed, and its <code>robots.txt</code> allows everything. The collector asks for a small number of shows per day, pauses between requests, and names itself (<code>RadioArchivesBot</code>).</li>
+<li>Stations that publish no tracklists at all cannot appear in the charts; they are still listed, so that their existence is recorded.</li>
+</ul>
+<h2>What the data can and cannot tell you</h2>
+<ul>
+<li>Tracklists are written by the presenters, so spellings, versions and formats vary. Shows without a tracklist are skipped.</li>
+<li>The time shown for a show is the start of its regular slot where the station publishes one. Archive shows are not always broadcast at that slot.</li>
+<li>Genres are not shown here. A MusicBrainz ID and link are given for an artist only when an exact, unambiguous match was found.</li>
+</ul>
+<h2>Privacy</h2>
+<p>This website sets no cookies, runs no analytics, shows no adverts and loads nothing from other sites. Contact addresses collected for outreach are never published.</p>
+<h2>Removal requests</h2>
+<p>If a station, an artist or a rights holder asks for something to be changed or removed, it will be, promptly. Ask in an issue on the <a href="https://github.com/pink-bourbon-estate/Radio_Archives/issues" rel="noopener">source code page</a>.</p>

@@ -38,7 +38,11 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             python3 tools/musicbrainz.py --bbc6 _bbc6/data --max 3000
-            git add catalogue/data
+            # the Independent Archive's artists, same rules
+            python3 tools/independent_export.py _independent_data
+            python3 tools/musicbrainz.py --bbc6 _bbc6/data --max 1500 \
+              --artists independent/data/artists.tsv --log independent/data/musicbrainz_lookups.tsv
+            git add catalogue/data independent/data
             if git diff --cached --quiet; then echo "No new IDs."; exit 0; fi
             git commit -m "Catalogue: MusicBrainz IDs $(date -u +%Y-%m-%d)"
             if git push origin HEAD:main; then exit 0; fi

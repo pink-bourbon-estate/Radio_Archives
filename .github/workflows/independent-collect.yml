@@ -1,0 +1,38 @@
+name: Independent Archive collector
+
+# Once a day, collects new shows and tracklists from the independent stations that publish them
+# (Noods Radio so far, from its public JSON feed; its robots.txt allows everything). Each run adds at most
+# 400 shows, so the archive catches up over a few days. See tools/noods.py and docs/INDEPENDENT-ARCHIVE.md.
+on:
+  schedule:
+    - cron: "27 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: independent-collector
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect and commit
+        run: |
+          git config user.name "radio-archives-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            python3 tools/noods.py --max-shows 400
+            git add independent/data
+            if git diff --cached --quiet; then echo "Nothing new."; exit 0; fi
+            git commit -m "Independent Archive: new Noods Radio shows $(date -u +%Y-%m-%d)"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Push rejected (attempt $attempt); starting again from the latest main."
+          done
+          exit 1

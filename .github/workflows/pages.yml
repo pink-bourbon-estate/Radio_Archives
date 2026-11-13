@@ -2,7 +2,7 @@ name: Website
 
 # Builds the radio station archives and publishes them to GitHub Pages.
 #   /                          the landing page listing every station
-#   /independent/              the Independent Archive (article and station list)
+#   /independent/              the Independent Archive (same dashboard as the other two; /independent/stations/ lists the stations)
 #   /bbc-radio-6-music/        BBC Radio 6 Music (built from the 6 Music repository's data)
 #   /jazz-fm/                  Jazz FM (built from the data this repository collects)
 # The daily schedule runs after the 6 Music data refresh (05:23 UTC) has finished.
@@ -83,10 +83,26 @@ jobs:
           # Keep it out of search results until the data has been checked for a while.
           SITE_NOINDEX: "1"
 
-      - name: Landing page
+      - name: Build the Independent Archive
         run: |
-          cp landing/index.html public/index.html
-          python3 tools/build_independent.py public/independent
+          python3 tools/independent_export.py _independent_data
+          # the same generator and look as the 6 Music and Jazz FM sites
+          ./stations/bbc-radio-6-music/target/release/bbc6 site --data _independent_data \
+            --src stations/bbc-radio-6-music/site \
+            --brand independent/site/brand.json --about independent/site/about.html \
+            --out public/independent \
+            --origin "https://${{ github.repository_owner }}.github.io" \
+            --base "/${{ github.event.repository.name }}/independent/"
+          cp _independent_data/plays.csv public/independent/plays.csv
+          node --check public/independent/assets/app.js
+          test -f public/independent/data/meta.json
+          # the list of stations (with the article) lives under /independent/stations/
+          python3 tools/build_independent.py public/independent/stations
+        env:
+          SITE_NOINDEX: "1"
+
+      - name: Landing page
+        run: cp landing/index.html public/index.html
 
       - name: Make sure no email address slipped into the site
         run: |

@@ -53,7 +53,7 @@ td:first-child {{ min-width: 8rem; }}
 .risk.paused {{ border-color: #c84; }}
 footer {{ margin-top: 3rem; opacity: .7; font-size: .85rem; }}
 </style></head><body>
-<nav><a href="../">← Radio Archives</a></nav>
+<nav><a href="../">← Independent Archive</a></nav>
 {article}
 <h2 id="stations">The stations ({len(rows)})</h2>
 <p>Every station found so far. A station marked "Not confirmed" came from a public list and has not been checked yet. <a href="stations.tsv">Download the list</a>.</p>
