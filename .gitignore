@@ -28,3 +28,4 @@ secrets.*
 target/
 public/
 _bbc6/
+__pycache__/
