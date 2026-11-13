@@ -2,7 +2,7 @@
   "name": "Independent Archive",
   "station": "UK independent radio",
   "short": "Independent",
-  "source": "each station's own website",
+  "source": "the station website",
   "repo": "https://github.com/pink-bourbon-estate/Radio_Archives",
   "downloads": "plays.csv",
   "no_genres": true,
