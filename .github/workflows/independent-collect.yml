@@ -1,8 +1,8 @@
 name: Independent Archive collector
 
 # Once a day, collects new shows and tracklists from the independent stations that publish them
-# (Noods Radio so far, from its public JSON feed; its robots.txt allows everything). Each run adds at most
-# 400 shows, so the archive catches up over a few days. See tools/noods.py and docs/INDEPENDENT-ARCHIVE.md.
+# (Noods Radio from its public JSON feed; stations on Mixcloud through Mixcloud's public API). Each run adds at most
+# 400 shows per source, so the archive catches up over a few days. See tools/noods.py and docs/INDEPENDENT-ARCHIVE.md.
 on:
   schedule:
     - cron: "27 5 * * *"
@@ -29,9 +29,10 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             python3 -u tools/noods.py --max-shows 400 --max-minutes 20
+            python3 -u tools/mixcloud.py --max-details 400 --max-minutes 25
             git add independent/data
             if git diff --cached --quiet; then echo "Nothing new."; exit 0; fi
-            git commit -m "Independent Archive: new Noods Radio shows $(date -u +%Y-%m-%d)"
+            git commit -m "Independent Archive: new shows $(date -u +%Y-%m-%d)"
             if git push origin HEAD:main; then exit 0; fi
             echo "Push rejected (attempt $attempt); starting again from the latest main."
           done
