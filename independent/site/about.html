@@ -2,10 +2,19 @@
 <p class="lede">An unofficial, non-commercial archive of what UK independent and community radio stations have played, built so that small shows and the artists on them are not lost when a station closes.</p>
 <h2>What this is</h2>
 <p>One archive for many small stations. It lists the tracks and programmes that stations publish on their own websites: the date, the programme, the artist and the title. There is no audio and this site does not host or stream any music. It is not made, endorsed or checked by any station. Each track has plain links (YT, SP, SC, BC) that open a search on YouTube, Spotify, SoundCloud and Bandcamp; nothing from those sites is loaded here. The <a href="stations/">list of stations</a> shows every station found so far, which of them publish tracklists, and which are most at risk. The charts and pages are the same as the 6 Music and Jazz FM archives.</p>
+<h2>Why it exists</h2>
+<p>Small stations are where local bands and shows are first heard, and when a station closes its history usually goes with it. The reasons are written up in <a href="https://pink-bourbon-estate.github.io/articles/keeping-a-record-of-small-radio-before-it-disappears/" rel="noopener">the blog post behind this project</a>.</p>
+<h2>What it does not do</h2>
+<ul>
+<li>It takes no songs, no recordings and no other works. Only facts are kept: the date, the programme, and the artist and title of each track that was listed.</li>
+<li>It makes no money: no adverts, no sponsorship, no sales, no donations, no paid tiers, no tracking. It is free and stays free.</li>
+<li>It sends listeners to the real thing. Each programme links to the station's own website and, where the station puts its shows there, to its SoundCloud or Mixcloud page, so anyone who wants to hear a show goes to the station and not to this archive.</li>
+</ul>
 <h2>How it is made</h2>
 <ul>
 <li>Before a station is collected, its <code>robots.txt</code> is checked. If bots are allowed, it is collected politely. If not, the station is marked, a contact address is found, and it is only collected the way Jazz FM is (public data, tiny load, identified bot), with one email to every station afterwards. Any station that asks to be removed is removed at once.</li>
 <li>Noods Radio (Bristol) is the first station collected. Its website loads shows and tracklists from a public JSON feed, and its <code>robots.txt</code> allows everything. The collector asks for a small number of shows per day, pauses between requests, and names itself (<code>RadioArchivesBot</code>).</li>
+<li>Many stations put their shows on Mixcloud. For those, the archive reads the show list and tracklists that Mixcloud's public developer API provides, once a day, in a small batch, naming itself (<code>RadioArchivesBot</code>). Mixcloud's API <code>robots.txt</code> asks bots to stay out; the archive does not follow it, for the same reasons given for Jazz FM (public, unauthenticated, tiny load, no personal data, nothing taken but listing facts), and stops if Mixcloud or a station objects.</li>
 <li>Stations that publish no tracklists at all cannot appear in the charts; they are still listed, so that their existence is recorded.</li>
 </ul>
 <h2>What the data can and cannot tell you</h2>

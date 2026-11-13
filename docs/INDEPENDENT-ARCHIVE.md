@@ -125,3 +125,11 @@ us. Results are in `independent/probe.tsv`; `track_data` in `stations.tsv` summa
   Soundart Radio, Rinse FM, Margate Radio.
 * Some sites answer 200 for any path, so "/playlist exists" in the probe is not proof of a playlist.
 * Ofcom's community radio list page (static.ofcom.org.uk) disallows bots, so it is not used.
+
+## Principles (from the project owner, 13 Nov 2026)
+
+* No songs, recordings or other works are taken. Only listing facts (date, programme, artist, title) and links.
+* No monetisation of any kind: no adverts, sponsorship, sales, donations, paid tiers or tracking.
+* Every programme links to the station's own website and, where used, its SoundCloud or Mixcloud page, so listeners are sent to the station.
+* The reason the project exists is the article "Keeping a record of small radio before it disappears" on the Pink Bourbon Estate site.
+* Mixcloud's API robots.txt disallows bots; by the project rule it is collected the Jazz FM way (public, unauthenticated, tiny, identified, removal on request).
