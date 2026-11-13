@@ -143,11 +143,37 @@ pub fn describe(json: &str) -> String {
             _ => {}
         }
     }
+    // A sample of anything called "playlist" / "tracks" / "songs", which is where plays should be.
+    fn sample(v: &Value, out: &mut Vec<String>) {
+        match v {
+            Value::Object(o) => {
+                for (k, x) in o {
+                    let kl = k.to_lowercase();
+                    if out.len() < 3 && (kl.contains("playlist") || kl.contains("track") || kl.contains("song")) {
+                        let mut t = x.to_string();
+                        t.truncate(t.char_indices().nth(1500).map_or(t.len(), |(i, _)| i));
+                        out.push(format!("{k} = {t}"));
+                    } else {
+                        sample(x, out);
+                    }
+                }
+            }
+            Value::Array(a) => a.iter().take(3).for_each(|x| sample(x, out)),
+            _ => {}
+        }
+    }
     match serde_json::from_str::<Value>(json) {
         Ok(v) => {
             let mut seen = Vec::new();
             keys(&v, &mut seen);
-            format!("{} bytes of JSON; keys seen: {}", json.len(), seen.join(", "))
+            let mut samples = Vec::new();
+            sample(&v, &mut samples);
+            format!(
+                "{} bytes of JSON; keys seen: {}\nSAMPLES:\n{}",
+                json.len(),
+                seen.iter().take(30).cloned().collect::<Vec<_>>().join(", "),
+                samples.join("\n")
+            )
         }
         Err(e) => format!("not JSON: {e}"),
     }
