@@ -1,0 +1,40 @@
+name: Independent fetch sources
+
+# Run by hand with a list of public page URLs. Saves each page (robots.txt permitting, 2 seconds apart)
+# into independent/sources/raw/ and commits it, so station lists can be read and imported.
+# See tools/fetch_sources.py.
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "Space-separated page URLs"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: independent-fetch
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch
+        env:
+          URLS: ${{ inputs.urls }}
+        run: python3 -u tools/fetch_sources.py $URLS
+      - name: Commit
+        run: |
+          git config user.name "radio-archives-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add independent/sources/raw
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Independent sources: fetched pages $(date -u +%Y-%m-%d)"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
