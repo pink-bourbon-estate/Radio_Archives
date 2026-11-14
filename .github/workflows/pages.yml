@@ -103,6 +103,9 @@ jobs:
           # the front door: the station directory, with a page for every station
           python3 tools/build_directory.py public/independent "/${{ github.event.repository.name }}/independent/"
           node --check public/independent/assets/theme.js
+          node --check public/independent/assets/dash.js
+          node --check public/independent/assets/timeseries.js
+          test -f public/independent/data/dash.json
           test -f public/independent/station/noods-radio/index.html
         env:
           SITE_NOINDEX: "1"

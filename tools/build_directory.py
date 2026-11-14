@@ -24,6 +24,44 @@ RISK = {"closed": "Closed", "paused": "Paused", "high": "At risk", "watch": "Sma
 e = html.escape
 
 
+EXTRA_CSS = """
+.slicer { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: flex-start; margin: 16px 0; }
+.slicer details { border: 1px solid var(--line); padding: 8px 12px; min-width: 260px; }
+.slicer summary { cursor: pointer; }
+.slicer select, .slicer button, .tools select { font: inherit; font-size: 14px; padding: 6px 10px; border: 1px solid var(--ink); background: transparent; color: var(--ink); border-radius: 0; cursor: pointer; }
+.plist { max-height: 260px; overflow: auto; margin-top: 8px; }
+.pick { display: block; font-size: 14px; padding: 2px 0; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 40px; }
+.hb { display: grid; grid-template-columns: 9rem 1fr 3.5rem; align-items: center; gap: 10px; font-size: 13px; padding: 3px 0; }
+.hb i { display: block; height: 10px; background: var(--ink); }
+.hb em { font-style: normal; text-align: right; color: var(--mute); }
+.heatwrap { overflow-x: auto; }
+.hm { border-collapse: collapse; font-size: 11px; }
+.hm th { font-weight: 400; text-transform: none; letter-spacing: 0; padding: 2px 6px 2px 0; border: 0; white-space: nowrap; }
+.hm td { width: 14px; height: 18px; padding: 0; border: 1px solid var(--bg); }
+.facts { display: grid; grid-template-columns: 9rem 1fr; gap: 6px 16px; font-size: 14px; }
+.facts dt { color: var(--mute); } .facts dd { margin: 0; }
+.tools label { font-size: 14px; display: inline-flex; gap: 8px; align-items: center; }
+"""
+
+
+ALIAS = {"hiphop": "hip hop", "rnb": "r&b", "randb": "r&b", "rn b": "r&b", "dnb": "drum & bass", "drum and bass": "drum & bass",
+         "drumandbass": "drum & bass", "drum n bass": "drum & bass", "electronica": "electronica"}
+
+
+def clean_tag(t, stationkeys):
+    """Genre-like tags only: lower-cased, merged spellings, no station names, no numbers."""
+    t = html.unescape(t).strip().lower()
+    t = re.sub(r"\s+", " ", t)
+    flat = re.sub(r"[^a-z0-9]", "", t)
+    if not t or t.isdigit() or len(flat) < 2 or flat in stationkeys:
+        return ""
+    if any(w in flat for w in ("radio", "listenagain", "fm", "podcast", "weeklyshow")) and flat not in ("fmradio",):
+        return ""
+    t = re.sub(r"[''`]", "", t).replace(" n ", " & ") if "n" in t and re.search(r"\b(r|d)\s?n\s?[bs]\b|rn?n?b", t) else t
+    return ALIAS.get(t, ALIAS.get(re.sub(r"[^a-z0-9& ]", "", t), t))
+
+
 def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
 
@@ -70,10 +108,10 @@ def main(out, base):
     episodes = []  # station, programme, date, title, tags, url, tracks
     for s in noods:
         episodes.append(("Noods Radio", s["title"], s["date"], s["title"], "; ".join(s["genres"]),
-                         f"https://noodsradio.com/shows/{s['slug']}", len(s["tracks"])))
+                         f"https://noodsradio.com/shows/{s['slug']}", len(s["tracks"]), int(s["start"][:2]) if s.get("start") else -1))
     for st, rows in mix.items():
         for r in rows:
-            episodes.append((st, "", r["date"], r["title"], "; ".join(r["tags"]), r["url"], len(r["sections"] or [])))
+            episodes.append((st, "", r["date"], r["title"], "; ".join(r["tags"]), r["url"], len(r["sections"] or []), -1))
 
     by_station = collections.defaultdict(list)
     for ep in episodes:
@@ -94,6 +132,29 @@ def main(out, base):
              "tracks": tracks, "mixcloud": accounts.get(name, ""), "platforms": pr.get("platform", ""), "eps": eps}
         recs.append(r)
     recs.sort(key=lambda r: (r["region"], r["city"].lower(), r["name"].lower()))
+
+    # data for the dashboard: compact arrays, no emails
+    import datetime
+    idx = {r["name"]: i for i, r in enumerate(recs)}
+    stationkeys = {re.sub(r"[^a-z0-9]", "", r["name"].lower()) for r in recs}
+    tagi, taglist = {}, []
+    dep = []
+    for r in recs:
+        for x in r["eps"]:
+            if not x[2]:
+                continue
+            ids = []
+            for t in x[4].split(";"):
+                k = clean_tag(t, stationkeys)
+                if k:
+                    if k not in tagi:
+                        tagi[k] = len(taglist)
+                        taglist.append((k[0].upper() + k[1:]).replace("R&b", "R&B"))
+                    ids.append(tagi[k])
+            day = (datetime.date.fromisoformat(x[2]) - datetime.date(1970, 1, 1)).days
+            dep.append([idx[r["name"]], day, sorted(set(ids)), x[7], x[6]])
+    json.dump({"st": [[r["slug"], r["name"], r["region"], r["city"]] for r in recs], "tags": taglist, "ep": dep},
+              open(os.path.join(out, "data", "dash.json"), "w", encoding="utf-8"), separators=(",", ":"), ensure_ascii=False)
 
     # downloads: the linked lists (no emails anywhere)
     with open(os.path.join(out, "data", "stations.tsv"), "w", newline="", encoding="utf-8") as f:
@@ -133,7 +194,14 @@ def main(out, base):
         tagp = ("<h2>Genres its shows are tagged with</h2><p>" + " · ".join(f"{e(t)} ({n})" for t, n in tags.most_common(15)) + "</p>") if tags else ""
         recent = "".join(f'<tr><td>{e(x[2])}</td><td><a href="{e(x[5])}" rel="noopener">{e(x[3])}</a></td><td>{e(x[4])}</td><td>{x[6] or ""}</td></tr>' for x in r["eps"][:25])
         rec = (f'<h2>Latest shows held</h2><p class="meta"><a href="{base}data/episodes/{r['slug']}.tsv">Download all {r['episodes']:,}</a></p><div class="wrap"><table><thead><tr><th>Date</th><th>Show (links to the station)</th><th>Tags</th><th>Tracks</th></tr></thead><tbody>{recent}</tbody></table></div>') if recent else "<h2>Shows</h2><p>No shows collected yet for this station.</p>"
-        trk = f'<p><a href="{base}tracks/">See its track statistics →</a></p>' if r["tracks"] else ("<p>This station does not publish tracklists, so no tracks are listed.</p>" if r["episodes"] else "")
+        trk = ""
+        if r["episodes"]:
+            trk = f'<p><a href="{base}?station={r["slug"]}">See it in the dashboard →</a>'
+            if r["tracks"]:
+                trk += f' · <a href="{base}tracks/">Track statistics</a>'
+            trk += "</p>"
+        if r["episodes"] and not r["tracks"]:
+            trk += "<p>This station does not publish tracklists, so no tracks are listed.</p>"
         body = (f'<p class="meta"><a href="{base}">← All stations</a></p><h1>{e(r["name"])}</h1><p class="lede">{e(r["city"] or "")}'
                 f'{" · " + e(r["region"]) if r["region"] else ""}</p>{stats}<dl class="facts">{dl}</dl>{trk}{tagp}{rec}'
                 f'<p class="meta">Is this your station? To correct or remove this page, open an issue on the '
@@ -153,28 +221,34 @@ def main(out, base):
         f'<td>{e(r["music"])}</td><td>{e(RISK.get(r["risk"], r["risk"]))}</td><td>{r["episodes"]:,}</td><td>{r["tracks"]:,}</td></tr>' for r in recs)
     ropts = "".join(f'<option>{e(k)}</option>' for k in sorted(reg))
     body = f"""<h1>Independent Archive</h1>
-<p class="lede">A directory of UK independent and community radio: who is on air, where, and what they broadcast. Tracks are listed only where a station publishes them.</p>
-<div class="stats"><div class="stat"><b>{len(recs)}</b><span>stations</span></div><div class="stat"><b>{len(reg)}</b><span>regions and nations</span></div>
-<div class="stat"><b>{sum(1 for r in recs if r['episodes'])}</b><span>with shows held</span></div><div class="stat"><b>{sum(r['episodes'] for r in recs):,}</b><span>shows</span></div>
-<div class="stat"><b>{sum(r['tracks'] for r in recs):,}</b><span>tracks</span></div></div>
-<p class="meta">Two views: <b>Stations</b> (this page, with a page for each station) and <a href="{base}tracks/">Tracks</a> (statistics for the stations that publish tracklists, so far Noods Radio). Why this exists: <a href="https://pink-bourbon-estate.github.io/articles/keeping-a-record-of-small-radio-before-it-disappears/">the blog post</a>. Stations are listed from public sources and checked over time; "not yet placed" or "none found" means we have not found one, not that none exists.</p>
-<h2>By region</h2><div class="grid">{cards}</div>
-<h2>All stations</h2>
-<div class="tools"><input id="q" type="search" placeholder="Search station, town or music" aria-label="Search stations">
-<select id="reg" aria-label="Region"><option value="">All regions</option>{ropts}</select></div>
-<div class="wrap"><table><thead><tr><th>Station</th><th>Town / city</th><th>Region</th><th>Music</th><th>Risk</th><th>Shows held</th><th>Tracks</th></tr></thead><tbody id="t">{rows}</tbody></table></div>
-<p class="meta">Downloads: <a href="{base}data/stations.tsv">stations</a> · <a href="{base}data/programmes.tsv">programmes</a> · episodes (one file per station, linked from its page). Tab-separated; they link to each other by <code>station_id</code>.</p>
-<script>const R=[...document.querySelectorAll('#t tr')],q=document.getElementById('q'),g=document.getElementById('reg');
-function go(){{const s=q.value.toLowerCase();R.forEach(r=>{{r.hidden=!((!g.value||r.dataset.region===g.value)&&r.textContent.toLowerCase().includes(s));}});}}
-q.addEventListener('input',go);g.addEventListener('change',go);</script>"""
+<p class="lede">What UK independent and community radio is broadcasting: which stations, where, which shows and genres, and when. Pick one or more stations to filter everything. Tracks are listed only where a station publishes them.</p>
+<noscript><p>The dashboard needs JavaScript. The <a href="{base}data/stations.tsv">station list</a> can be downloaded without it.</p></noscript>
+<div id="dash">
+<div class="slicer"><details><summary>Stations: <span id="sel">All stations</span></summary>
+<input id="sq" type="search" placeholder="Find a station" aria-label="Find a station"><div id="slist" class="plist"></div></details>
+<select id="reg" aria-label="Region"><option value="">All regions</option></select><button id="clear" type="button">Clear</button></div>
+<div class="stats" id="stats"></div>
+<h2>Shows over time</h2><div id="tc"></div>
+<div class="grid2"><div><h2>Genres</h2><div id="genres"></div></div><div><h2>Day of the week</h2><div id="dow"></div></div></div>
+<h2>Start time</h2><p class="meta" id="hournote"></p><div class="grid2"><div id="hours"></div><div><div id="heat" class="heatwrap"></div></div></div>
+<h2>Where</h2><div id="regions"></div>
+<h2>Stations</h2><div class="wrap"><table><thead><tr><th>Station</th><th>Town / city</th><th>Region</th><th>Shows</th><th>Tracks</th></tr></thead><tbody id="tbody"></tbody></table></div>
+</div>
+<p class="meta">Two views: this dashboard (with a page for every station) and <a href="{base}tracks/">Tracks</a> (statistics for stations that publish tracklists, so far Noods Radio). Why this exists: <a href="https://pink-bourbon-estate.github.io/articles/keeping-a-record-of-small-radio-before-it-disappears/">the blog post</a>. Show dates for stations on Mixcloud are upload dates; Noods dates and start times are broadcast. Stations are listed from public sources: "not yet placed" or "none found" means we have not found one, not that none exists.</p>
+<p class="meta">Downloads: <a href="{base}data/stations.tsv">stations</a> · <a href="{base}data/programmes.tsv">programmes</a> · episodes (one file per station, linked from its page). Tab-separated; they link by <code>station_id</code>.</p>
+<script src="{base}assets/timeseries.js"></script><script src="{base}assets/dash.js" data-base="{base}"></script>"""
     os.makedirs(out, exist_ok=True)
     open(os.path.join(out, "index.html"), "w", encoding="utf-8").write(page(base, "Independent Archive", "A directory of UK independent and community radio stations.", body, "dir"))
     about = open("independent/site/about.html", encoding="utf-8").read()
     os.makedirs(os.path.join(out, "about"), exist_ok=True)
     open(os.path.join(out, "about", "index.html"), "w", encoding="utf-8").write(page(base, "About · Independent Archive", "About the Independent Archive.", about, "about"))
+    os.makedirs(os.path.join(out, "assets"), exist_ok=True)
     for f in ("style.css", "theme.js", "favicon.svg"):
-        os.makedirs(os.path.join(out, "assets"), exist_ok=True)
         shutil.copy(f"stations/bbc-radio-6-music/site/assets/{f}", os.path.join(out, "assets", f))
+    for f in ("timeseries.js", "dash.js"):
+        shutil.copy(f"independent/site/{f}", os.path.join(out, "assets", f))
+    with open(os.path.join(out, "assets", "style.css"), "a", encoding="utf-8") as f:
+        f.write(EXTRA_CSS)
     print(f"{len(recs)} station pages, {len(episodes)} shows, {sum(r['tracks'] for r in recs)} tracks")
 
 
