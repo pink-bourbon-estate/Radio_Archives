@@ -1,5 +1,6 @@
 id	name	mbid
 a001be2131ca7	Carmen Mcrae	29b0a6c7-ab3a-4bf3-a64f-63c8a3548196
+a00bfe2029ea2	Little Willie John	
 a00f9576a9e30	Dr. John	fe0e1895-aa84-47d9-8e5b-7930fc20709b
 a01186bf98be2	Sonja Kandels	848ae96d-0a38-47d3-a6b0-7ee8509caf60
 a01505f53371c	Bugz In The Attic	e12903cf-78ff-4d15-8dfa-54985733827f
@@ -11,6 +12,7 @@ a022f2094b0ed	Quintetto Atlantico
 a02524e191673	Sam Fribush, Corey Fonville &amp; Alan Good Parker	
 a0256abf520e4	Gerry Allen	
 a029db9f050b4	Kokoroko	2650f0e7-3879-4b2c-8908-d025113cbece
+a02b43bcf1439	Steve White Trio	
 a02edd4eb3a33	Thundercat	044fd265-79dd-43eb-afc4-8b20becf7e17
 a02f6df0059a9	The Darius Brubeck Quartet	347a90bc-2aa5-4292-8ff6-0fa5e61306dd
 a0305acc4613f	Baltic Jazz Recordings	
@@ -38,14 +40,18 @@ a09f873a15626	Lewis Taylor	5d825a49-c827-4965-a744-b7fff4e7768b
 a0a70022bff4d	Lee Ritenour	0c361ea5-98c6-4947-900b-201833f2dd84
 a0a8d71539f89	Candi Staton	6afcc957-d742-41c6-ad0b-31b2f1967353
 a0a98c2a5ac4c	Syncrosystem	
+a0b17d20c3526	Graham Central Station	
 a0b54ca124d92	Peter Tegnér	
 a0b9c23824aa5	Sabrina Malheiros	0f84f6c5-9fda-4a36-8e75-acba8d6dd1ea
 a0ba348c6f6f9	Dinner Party	
 a0bbba672313f	Oscar Peterson	ed801bdd-f057-41c0-94fb-76cb5676cd59
 a0bbec8c3674e	Jacob Collier	1df15ee0-b52b-4315-9cb9-bc5a27a685e9
 a0bf204bc1898	Me'Shell Ndegéocello	
+a0bfaa70065f6	Beverley Knight	
 a0bfc4a12a13b	Michael Kiwanuka	
+a0caa37b11d56	Roland Kirk	
 a0cb528889c05	Sergio Mendes and Brazil ' 66	
+a0d3c854050d5	Ashley Henry	
 a0d95d1563e67	Roy Hargrove Quintet	d6bc9b64-6480-4d74-b539-651f07ee31b9
 a0d9f8656ccd7	Soweto Kinch	5cc2337b-233a-4654-a4eb-e6959bc0783f
 a0dc8469ea401	Sam Fribush, Corey Fonville & Alan Good Parker	
@@ -79,9 +85,11 @@ a13baebaccdaf	Mama Terra	d1027549-f9d5-4fa7-86c5-4e728515cebf
 a13da6feaa2d0	Art Farmer and Benny Golson Jazztet	
 a140f23ed3771	Herb Ellis	33ddc4a0-2d48-4da5-91f4-180c3283d2f9
 a141cef00b181	Chick Corea	8446fcca-109e-4c6d-a2ff-5a269b32b4c2
+a145426792501	Tony Bennett and Count Basie and His Orchestra	
 a145ebedf850f	Aretha Franklin	2f9ecbed-27be-40e6-abca-6de49d50299e
 a14683d261ebf	Rachael Price and The Tennessee Terraplanes	
 a147a234cde57	Bert Jansch	
+a147f709eafdf	Galactic and Irma Thomas	
 a1543ffbae8cf	Theo Croker	2c7bc024-3d96-4051-b0ec-b65229df1419
 a154b46122c1f	Tucker Zimmerman	11edf8b3-f37e-48a9-8166-1c1f91148917
 a157af77c2258	ARTEMIS	714a9c41-1525-40b7-9ee1-34bba8855659
@@ -166,6 +174,7 @@ a30c5b4369c0e	The Van Morrison Alumni Band
 a317b5a71758d	The Midnight Hour	
 a32065c377e32	The Winston Brothers	18507767-4302-460b-9d35-8eddbb3cdafa
 a3218bfae5526	Sade	67930b3e-e00b-469f-8c74-fd69f20522ec
+a325e01078d1c	Mica Paris	
 a32b1ef8ed65d	Stan Getz and Charlie Byrd	
 a32b21e51cd28	Stanley Clarke and Howard Hewett	
 a33368580c5bf	John Lee Hooker With Ry Cooder	
@@ -199,6 +208,7 @@ a3a2f128863d3	Walter Beasley
 a3a9511ef4a72	Stanley Clarke and George Duke	
 a3abdb40238ee	Ahmed Sirour	22d94246-a2d6-4e23-895b-9d3f4b73f73e
 a3adeee40a48a	Hejira	42c47a88-3890-4248-809c-5c914f15361e
+a3b2d23524549	Eddie Bo	
 a3b44309d1371	Duke Ellington and Billy Strayhorn	
 a3b8f53904c42	UMO Jazz Orchestra meets Magnum Coltrane Price	
 a3bf4434aa4c2	Jo Harrop	341d1c7d-4c47-4655-b1c9-3351d6b165cf
@@ -217,6 +227,7 @@ a3f8ef90778a9	Kansas Smitty's
 a3fd2ba23154d	Daniel Goyone	
 a3fe7b9116886	Nicole Zuraitis	
 a403b08f9066b	Oscar Peterson Trio	b083ec9b-27e0-4fda-801d-cb40861a0578
+a4054e1b2ba10	Magnificent Sevenths	
 a413aee631a11	Jamie Cullum	b10806de-2198-4313-af6a-13df4acb912f
 a4162560ecca9	Stan Getz	8f2422ab-0ec6-4c92-80c4-afe9622fab32
 a418ee7f9b591	Lauryn Hill	
@@ -228,6 +239,7 @@ a427707c20b02	Jimmy Liggins	f448ed44-68f4-49d0-ba18-972f421a6060
 a42aed5db7502	Bebe and Cece Winans	
 a42c919cc6c4d	Miguel Atwood-Ferguson	
 a437cd5c42f3f	Family Company and Sam Pounds	
+a438d63542bc1	Morrissey Mullen	
 a43b562e3da6d	Frank Sinatra and Antonio Carlos Jobim	
 a441c1c331863	Ayanna Witter-Johnson	
 a4438993c7964	Jessica Lauren	a6add753-804e-4aee-98e7-36e8174247f8
@@ -256,6 +268,7 @@ a4d0b9c91a8ce	Jackie Wilson and Count Basie
 a4d823af75887	Quincy Jones and Valerie Simpson	
 a4e58120d225a	José James	481c8894-c898-4332-8882-db5a90c318e1
 a4ed273c0eedf	Los Coast	39de8d26-412d-430f-97c3-b52790438f50
+a4f5167c7c18a	Ian Shaw	
 a4f9de006cced	Nubya Garcia	42dd1862-7255-47ed-8584-651abce3bf53
 a4fb230bc6ea7	Pat Metheny, Anna Maria Jopek	
 a5062ae2b877c	Melissa Aldana	faa21ccf-f0d3-4a84-95d4-ae596aa40744
@@ -294,6 +307,7 @@ a56f085029086	Freddie Hubbard	59ae7a1a-f454-435b-8a5a-e327e692bb5a
 a570cce2bd65d	Seun Kuti and Egypt 80	
 a575aafd301aa	Georgie Fame	17776099-2662-48e0-9a51-7e3cbe0930fa
 a5785dc800144	Earl King	0ad58e2b-51d9-4c6b-a609-2804246b70da
+a57f7c4f55986	Diana Krall and Natalie Cole	
 a581e63c4b328	Eddie Henderson	b07d5aa9-936d-4860-bb06-3a4b4e0205ed
 a5843684758d6	Earth Wind and Fire	535afeda-2538-435d-9dd1-5e10be586774
 a584b9ce32586	Ray Lozano	
@@ -316,6 +330,7 @@ a5ac6c9159031	Gilberto Gil	cf6b70f6-2616-481c-912c-0263cabfc974
 a5acdcfe79c08	Betty Wright	
 a5b0c4c9b119e	Jon Batiste and Celeste	
 a5b0d989ae962	Quincy Jones and Patti Austin	
+a5ba3adb4f298	The Crusaders and Randy Crawford	
 a5bbb26698191	Dave Bartholomew	9ad119e3-8a03-41a9-9ba8-fa754390b81d
 a5c4354323565	Tuba Skinny	
 a5c878b49b6f8	Ambrose Akinmusire	
@@ -351,8 +366,10 @@ a661c1ee097e3	Norah Jones and Dirty Dozen Brass Band
 a663b45163c68	Manu Dibango	826b488f-5164-45ca-abc4-ab11b3c321eb
 a667314735565	Sara Gazarek	
 a66782ccab6ac	Brad Mehldau	b7723b3f-9a35-438d-bc42-8ad8b5e027ae
+a66bc802e28b0	Full Flava	
 a6716b5a7ac14	Kurt Elling	4d39b9be-128d-49a4-a1d3-52727c496343
 a67275de9181c	Allexa Nava	
+a672822dac2f6	The Ju Ju Orchestra	
 a6732baa33294	Jon Cleary	a417f0e5-2c14-445a-9a07-5a7ad2bdeafa
 a678f922b4306	Jeff Lorber Fusion	d42ba748-e3a1-4873-8434-39d495b787b7
 a67b033442e8e	Ekep Nkwelle	
@@ -390,12 +407,14 @@ a714997662783	Yazmin Lacey	451919df-764c-40cf-9aa2-fcafe599d869
 a716aa01cca8b	Billy Valentine and The Universal Truth	
 a71723ff6201c	Guru	215c6ab2-7888-4061-bd56-9fb650328106
 a71845a32711b	Kamasi Washington	c7a3e868-c6d8-4512-a5ef-f6cbe42899b0
+a71d43bb6a13f	The Dirty Dozen Brass Band	
 a71dc49fe6d58	Julie London	e7ee5f13-baf5-4a87-b58b-f871c137d4f5
 a7212ecbbc138	David Benoit	34832720-12d3-44b4-bb80-8f06bcfb09ba
 a7253ca771825	The Dirty Dozen Brass Band and Dr. John	
 a72910b443ef2	Chic	a4ed036b-5f18-439c-b1e1-96d205bab255
 a730d79d89946	Sahra	70b1e342-623b-470d-a479-8034c03ee79d
 a73391856c1bd	Mtume	3e0ad499-0d3b-4445-8224-c63b4ad46317
+a734cb6d93b97	Nicholas Payton	
 a7385611251f6	Sharp Little Bones	
 a73b48808d7d2	Dexter Gordon	cc1588e1-5ba3-45a6-b80c-b31035c89339
 a73cf6dfe9bac	Ohio Players	
@@ -433,6 +452,7 @@ a7b088b62b920	Summer Pearl
 a7b3c952f7664	Jean Knight	4a8d9623-4d6c-4b7c-8dc5-5d5319ab8a20
 a7b56be1876fa	Chris Botti	
 a7b9181e3096f	Lack Of Afro	1b337b9f-1562-4863-a5c8-50c9d6d5e010
+a7b9337f19364	Matt Wilde	
 a7bb1c1b15619	Luther Vandross	816d9b5d-eaf9-4a97-b5f7-6e82cd01aafe
 a7be3648ca7b8	Carmen McRae and Dave Brubeck	
 a7bfcd67c3006	Rob Barron Trio	
@@ -468,6 +488,7 @@ a8342760f5b87	Joe Henderson	bcab8301-c7e5-4689-a4ad-9ee947b4ce37
 a8366ac5545a1	Kevin Hays	
 a843ec011b7a0	Snowboy and Noel Mccoy	
 a84647ac0a061	Jon Regen	
+a849bdfd4f68c	Gabrielle Cavassa	
 a84a2c36ed376	Wynton Marsalis	0d74dcc7-5684-4695-830f-a9846aad8ba9
 a84e7ca34675d	Wojtek Mazolewski Quintet	f3054258-e308-460b-b975-6cdd3c02de09
 a8548508679a8	Nao Yoshioka	d2a40920-9c83-4ece-a378-a952795ecbf6
@@ -476,6 +497,7 @@ a858171876374	Sunlightsquare	b95edec1-c2f0-4bfd-8dc3-f9c1d692f08e
 a858215b7a0b9	Rodney Franklin	142cc4f5-396e-45f5-b142-97a375351aa1
 a85c4581e8f96	Harry Connick Jr	fd23e684-270f-4507-9cb0-a0e0d7854d16
 a860b161e8768	Butcher Brown	c0937ba4-6869-456b-afd0-10335ae50245
+a87ae22bc9a8d	Keyon Harrold	
 a87ae5d9580c1	Theo and Sahra	
 a87dc24dd7a68	Diana Krall	67d2cb7a-9ddb-4a7f-82bf-5a2d1a038e98
 a886024e93d43	Nuyorican Soul and Jocelyn Brown	
@@ -516,6 +538,7 @@ a92ae9c137db2	Leif Garrett
 a92bf574dd36e	Sol Paradise	
 a92ce05ce6af3	Cyril Neville	
 a92cf2cf65e3f	John Lee Hooker and Taj Mahal and Miles Davis	
+a92fae1e24ac4	Yussef Dayes	
 a934ea7ebe7f7	Rasmus Sørensen	
 a93a3502f1719	The Teskey Brothers	
 a93add29505df	Tenorio Jr	
@@ -524,6 +547,7 @@ a950273f06dab	Madeleine Peyroux	7f260b9c-bea7-469b-9ba8-0daec7d2c85c
 a95468db764e0	Kansas Joe and Memphis Minnie	
 a95e50e758ccb	Muito Kaballa	
 a9609a6b5adb4	Candy Dulfer	
+a960d74b64628	Gary Brown	
 a96386ecac0e3	Shaun G	
 a963d01a0c2a6	Homeboy Sandman	
 a966101381981	Jimmy McGriff	58f23499-f263-4772-9b7a-2f6cd2fe428f
@@ -553,18 +577,22 @@ a9c90ed1140f4	Jon Lucien	d4f3250e-3f30-46be-86cd-b3d7bbcf8d6c
 a9cf849ae8ee0	Bo Dollis and The Wild Magnolias	
 a9dfcca1f5604	Greg Dean (feat. Jarrod Lawson)	
 a9e28458b8b4c	Nouria Bah	74329d49-407b-42b2-a77f-992cbe4df80f
+a9e753cfecc30	Dave Brubeck and Carmen McRae	
 a9e8dea493996	Charlie Stacey	9691f039-5c9c-48bf-9a2b-60706e258b25
 a9ec08fa21d49	Corinne Bailey Rae	
 a9eccc5da1792	Southside Sound Surgeons	
 a9ed7fa95dafa	Federation Of The Disco Pimp	84e25418-d914-4d19-b86d-2135bfb46ca4
 a9f26e77032c7	Nicholas Payton and Esperanza Spalding	
 aa03b8947ff59	Christian McBride Big Band	dc24ff93-d5c8-45b0-882b-a1c38d7f685e
+aa06ea1600931	Teddy Pendergrass	
+aa08537e18dea	Alan Broadbent Trio	
 aa0c822cb724e	Stacey Kent	7cd536a1-8d66-49e3-bf14-e1be74a06363
 aa1340ff19f8c	Michel Petrucciani	2b75141c-05e9-42eb-ae63-6695d86cdc19
 aa16dd6d9750a	Zero 7	c23b637b-97c6-41eb-8ef6-6c724efc80a8
 aa1a727c4352f	Michael Garrick	
 aa2c19020f0a1	Mary J. Blige	db76c5ca-d555-4f09-b1db-baa1b713d875
 aa2d85a1335ec	Donald Fagen	70047e57-0153-4117-b0fc-a1d2e322e5ef
+aa35558899c56	B.B. King	
 aa36fcb46fdaa	Kurt Rosenwinkel	fc43556b-9657-4680-8809-e50295380f98
 aa3d5042888ea	Tom Browne	2b2596a1-089b-47ee-9aad-0587da08383a
 aa3efa176260a	Nat Adderley	a9e79d89-f90b-4cef-943e-68151336a430
@@ -591,6 +619,7 @@ aa98a70bbed38	The Count Basie Orchestra and Bettye LaVette
 aa9c90b2d2972	D'Influence	
 aa9eb2f0337fa	Omasta	
 aaa1e695c759b	Muireann Bradley	
+aaa382c9eca7f	Jamison Ross	
 aab1c0486267f	Us3 and Rahsaan	
 aab4e0fa7a408	Mamas Gun	f2de4222-36b7-4afa-8ff9-dd04531cfc2d
 aac344cc4c5fe	Fred Wesley and the JBs	
@@ -598,6 +627,7 @@ aac4924bf88f8	World on a String
 aacd11b3bd46d	Nathan Haines	1356846a-ebe8-40f0-95ba-3f7c95cd8a8e
 aae0b1f6a1e5d	Maxwell	
 aae1a707c4420	Koop and Cecilia Stalin	
+aaed72b2444b6	Lazy Lester	
 aaef9d948c936	Pat Metheny	7daac7f9-8fcc-485f-a14f-f8091d98cf25
 aaf97c18a7cad	Carleen Anderson	cd3dc0d1-bad1-4faa-8618-0d28ecbdc0ed
 aafb4bbb160ec	Van Morrison and Joey DeFrancesco	
@@ -646,6 +676,7 @@ ab951792db0b1	Joe Lee Wilson	aeefa6f6-0ba4-4ef3-8f6f-fc086809f13b
 ab9f426c7da84	Lonnie Liston Smith	b7eb7b38-7f51-45e9-b583-64303b24eabe
 aba506881f0af	Ned Doheny	dba5b25b-94fd-47c0-958f-ad279cfdccf6
 aba703a355687	Esbjorn Svensson Trio	cfa7c6b1-bbb3-4f9a-a636-cbfafb9b4bcf
+aba7ca00e6541	Khruangbin and Leon Bridges	
 ababd9af7b86f	Laura Jurd	
 abb5628ad5b3e	Corto.Alto	5726d85f-b8eb-49d0-8ee5-8359c087206c
 abb76aa340716	Charlie Parker Quintet	
@@ -655,6 +686,7 @@ abcab42878c39	Lady Blackbird	5e779832-3109-419b-b713-9165809ac1cf
 abd43704e6246	Candice Hoyes	07019158-80f8-47fb-8cbf-162bb0e7f141
 abd923813038d	Roger Beaujolais Quartet	
 abdcb649b9685	Ella Fitzgerald and Count Basie and His Big Band	
+abe3428414480	Herbie Hancock and Joni Mitchell	
 abe3e574e24d7	Maceo Parker	7ec0b91d-c6ad-417e-934c-decfdc45bada
 abeb217556259	Giacomo Smith	ba59c882-c0b0-4776-aa05-f5506cbda384
 abee995b42fb7	Gary Clark Jr.	
@@ -680,6 +712,7 @@ ac44e405a9fef	Camilla George	49cd364e-6c8a-4702-a1ff-83dd126242c7
 ac474f3d0a710	Russell Gunn + Blackhawk	
 ac47703de4e6b	Ella Fitzgerald and Louis Armstrong	a69c83f7-6a87-4800-91e2-b4e00a21aeb6
 ac481e4e8755f	Kassa Overall	
+ac48b04e76b52	Sandra-Mae Lux	
 ac4b262775bdd	Ego Ella May	2c235afa-c51a-4c07-827d-59f233eeda37
 ac4f068f32a73	Sinikka Langeland	
 ac597a8ad1c53	Tony Bennett and Diana Krall	
@@ -716,10 +749,12 @@ ace37e2921a6f	Charles Lloyd
 ace6b400ae36d	Cut Capers	4dc7e2ed-21dc-4da3-8080-a4bb82ea40d4
 aceb7ed0d98e6	Robert Glasper Experiment	0ec3c9dc-45e7-4bc1-9813-a866acaae772
 aceba95970191	John Renbourn	
+acf2469f402e1	Jazzanova	
 acfb83a25fa34	Leon Ware	9b1f8808-6bdd-4d36-b619-ec5c7e6d0d7d
 acfffb3ca0b13	Bill Laurance	f30eb720-5cb6-4b44-a289-07ced7971041
 ad00d28e395d3	Jackson Mathod	
 ad010355175a4	Elena Pinderhughes	164f988e-6a25-4514-bf84-14f94e4b08b8
+ad0bcc41f5fd3	Boozoo Chavis	
 ad112b20e9f75	Ronny Jordan	50b3ef68-29c1-42ec-92d5-90e0f40fdf7f
 ad1737a478e70	Norman Brown	
 ad280c1c7095b	MT Jones	a7c50dc3-9a8b-4868-8cc9-3a9f065d62f0
@@ -739,6 +774,8 @@ ad618ede8d610	Fergus Mccreadie	cc564538-5812-4a9e-a6b7-bfe9a59a52f6
 ad618f9d40034	Jon Gomm	eb9c78a5-d7f0-49c1-b887-1aa983ddb84a
 ad6358a88cd5c	Telemakus	2fd066ab-06eb-47e3-8186-84d3caa0c6c7
 ad68b181909c9	Joe Louis Walker	
+ad6d1207620f3	Ethan Iverson	
+ad70ee7df430b	Blue Lab Beats	
 ad7796fd7a8b5	Stan Getz, Joao Gilberto, Astrud Gilberto	
 ad7be34c729ad	Oscar Brown Jr.	fad74575-8a16-4c50-99a5-5d20fda0bd46
 ad7d64ebb6fdb	Crusaders	fcb79f1a-d3a9-41fe-9cd7-d16537907337
@@ -796,6 +833,7 @@ ae64fa62db167	Mike Freedman
 ae6dee7bcf955	The Baylor Project	
 ae6ec2db6eaef	Lavan	
 ae6feae34404a	Parliament	d1947987-9614-49ae-bd36-8000e6b6f7d0
+ae72693af8288	Sharon Jones and The Dap-Kings	
 ae73a34b6254e	Joshua Idehen	
 ae74019fd96c5	Etienne Charles	
 ae74ff4daffd5	ArmstrongJW	
@@ -810,6 +848,8 @@ aea7210ce0d9a	Tele Tempo
 aeaa981a5a848	Harold Mabern	
 aeab4fe988c37	Sons Of Kemet	fee950a2-e68c-4e76-b1ae-ff6efdf68b11
 aeac0479eccd3	Tony Bennett and Willie Nelson	
+aeb223216b0a9	Abbey Lincoln	
+aeb49f4930981	Musiq Soulchild	
 aeb988dce0f36	Nancy Wilson	
 aebaa252f3dcc	Jon Batiste	a2a72dba-3a08-43c4-859c-4c7f5fcc9599
 aec2d490d6fb5	Snarky Puppy	fe85367e-4036-43c1-874b-b91af81cb4f3
@@ -832,6 +872,7 @@ af1c4bdc56316	Kaidi Tatham and The First Word All Stars
 af20a4699434b	Jake Xerxes Fussell	
 af3097dcb3b9b	Lee Morgan	a1235272-3650-4ed7-9317-5a55a08701ec
 af3a6c6490ede	Robert Johnson	8a8bbba6-72f7-4900-a306-c40b94f2631b
+af3f1fc804aa9	Paul McCartney	
 af3fe7223d200	Rosie Frater-Taylor	
 af401f6b93fba	Harben Kay	
 af437da13014f	Gwen McCrae	bd518350-09ad-4ecc-934e-11168e84227c
@@ -842,6 +883,7 @@ af5980d26d33a	Le Tout Puissant Tropical Orchestra
 af5b91330714c	Poncho Sanchez	
 af5c979bfc3a9	Jools Holland and Yolanda Brown	
 af5ecf2f4e371	Joyce Moreno	
+af67f35b30a77	Miles Davis +19	
 af6adaf3dd7db	Karin Krog and Georgie Fame	
 af71340c4cd41	The Pucciarelli Group	
 af71b0f318a79	Jason Moran	
@@ -860,6 +902,7 @@ af9b611a1ac46	Ramsey Lewis	fe19b809-e86c-4736-882a-53b72e23171b
 af9ce72eb963a	Nola Resistance	
 afa1ee9ae1948	Charles Overton	
 afa35e96a5c7a	Shirley Horn	1f72d108-f2dc-44cd-8213-8d3426cc2c9a
+afa5b485c2b63	Fats Domino	
 afb0fc5213ffe	Shaun Escoffery	
 afb2d53c116a1	Jacques Pellen	
 afb4bf4cede02	Warren Wolf	
