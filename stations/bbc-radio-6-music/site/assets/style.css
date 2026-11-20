@@ -141,3 +141,17 @@ details ol { font-size: 14px; margin: 8px 0 8px 1.4em; padding: 0; }
 /* light / dark switch (see theme.js) */
 .themebtn { margin-left: auto; padding: 4px 10px; font-size: 11px; }
 @media print { .themebtn { display: none; } }
+
+/* date explorer: zoom control, clickable bars, selected-period panel */
+.seg { display: inline-flex; flex-wrap: wrap; }
+.seg button { margin-right: -1px; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg button:disabled { opacity: .35; cursor: default; }
+.seg button:disabled:hover { background: transparent; color: var(--ink); }
+.chart .col { cursor: pointer; outline: none; }
+.chart .hit { fill: transparent; }
+.chart .col:hover .bar, .chart .col:focus-visible .bar { fill: var(--accent); }
+.chart .col:focus-visible .hit { stroke: var(--ink); }
+.chart .bar.sel { fill: var(--accent); }
+.selpanel { margin: 24px 0 8px; padding-top: 4px; border-top: 2px solid var(--ink); }
+[hidden] { display: none !important; }

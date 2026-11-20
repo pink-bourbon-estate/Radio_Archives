@@ -1,5 +1,6 @@
 mod derive;
 mod enrich;
+mod explore;
 mod pages;
 mod playlists;
 mod scrape;

@@ -611,6 +611,16 @@ pub fn run(args: &Args) -> Res<()> {
         }));
     }
     write_json(&out.join("latest.json"), &json!(days))?;
+    {
+        let plays: Vec<crate::explore::Play> = rows
+            .iter()
+            .map(|r| crate::explore::Play { day: r.day, track: r.ti, artist: r.ai, show: r.si, hour: hours[r.ep as usize].min(23) })
+            .collect();
+        let t: Vec<(String, String, u32)> = tracks.iter().map(|t| (t.artist.clone(), t.title.clone(), t.ai)).collect();
+        let a: Vec<(String, String, String)> = artists.iter().map(|a| (a.name.clone(), a.id.clone(), a.letter.clone())).collect();
+        let sh: Vec<(String, String)> = shows.iter().map(|s| (s.name.clone(), s.slug.clone())).collect();
+        crate::explore::write_all(&out, &plays, &t, &a, &sh)?;
+    }
 
     // ------------------------------------------------------------ artist shards
     let mut by_artist: Vec<Vec<u32>> = vec![Vec::new(); artists.len()];

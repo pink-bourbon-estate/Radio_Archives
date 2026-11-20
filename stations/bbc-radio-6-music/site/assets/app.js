@@ -81,12 +81,16 @@
 
   /** Save text as a file in the visitor's browser. */
   function saveFile(name, text, type) {
-    const url = URL.createObjectURL(new Blob([text], { type: type + ';charset=utf-8' }));
-    const a = h('a', { href: url, download: name });
+    // A byte-order mark makes Excel read the CSV as UTF-8, so accented names stay right.
+    const body = type === 'text/csv' ? ['\ufeff', text] : [text];
+    const blob = new Blob(body, { type: type + ';charset=utf-8' });
+    if (navigator.msSaveOrOpenBlob) return navigator.msSaveOrOpenBlob(blob, name);
+    const url = URL.createObjectURL(blob);
+    const a = h('a', { href: url, download: name, rel: 'noopener', style: 'display:none' });
     document.body.append(a);
     a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    // Some browsers (Safari, Firefox) need the link and URL to outlive the click, so tidy up later.
+    setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 60000);
   }
   const csvCell = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
   const toCSV = (head, rows) => [head, ...rows].map((r) => r.map(csvCell).join(',')).join('\r\n') + '\r\n';
@@ -173,7 +177,7 @@
   /* ------------------------------------------------------------ charts */
 
   /** Vertical bar chart drawn as SVG. data: [{label, value, href?}] */
-  function barChart({ data, title, filename, unit = 'plays', labelEvery = 1 }) {
+  function barChart({ data, title, filename, unit = 'plays', labelEvery = 1, onPick }) {
     const W = 760, H = 240, L = 46, B = 28, T = 10;
     const max = Math.max(...data.map((d) => d.value), 1);
     const nice = (m) => { const p = 10 ** Math.floor(Math.log10(m)); return [1, 2, 4, 8, 10].map((x) => x * p).find((v) => v >= m); };
@@ -189,9 +193,19 @@
     data.forEach((d, i) => {
       const bh = ((H - T - B) * d.value) / top;
       const x = L + i * bw + bw * 0.12;
-      const bar = el('rect', { class: 'bar', x, y: H - B - bh, width: bw * 0.76, height: Math.max(bh, 0) });
-      bar.append(el('title', {}, `${d.label}: ${fmt(d.value)} ${unit}`));
-      svg.append(bar);
+      const bar = el('rect', { class: 'bar' + (d.sel ? ' sel' : ''), x, y: H - B - bh, width: bw * 0.76, height: Math.max(bh, 0) });
+      const tip = `${d.tip || d.label}: ${fmt(d.value)} ${unit}` + (onPick ? ' (click to select)' : '');
+      if (onPick) {
+        // The whole column is clickable, so even a tiny bar is easy to hit; it also works from the keyboard.
+        const col = el('g', { class: 'col', tabindex: 0, role: 'button', 'aria-label': tip });
+        col.append(el('rect', { class: 'hit', x: L + i * bw, y: T, width: bw, height: H - T - B }), bar, el('title', {}, tip));
+        col.addEventListener('click', () => onPick(i));
+        col.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPick(i); } });
+        svg.append(col);
+      } else {
+        bar.append(el('title', {}, tip));
+        svg.append(bar);
+      }
       if (i % labelEvery === 0) svg.append(el('text', { x: x + bw * 0.38, y: H - 9, 'text-anchor': 'middle' }, d.label));
     });
     const dl = downloadButtons(filename, () => ({ head: ['Label', unit], rows: data.map((d) => [d.label, d.value]) }));
@@ -204,6 +218,188 @@
     const list = h('ol', { class: 'bars' }, items.map((i) => h('li', {}, h('span', {}, i.href ? h('a', { href: i.href }, i.label) : i.label),
       h('span', { class: 'fill-cell' }, h('div', { class: 'fill', style: `width:${(i.value / max) * 100}%` })), h('span', { class: 'v' }, fmt(i.value)))));
     return h('div', {}, h('div', { class: 'tools' }, h('span', { class: 'count' }), downloadButtons(filename, () => ({ head, rows: items.map((i) => [i.label, i.value]) }))), list);
+  }
+
+  /* ------------------------------------------------------------ date explorer: zoom and click-to-filter */
+
+  const GRAINS = [['day', 'Day'], ['week', 'Week'], ['month', 'Month'], ['quarter', 'Quarter'], ['year', 'Year']];
+  const WINDOW = { day: 60, week: 52, month: 36, quarter: 24, year: 60 };
+  const FINER = { year: 'month', quarter: 'month', month: 'day', week: 'day' };
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const p2 = (n) => String(n).padStart(2, '0');
+  /** Day numbers count days since 1970-01-01 (UTC), so there are no time-zone surprises. */
+  const dnum = (y, m, d) => Math.floor(Date.UTC(y, m, d) / 864e5);
+  const dymd = (n) => { const d = new Date(n * 864e5); return [d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()]; };
+  const dnumIso = (iso) => dnum(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10));
+  const dIso = (n) => { const [y, m, d] = dymd(n); return y + '-' + p2(m + 1) + '-' + p2(d); };
+  const dLong = (n) => { const [y, m, d] = dymd(n); return d + ' ' + MONTHS[m] + ' ' + y; };
+
+  /** The day, week (Monday to Sunday), month, quarter or year that contains day number n. */
+  function periodOf(n, g) {
+    const [y, m, d] = dymd(n);
+    let from = n, to = n, label, key;
+    if (g === 'day') { label = dLong(n); key = dIso(n); }
+    else if (g === 'week') { from = n - ((n + 3) % 7 + 7) % 7; to = from + 6; label = 'Week of ' + dLong(from); key = 'w' + dIso(from); }
+    else if (g === 'month') { from = dnum(y, m, 1); to = dnum(y, m + 1, 1) - 1; label = MONTHS_LONG[m] + ' ' + y; key = y + '-' + p2(m + 1); }
+    else if (g === 'quarter') { const q = Math.floor(m / 3); from = dnum(y, q * 3, 1); to = dnum(y, q * 3 + 3, 1) - 1; label = 'Q' + (q + 1) + ' ' + y; key = y + '-Q' + (q + 1); }
+    else { from = dnum(y, 0, 1); to = dnum(y + 1, 0, 1) - 1; label = String(y); key = String(y); }
+    return { grain: g, from, to, label, key };
+  }
+  /** Read a period back from its short key, e.g. 2024-03, 2024-Q1, 2024, 2024-03-05, w2024-03-04. */
+  function periodFromKey(k) {
+    let m;
+    if ((m = /^w(\d{4})-(\d\d)-(\d\d)$/.exec(k))) return periodOf(dnum(+m[1], +m[2] - 1, +m[3]), 'week');
+    if ((m = /^(\d{4})-(\d\d)-(\d\d)$/.exec(k))) return periodOf(dnum(+m[1], +m[2] - 1, +m[3]), 'day');
+    if ((m = /^(\d{4})-Q([1-4])$/.exec(k))) return periodOf(dnum(+m[1], (+m[2] - 1) * 3, 1), 'quarter');
+    if ((m = /^(\d{4})-(\d\d)$/.exec(k))) return periodOf(dnum(+m[1], +m[2] - 1, 1), 'month');
+    if ((m = /^(\d{4})$/.exec(k))) return periodOf(dnum(+m[1], 0, 1), 'year');
+    return null;
+  }
+  const nextStart = (p) => p.to + 1;
+  const barLabel = (p) => {
+    const [y, m, d] = dymd(p.from);
+    return p.grain === 'day' || p.grain === 'week' ? d + ' ' + MONTHS[m] : p.grain === 'month' ? MONTHS[m] + ' ' + String(y).slice(2) : p.grain === 'quarter' ? p.label.replace(/ 20/, ' ') : String(y);
+  };
+
+  /** Plays per day for the whole archive (or one show) as { start: day number, d: [counts] }. */
+  const dailyAll = async () => { const j = await getJSON('daily.json'); return { start: dnumIso(j.start), d: j.d }; };
+  async function dailyShow(slug) {
+    const [j, all] = await Promise.all([getJSON('show_daily.json'), getJSON('daily.json')]);
+    const out = new Array(all.d.length).fill(0), flat = j.shows[slug] || [];
+    for (let i = 0; i < flat.length; i += 2) out[flat[i]] = flat[i + 1];
+    return { start: dnumIso(j.start), d: out };
+  }
+
+  /** Add up every play in [from, to] by fetching only the month files that overlap it. */
+  async function totals(from, to, daily, slug) {
+    const t = new Map(), a = new Map(), s = new Map(), weekday = new Array(7).fill(0), hour = new Array(24).fill(0);
+    let plays = 0;
+    const last = daily.start + daily.d.length - 1;
+    const lo = Math.max(from, daily.start), hi = Math.min(to, last);
+    const files = [];
+    for (let n = lo; n <= hi;) { const [y, m] = dymd(n); files.push([y, m]); n = dnum(y, m + 1, 1); }
+    const shards = await Promise.all(files.map(([y, m]) => getJSON('month/' + y + '-' + p2(m + 1) + '.json').then((j) => [y, m, j], () => null)));
+    for (const sh of shards) {
+      if (!sh) continue;
+      const [y, m, j] = sh, p = j.p;
+      for (let i = 0; i < p.length; i += 4) {
+        const n = dnum(y, m, p[i]);
+        if (n < from || n > to) continue;
+        const sv = j.s[p[i + 2]];
+        if (slug && sv[1] !== slug) continue;
+        const tv = j.t[p[i + 1]], av = tv[0] >= 0 ? j.a[tv[0]] : null;
+        const tk = (av ? av[0] : '') + '\u0001' + tv[1];
+        const te = t.get(tk) || t.set(tk, { r: [av ? av[0] : '', tv[1], 0, av ? av[1] : '', av ? av[2] : ''] }).get(tk);
+        te.r[2]++;
+        if (av) { const ae = a.get(av[0]) || a.set(av[0], { r: [av[0], av[1], av[2], 0] }).get(av[0]); ae.r[3]++; }
+        const se = s.get(sv[1]) || s.set(sv[1], { r: [sv[0], sv[1], 0] }).get(sv[1]);
+        se.r[2]++;
+        weekday[((n + 3) % 7 + 7) % 7]++;
+        hour[p[i + 3]]++;
+        plays++;
+      }
+    }
+    const rank = (m, k) => [...m.values()].map((x) => x.r).sort((x, y) => y[k] - x[k] || String(x[0]).localeCompare(String(y[0])));
+    return { plays, tracks: rank(t, 2), artists: rank(a, 3), shows: rank(s, 2), weekday, hour };
+  }
+
+  /** Buckets of one grain that end at day `end` (at most `n` of them), with the plays in each. */
+  function buckets(daily, grain, end, n) {
+    const last = daily.start + daily.d.length - 1;
+    let p = periodOf(Math.min(end, last), grain);
+    const list = [];
+    while (list.length < n && p.to >= daily.start) { list.unshift(p); p = periodOf(p.from - 1, grain); }
+    return list.map((b) => {
+      let v = 0;
+      for (let d = Math.max(b.from, daily.start); d <= Math.min(b.to, last); d++) v += daily.d[d - daily.start];
+      return { ...b, value: v, tip: b.label, label: barLabel(b) };
+    });
+  }
+
+  /**
+   * The zoom control, the chart and the panel that follows the clicked bar.
+   *   opts.daily: { start, d }       plays per day
+   *   opts.slug: limit everything to one show
+   *   opts.onChange(sel|null): the page can show or hide its all-time sections
+   * Returns { el: controls and chart, panel: the selected period's dashboard, select(key) }.
+   */
+  function explorer(opts) {
+    const daily = opts.daily, last = daily.start + daily.d.length - 1;
+    const st = { grain: opts.grain || 'month', end: opts.end || last, sel: null };
+    const el = h('div', { class: 'explorer' }), panel = h('div', { class: 'selpanel', 'aria-live': 'polite' });
+    const keepUrl = () => {
+      const u = new URL(location.href);
+      st.sel ? u.searchParams.set('period', st.sel.key) : u.searchParams.delete('period');
+      history.replaceState(history.state, '', u);
+    };
+    const half = () => Math.floor(WINDOW[st.grain] / 2);
+    /** The end of the period k periods after (or before, if k is negative) the one containing day n. */
+    const step = (n, k) => { let p = periodOf(n, st.grain); for (let i = 0; i < Math.abs(k); i++) p = periodOf(k > 0 ? p.to + 1 : p.from - 1, st.grain); return p.to; };
+    const reveal = (p) => { st.end = Math.min(last, step(p.to, half())); };
+
+    function pick(p) {
+      st.sel = p; st.grain = p.grain;
+      keepUrl(); drawChart(); drawPanel(); opts.onChange && opts.onChange(p);
+    }
+    function clear() { st.sel = null; keepUrl(); drawChart(); drawPanel(); opts.onChange && opts.onChange(null); }
+
+    function drawChart() {
+      const list = buckets(daily, st.grain, st.end, WINDOW[st.grain]);
+      const first = list[0] ? list[0].from : daily.start, lastB = list.length ? list[list.length - 1].to : last;
+      const inSel = (b) => st.sel && ((b.from >= st.sel.from && b.to <= st.sel.to) || (st.sel.from >= b.from && st.sel.to <= b.to));
+      const chart = barChart({
+        title: 'Tracks played per ' + st.grain + (opts.slug ? ' on this show' : '') + ' (' + dLong(first) + ' to ' + dLong(Math.min(lastB, last)) + ')',
+        filename: (opts.slug || 'plays') + '-per-' + st.grain, unit: 'plays', labelEvery: Math.ceil(list.length / 12),
+        data: list.map((b) => ({ label: b.label, tip: b.tip, value: b.value, sel: inSel(b) })),
+        onPick: (i) => pick(periodOf(list[i].from, st.grain)),
+      });
+      const seg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Zoom: day, week, month, quarter or year' }, GRAINS.map(([g, name]) => h('button', {
+        type: 'button', 'aria-pressed': String(st.grain === g),
+        onclick: () => { st.grain = g; if (st.sel) reveal(st.sel); drawChart(); },
+      }, name)));
+      const nav = h('div', { class: 'seg' },
+        h('button', { type: 'button', disabled: first <= daily.start, onclick: () => { st.end = Math.max(daily.start, step(lastB, -half())); drawChart(); } }, '‹ Earlier'),
+        h('button', { type: 'button', disabled: lastB >= last, onclick: () => { st.end = Math.min(last, step(lastB, half())); drawChart(); } }, 'Later ›'));
+      el.replaceChildren(h('div', { class: 'tools' }, seg, nav, st.sel ? h('button', { type: 'button', onclick: clear }, 'Clear: ' + st.sel.label + ' ×') : h('span', { class: 'meta' }, 'Click a bar to see just that ' + st.grain + '.')), chart);
+    }
+
+    let token = 0;
+    async function drawPanel() {
+      const sel = st.sel, me = ++token;
+      if (!sel) return panel.replaceChildren();
+      panel.replaceChildren(h('p', { class: 'meta' }, 'Loading ' + sel.label + ' ...'));
+      let tot;
+      try { tot = await totals(sel.from, sel.to, daily, opts.slug); } catch (e) { return panel.replaceChildren(h('p', { class: 'note' }, 'That period could not be loaded.')); }
+      if (me !== token) return;
+      const key = (opts.slug || 'all') + '-' + sel.key.replace(/[^0-9A-Za-z-]/g, '');
+      const fin = FINER[sel.grain];
+      const kids = [h('h2', {}, (opts.slug ? '' : 'Everything played in ') + sel.label), h('p', { class: 'meta' }, dLong(sel.from) + (sel.from === sel.to ? '' : ' to ' + dLong(Math.min(sel.to, last))))];
+      kids.push(statStrip([[fmt(tot.plays), 'plays'], [fmt(tot.tracks.length), 'distinct tracks'], [fmt(tot.artists.length), 'artists'], opts.slug ? null : [fmt(tot.shows.length), 'shows']].filter(Boolean)));
+      if (!tot.plays) { kids.push(h('p', { class: 'note' }, 'Nothing was played in this period.')); return panel.replaceChildren(...kids); }
+      if (fin) {
+        const sub = buckets(daily, fin, Math.min(sel.to, last), 400).filter((b) => b.from >= sel.from);
+        kids.push(section('Zoom in: by ' + fin, barChart({
+          title: 'Tracks played per ' + fin + ' in ' + sel.label, filename: key + '-per-' + fin, labelEvery: Math.ceil(sub.length / 14),
+          data: sub.map((b) => ({ label: b.label, tip: b.tip, value: b.value })),
+          onPick: (i) => { st.grain = fin; const p = periodOf(sub[i].from, fin); reveal(p); pick(p); },
+        })));
+      }
+      kids.push(h('div', { class: 'two' },
+        section('Most played tracks', dataTable({ cols: trackCols(), rows: tot.tracks.slice(0, 100), filename: key + '-tracks', sortCol: 2 })),
+        section('Most played artists', dataTable({ cols: artistRowCols, rows: tot.artists.slice(0, 100), filename: key + '-artists', sortCol: 1 }))));
+      if (!opts.slug) kids.push(section('Busiest shows', barList({ filename: key + '-shows', head: ['Show', 'Plays'], items: tot.shows.slice(0, 15).map((s) => ({ label: s[0], value: s[2], href: '#/show/' + s[1] })) })));
+      const wk = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      kids.push(h('div', { class: 'two' },
+        sel.to - sel.from >= 6 ? section('Day of the week', barChart({ title: 'Tracks played by weekday in ' + sel.label, filename: key + '-weekday', data: wk.map((d, i) => ({ label: d, value: tot.weekday[i] })) })) : null,
+        section('Time of day', barChart({ title: 'Tracks played by the hour the programme starts, in ' + sel.label, filename: key + '-hour', data: tot.hour.map((v, i) => ({ label: p2(i), value: v })) }))));
+      panel.replaceChildren(...kids);
+    }
+
+    const fromUrl = opts.useUrl === false ? null : periodFromKey(new URLSearchParams(location.search).get('period') || '');
+    if (fromUrl && fromUrl.to >= daily.start && fromUrl.from <= last) { st.sel = fromUrl; st.grain = fromUrl.grain; reveal(fromUrl); drawChart(); drawPanel(); opts.onChange && opts.onChange(fromUrl); }
+    else drawChart();
+    return { el, panel, select: (key) => { const p = periodFromKey(key); if (p) { st.grain = p.grain; reveal(p); pick(p); } }, clear };
   }
 
   /* ------------------------------------------------------------ small page parts */
@@ -231,7 +427,10 @@
   /* ------------------------------------------------------------ pages */
 
   async function home() {
-    const [meta, win, summary, latest] = await Promise.all([getJSON('meta.json'), getJSON('windows.json'), getJSON('summary.json'), getJSON('latest.json')]);
+    const [meta, win, summary, latest, daily] = await Promise.all([getJSON('meta.json'), getJSON('windows.json'), getJSON('summary.json'), getJSON('latest.json'), dailyAll()]);
+    let allTime = null;
+    const ex = explorer({ daily, grain: 'month', onChange: (sel) => { if (allTime) allTime.hidden = !!sel; } });
+    ex.picked = !!new URLSearchParams(location.search).get('period');
     const lastDay = latest.find((d) => d.episodes.length) || latest[0];
     const wcard = (k, tag) => card({
       tag, title: fmt(win[k].plays) + ' plays', href: '#/most-played/' + k,
@@ -242,13 +441,16 @@
       h('h1', {}, 'Every track played on BBC Radio 6 Music.'),
       h('p', { class: 'lede' }, 'An archive of ' + fmt(meta.plays) + ' plays across ' + fmt(meta.shows) + ' shows, from ' + fmtDate(meta.first_day) + ' to ' + fmtDate(meta.as_of) + '. Updated every day.'),
       statStrip([[fmt(meta.plays), 'plays'], [fmt(meta.tracks), 'distinct tracks'], [fmt(meta.artists), 'artists'], [fmt(meta.shows), 'shows'], [fmt(meta.episodes), 'episodes']]),
+      section('Explore by date', h('p', { class: 'meta' }, 'Zoom by day, week, month, quarter or year, then click a bar: everything below changes to show just that period.'), ex.el),
+      ex.panel,
+      h('div', { class: 'alltime', hidden: !!ex.picked }, ...[
       section('Played recently', h('p', { class: 'meta' }, 'The windows below end on the last day in the data (' + fmtDate(meta.as_of) + '), and are refreshed every day.'),
         h('div', { class: 'grid' }, wcard('today', 'Played on the last day'), wcard('week', 'Played this week'), wcard('month', 'Played this month'), wcard('year', 'Played this year'))),
       section('On the last day', h('p', { class: 'meta' }, lastDay ? fmtDate(lastDay.date) + ' · ' + lastDay.episodes.length + ' episodes with tracklists' : ''),
         h('div', { class: 'grid' }, (lastDay ? lastDay.episodes : []).slice(0, 8).map((e) => card({
           tag: e.time, title: e.show, href: '#/show/' + e.slug, lines: [e.title, fmt(e.tracks.length) + ' tracks'],
         }))), h('p', {}, h('a', { class: 'more', href: '#/latest' }, 'All episodes and tracklists from the last 7 days'))),
-      section('Plays per year', barChart({ title: 'Tracks played per year', filename: 'plays-per-year', data: summary.by_year.map((y) => ({ label: String(y[0]), value: y[1] })), labelEvery: 2 })),
+      section('Plays per year', barChart({ title: 'Tracks played per year', filename: 'plays-per-year', data: summary.by_year.map((y) => ({ label: String(y[0]), value: y[1] })), labelEvery: 2, onPick: (i) => ex.select(String(summary.by_year[i][0])) })),
       h('div', { class: 'two' },
         section('Busiest shows', barList({ filename: 'top-shows', head: ['Show', 'Plays'], items: summary.top_shows.slice(0, 15).map((s) => ({ label: s[0], value: s[2], href: '#/show/' + s[1] })) })),
         section('Day of the week', barChart({ title: 'Tracks played by weekday', filename: 'plays-by-weekday', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d, i) => ({ label: d, value: summary.weekday[i] })) }))),
@@ -256,7 +458,8 @@
       NOGENRES ? null : section('Genres (from MusicBrainz, use with care)',
         h('p', { class: 'note' }, 'Genre labels come from MusicBrainz user tags, and only about ' + summary.genre_coverage_pct + '% of plays belong to an artist that has one. Treat these as a rough guide. Every artist page links to its MusicBrainz entry, so you can check or improve it.'),
         barList({ filename: 'plays-by-genre', head: ['Genre group', 'Plays'], items: summary.genre_buckets.slice(0, 18).map((g) => ({ label: g[0], value: g[1] })) })),
-    );
+    ]));
+    allTime = main.querySelector('.alltime');
   }
 
   const playedTabs = [['#/most-played/today', 'Last day', 'today'], ['#/most-played/week', 'This week', 'week'], ['#/most-played/month', 'This month', 'month'], ['#/most-played/year', 'This year', 'year'], ['#/most-played/all', 'All time', 'all'], ['#/crate-dive', 'Least played', 'least']];
@@ -286,8 +489,8 @@
     setPage('Crate dive: tracks and artists played only once', h('h1', {}, 'Crate dive'), tabs(playedTabs, 'least'),
       h('p', { class: 'lede' }, fmt(total) + ' tracks in the archive have been played exactly once. Here they are, year by year: the deepest cuts to reach 6 Music.'),
       h('p', { class: 'note' }, 'A one-off is a track, or an artist, with a single play in the whole archive. Recent years score higher because new tracks have had less time to be played again, and tracklists before about 2010 are incomplete.'),
-      barChart({ title: 'Tracks played only once, by year', filename: 'played-once-tracks-by-year', unit: 'tracks', data: list.map((r) => ({ label: String(r.year), value: r.once_tracks })), labelEvery: 1 }),
-      barChart({ title: 'Artists played only once, by year', filename: 'played-once-artists-by-year', unit: 'artists', data: list.map((r) => ({ label: String(r.year), value: r.once_artists })), labelEvery: 1 }),
+      barChart({ title: 'Tracks played only once, by year', filename: 'played-once-tracks-by-year', unit: 'tracks', data: list.map((r) => ({ label: String(r.year), value: r.once_tracks })), labelEvery: 1, onPick: (i) => go(toPath('#/crate-dive/' + list[i].year)) }),
+      barChart({ title: 'Artists played only once, by year', filename: 'played-once-artists-by-year', unit: 'artists', data: list.map((r) => ({ label: String(r.year), value: r.once_artists })), labelEvery: 1, onPick: (i) => go(toPath('#/crate-dive/' + list[i].year)) }),
       section('Choose a year', h('div', { class: 'grid' }, [...list].reverse().map((r) => card({ tag: String(r.year), title: fmt(r.once_tracks) + ' one-off tracks', href: '#/crate-dive/' + r.year, lines: [fmt(r.once_artists) + ' one-off artists', pct(r.once_tracks, r.tracks) + ' of the tracks played that year'], more: ['#/crate-dive/' + r.year, 'Dive into ' + r.year] })))),
       section('Table', dataTable({
         cols: [{ label: 'Year', value: (r) => r.year, cell: (r) => h('a', { href: '#/crate-dive/' + r.year }, String(r.year)) }, { label: 'One-off tracks', value: (r) => r.once_tracks, num: true }, { label: 'Of all tracks', value: (r) => (r.tracks ? r.once_tracks / r.tracks : 0), cell: (r) => pct(r.once_tracks, r.tracks), num: true }, { label: 'One-off artists', value: (r) => r.once_artists, num: true }, { label: 'Of all artists', value: (r) => (r.artists ? r.once_artists / r.artists : 0), cell: (r) => pct(r.once_artists, r.artists), num: true }],
@@ -340,13 +543,18 @@
   }
 
   async function show(slug) {
-    const s = await getJSON('shows/' + encodeURIComponent(slug) + '.json');
+    const [s, daily] = await Promise.all([getJSON('shows/' + encodeURIComponent(slug) + '.json'), dailyShow(slug)]);
+    let allShow = null;
+    const ex = explorer({ daily, slug, grain: 'month', onChange: (sel) => { if (allShow) allShow.hidden = !!sel; } });
     setPage(s.name, h('p', { class: 'tag' }, h('a', { href: '#/shows' }, 'Shows')), h('h1', {}, s.name),
       h('p', { class: 'lede' }, fmt(s.plays) + ' plays · ' + fmt(s.episodes) + ' episodes with tracklists · ' + fmtDate(s.first) + ' to ' + fmtDate(s.last)),
+      section('Zoom in on this show', h('p', { class: 'meta' }, 'Choose day, week, month, quarter or year, then click a bar to see what this show played in that period.'), ex.el), ex.panel,
+      h('div', { class: 'alltime', hidden: !!new URLSearchParams(location.search).get('period') }, ...[
       section('Most played artists', dataTable({ cols: artistRowCols, rows: s.top_artists, filename: slug + '-top-artists', sortCol: 1, rank: true })),
       section('Every song played on this show', playlistTools(slug, s.tracks.map((r) => [r[0], r[1]])), dataTable({ cols: trackCols(), rows: s.tracks, filename: slug + '-all-songs', sortCol: 2 })),
       section('Latest episodes', s.recent.map((e) => h('details', {}, h('summary', {}, fmtDate(e.date) + ' ' + e.time + '  ', h('span', { class: 'meta' }, e.title + ' · ' + e.tracks.length + ' tracks')),
-        epTracks(e), h('p', {}, bbcEpisode(e.pid)), playlistTools(slug + '-' + e.date, e.tracks.map((t) => [t[0], t[1]]))))));
+        epTracks(e), h('p', {}, bbcEpisode(e.pid)), playlistTools(slug + '-' + e.date, e.tracks.map((t) => [t[0], t[1]])))))]));
+    allShow = main.querySelector('.alltime');
   }
 
   const LETTERS = '0abcdefghijklmnopqrstuvwxyz'.split('');
@@ -402,14 +610,20 @@
     if (y) {
       const e = list.find((x) => String(x.year) === String(y));
       if (!e) return notFound();
-      return setPage(String(y), h('p', { class: 'tag' }, h('a', { href: '#/years' }, 'Years')), h('h1', {}, String(y)),
+      const daily = await dailyAll();
+      let allYear = null;
+      const ex = explorer({ daily, grain: 'month', end: Math.min(daily.start + daily.d.length - 1, dnum(+y, 11, 31)), onChange: (sel) => { if (allYear) allYear.hidden = !!sel; } });
+      setPage(String(y), h('p', { class: 'tag' }, h('a', { href: '#/years' }, 'Years')), h('h1', {}, String(y)),
         h('p', { class: 'lede' }, fmt(e.plays) + ' plays · ' + fmt(e.episodes) + ' episodes · ' + fmt(e.artists) + ' different artists'),
-        h('div', { class: 'two' },
-          section('Most played tracks', dataTable({ cols: trackCols(), rows: e.tracks, filename: 'tracks-' + y, sortCol: 2 })),
-          section('Most played artists', dataTable({ cols: artistRowCols, rows: e.top_artists, filename: 'artists-' + y, sortCol: 1 }))));
+        section('Zoom in on ' + y, h('p', { class: 'meta' }, 'Choose day, week, month, quarter or year, then click a bar to see just that period.'), ex.el), ex.panel,
+        h('div', { class: 'two alltime', hidden: !!new URLSearchParams(location.search).get('period') },
+          section('Most played tracks in ' + y, dataTable({ cols: trackCols(), rows: e.tracks, filename: 'tracks-' + y, sortCol: 2 })),
+          section('Most played artists in ' + y, dataTable({ cols: artistRowCols, rows: e.top_artists, filename: 'artists-' + y, sortCol: 1 }))));
+      allYear = main.querySelector('.alltime');
+      return;
     }
     setPage('Years', h('h1', {}, 'Years'), h('p', { class: 'lede' }, 'Tracklists begin in mid-2008 and are complete from about 2010.'),
-      barChart({ title: 'Tracks played per year', filename: 'plays-per-year', data: summary.by_year.map((r) => ({ label: String(r[0]), value: r[1] })), labelEvery: 1 }),
+      barChart({ title: 'Tracks played per year', filename: 'plays-per-year', data: summary.by_year.map((r) => ({ label: String(r[0]), value: r[1] })), labelEvery: 1, onPick: (i) => go(toPath('#/year/' + summary.by_year[i][0])) }),
       section('Choose a year', h('div', { class: 'grid' }, [...list].reverse().map((e) => card({ tag: String(e.year), title: fmt(e.plays) + ' plays', href: '#/year/' + e.year, lines: [fmt(e.episodes) + ' episodes · ' + fmt(e.artists) + ' artists'], list: e.tracks.slice(0, 3).map(trackItem), more: ['#/year/' + e.year, 'Top 100 of ' + e.year] })))),
       section('Table', dataTable({ cols: [{ label: 'Year', value: (r) => r[0] }, { label: 'Plays', value: (r) => r[1], num: true }, { label: 'Episodes', value: (r) => r[2], num: true }, { label: 'Different artists', value: (r) => r[3], num: true }], rows: summary.by_year, filename: 'years', rank: false, sortCol: 0, sortDir: 'desc' })));
   }
