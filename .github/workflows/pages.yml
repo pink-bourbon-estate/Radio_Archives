@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.second.outputs.page_url || steps.first.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -129,5 +129,19 @@ jobs:
         with:
           path: public
 
-      - id: deployment
+      # GitHub sometimes cannot find the freshly uploaded site for a few seconds and the deploy fails
+      # with "No artifacts named github-pages". Wait a little, and try once more if it still does.
+      - name: Let the upload settle
+        run: sleep 20
+
+      - id: first
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Wait before retrying the deploy
+        if: steps.first.outcome == 'failure'
+        run: sleep 60
+
+      - id: second
+        if: steps.first.outcome == 'failure'
         uses: actions/deploy-pages@v4
