@@ -721,6 +721,30 @@
     });
     return btn;
   }
+  /** Most played tracks as a playlist file in Tune My Music's own format (Track name, Artist name, Album, Playlist name). */
+  function playlistFileButton(url, count) {
+    const label = count ? 'Top ' + fmt(count) : 'All, in lists of 10,000';
+    const btn = h('button', { type: 'button' }, label);
+    btn.addEventListener('click', async () => {
+      if (btn.dataset.busy) return;
+      btn.dataset.busy = '1';
+      try {
+        btn.textContent = 'Loading';
+        const rows = parseCSV(await (await fetch(url)).text());
+        const head = rows.shift(), col = (n) => head.indexOf(n);
+        const [ia, it, ib, ip] = [col('Artist'), col('Title'), col('Album'), col('Plays')];
+        rows.sort((x, y) => (+y[ip] || 0) - (+x[ip] || 0));
+        const list = (count ? rows.slice(0, count) : rows).filter((r) => r[ia] && r[it]);
+        const per = count || 10000, name = (i) => count ? 'BBC 6 Music top ' + fmt(count) : 'BBC 6 Music most played ' + String(i + 1).padStart(2, '0');
+        const out = list.map((r, i) => [r[it], r[ia], r[ib] || '', name(Math.floor(i / per))]);
+        saveBlob(count ? 'bbc6-top-' + count + '-playlist.csv' : 'bbc6-all-playlists.csv', new Blob([toCSV(['Track name', 'Artist name', 'Album', 'Playlist name'], out)], { type: 'text/csv;charset=utf-8' }));
+        btn.textContent = 'Saved ✓';
+      } catch (err) { btn.textContent = 'Could not load'; }
+      delete btn.dataset.busy;
+      setTimeout(() => { btn.textContent = label; }, 4000);
+    });
+    return btn;
+  }
   const fileButtons = (url, name) => h('span', { class: 'btnrow' }, fileButton(url, name, 'csv'), ' ', fileButton(url, name, 'txt'), ' ', fileButton(url, name, 'html'));
 
   async function downloads() {
@@ -748,6 +772,9 @@
           h('tbody', {}, files.map((f) => h('tr', {}, h('td', {}, h('code', {}, f[0])), h('td', {}, f[1]), h('td', {}, f[2]), h('td', {}, fileButtons(raw(f[0]), f[0])))),
             h('tr', {}, h('td', {}, h('code', {}, 'plays_YYYY.csv.gz')), h('td', {}, 'The full play-by-play record, one file per year (the source of all the others)'), h('td', {}, '4-6 MB each'), h('td', {}, h('a', { class: 'btn', href: REPO + '/tree/main/data/plays', rel: 'noopener' }, 'Browse'))),
             h('tr', {}, h('td', {}, h('code', {}, 'data-latest')), h('td', {}, 'The same CSV files, gzipped and rebuilt daily with the newest plays included (as of ' + fmtDate(meta.as_of) + ')'), h('td', {}, 'gzipped'), h('td', {}, h('a', { class: 'btn', href: REPO + '/releases/tag/data-latest', rel: 'noopener' }, 'Latest data'))))))),
+      section('Playlist for Tune My Music', h('p', {}, 'Tune My Music needs a file with the columns Track name, Artist name and Playlist name, so the dataset files above will not import. These make that file from the most played tracks, ready to upload at ', h('a', { href: 'https://www.tunemymusic.com/', rel: 'noopener noreferrer' }, 'tunemymusic.com'), ' (choose Upload file as the source). Its free plan is small, so start with the top 500.'),
+        h('p', { class: 'btnrow' }, ...[500, 1000, 5000, 10000, 0].flatMap((n) => [playlistFileButton(raw('tracks_unique.csv'), n), ' '])),
+        h('p', { class: 'meta' }, 'The last one splits every track into playlists of 10,000, which is Spotify\'s limit.')),
       section('Download a chart', h('p', {}, 'Every table and chart on this site has CSV and TXT buttons that download exactly what is on screen, sorted and filtered the way you have it. For example:'),
         h('ul', {}, h('li', {}, h('a', { href: '#/most-played/week' }, 'Most played this week')), h('li', {}, h('a', { href: '#/most-played/all' }, 'Most played of all time')), h('li', {}, h('a', { href: '#/years' }, 'Plays per year, and a top 100 for each year')), h('li', {}, h('a', { href: '#/shows' }, 'Every show; open one for a playlist of everything it has played')))),
       section('Playlists', h('p', {}, 'Each show page has a table of every song it has played with a CSV download, ready to import into a playlist-converter service. Use the Playlist CSV button on a show or episode page for that: it already has the column names Tune My Music expects (Track name, Artist name, Playlist name). The big dataset files above are for analysis; they are far too large for a converter, and the programme file has some rows with no show name. The command-line program in the source code can also write per-show and per-genre playlist files.')),
