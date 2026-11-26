@@ -105,9 +105,11 @@
   function downloadButtons(filename, getData) {
     const go = (kind) => () => {
       const { head, rows } = getData();
-      kind === 'csv' ? saveFile(filename + '.csv', toCSV(head, rows), 'text/csv') : saveFile(filename + '.txt', toTXT(head, rows), 'text/plain');
+      if (kind === 'csv') saveFile(filename + '.csv', toCSV(head, rows), 'text/csv');
+      else if (kind === 'txt') saveFile(filename + '.txt', toTXT(head, rows), 'text/plain');
+      else saveBlob(filename + '.html', new Blob(csvToHTMLParts(toCSV(head, rows), filename), { type: 'text/html;charset=utf-8' }));
     };
-    return [h('button', { type: 'button', onclick: go('csv'), 'aria-label': 'Download this table as CSV' }, 'CSV'), h('button', { type: 'button', onclick: go('txt'), 'aria-label': 'Download this table as text' }, 'TXT')];
+    return ['csv', 'txt', 'html'].map((k) => h('button', { type: 'button', onclick: go(k), 'aria-label': 'Download this table as ' + k.toUpperCase() }, k.toUpperCase()));
   }
 
   /* ------------------------------------------------------------ table */
@@ -664,9 +666,21 @@
   /** Tab-separated plain text, one line per row: opens in any text editor and pastes into a spreadsheet. */
   const csvToTXT = (text) => parseCSV(text).map((r) => r.map((c) => c.replace(/[\t\r\n]+/g, ' ')).join('\t')).join('\n') + '\n';
 
+  /** A standalone web page holding the whole file as a table, built in pieces so a big file does not need one giant string. */
+  function csvToHTMLParts(text, title) {
+    const esc = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const rows = parseCSV(text), parts = [];
+    parts.push('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(title) + '</title><style>body{font:14px/1.4 system-ui,sans-serif;margin:16px}table{border-collapse:collapse}th,td{border:1px solid #bbb;padding:3px 8px;text-align:left;vertical-align:top}th{background:#eee;position:sticky;top:0}</style></head><body><h1>' + esc(title) + '</h1><table>');
+    for (let i = 0; i < rows.length; i += 5000) {
+      parts.push(rows.slice(i, i + 5000).map((r, j) => '<tr>' + r.map((c) => (i + j === 0 ? '<th>' : '<td>') + esc(c) + (i + j === 0 ? '</th>' : '</td>')).join('') + '</tr>').join('\n') + '\n');
+    }
+    parts.push('</table></body></html>');
+    return parts;
+  }
+
   /** A button that fetches a data file and saves it to the computer (as .csv, or converted to .txt) instead of opening it in a tab. */
   function fileButton(url, name, kind = 'csv') {
-    const label = kind === 'txt' ? 'TXT' : 'CSV';
+    const label = kind === 'txt' ? 'TXT' : kind === 'html' ? 'HTML' : 'CSV';
     const btn = h('a', { class: 'btn', href: url, download: name, rel: 'noopener', 'aria-label': 'Download ' + name + ' as ' + label }, label);
     btn.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -684,7 +698,12 @@
           parts.push(value); got += value.length;
           btn.textContent = total ? Math.round((got / total) * 100) + '%' : Math.round(got / 1048576) + ' MB';
         } else parts.push(await res.blob());
-        if (kind === 'txt') {
+        if (kind === 'html') {
+          btn.textContent = 'Converting';
+          await new Promise((r) => setTimeout(r, 30));
+          const text = await new Blob(parts).text();
+          saveBlob(name.replace(/\.csv$/i, '') + '.html', new Blob(csvToHTMLParts(text, name.replace(/\.csv$/i, '')), { type: 'text/html;charset=utf-8' }));
+        } else if (kind === 'txt') {
           btn.textContent = 'Converting';
           await new Promise((r) => setTimeout(r, 30));
           const text = await new Blob(parts).text();
@@ -700,7 +719,7 @@
     });
     return btn;
   }
-  const fileButtons = (url, name) => h('span', { class: 'btnrow' }, fileButton(url, name, 'csv'), ' ', fileButton(url, name, 'txt'));
+  const fileButtons = (url, name) => h('span', { class: 'btnrow' }, fileButton(url, name, 'csv'), ' ', fileButton(url, name, 'txt'), ' ', fileButton(url, name, 'html'));
 
   async function downloads() {
     const meta = await getJSON('meta.json');
