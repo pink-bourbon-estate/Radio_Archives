@@ -21,7 +21,7 @@ follows the API rules exactly; the decision is the same as for Jazz FM (docs/JAZ
 stated in the README.
 
 Every lookup is written to catalogue/data/musicbrainz_lookups.tsv so it is never repeated
-needlessly. Usage: tools/musicbrainz.py [--bbc6 DIR] [--max N] [--offline] [--artists FILE --log FILE]
+needlessly. Usage: tools/musicbrainz.py [--bbc6 DIR] [--max N] [--minutes M] [--offline] [--artists FILE --log FILE]
 """
 import csv, glob, json, os, re, sys, time, unicodedata, urllib.parse, urllib.request, urllib.robotparser
 from datetime import date, timedelta
@@ -152,7 +152,13 @@ def main(argv):
         counts = {}
         last = 0.0
         failures = 0
+        # Stop on time as well as on count: when MusicBrainz is slowing us down the run must still end
+        # in time to save what it found, rather than being cut off by the workflow's time limit.
+        deadline = time.time() + 60 * float(argv[argv.index("--minutes") + 1]) if "--minutes" in argv else None
         for a in todo[:limit]:
+            if deadline and time.time() > deadline:
+                print("  time budget used up; the rest waits for the next run")
+                break
             wait = GAP - (time.time() - last)
             if wait > 0:
                 time.sleep(wait)
