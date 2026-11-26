@@ -777,6 +777,56 @@
     if (source === 'plays') { box.textContent = 'Loading ...'; load().then((l) => draw(l.length), () => { box.textContent = ''; }); } else draw(0);
     return section('Playlist for Tune My Music', h('p', {}, 'Pick a size and upload the file at ', h('a', { href: 'https://www.tunemymusic.com/', rel: 'noopener noreferrer' }, 'tunemymusic.com'), ' (choose Upload file as the source).'), box);
   }
+  /** Files worked out in the browser from a one-row-per-play file: distinct tracks, distinct artists, and tracks by programme. */
+  const DERIVED = {
+    'tracks_unique.csv': (rows) => {
+      const m = new Map();
+      for (const r of rows) { const k = r.artist + '\u0001' + r.title, e = m.get(k); if (e) { e.n++; if (r.date < e.first) e.first = r.date; if (r.date > e.last) e.last = r.date; } else m.set(k, { artist: r.artist, title: r.title, n: 1, first: r.date, last: r.date, id: r.id }); }
+      return [['Artist', 'Title', 'Plays', 'First played', 'Last played', 'MusicBrainzArtistID'], ...[...m.values()].sort((a, b) => b.n - a.n || a.artist.localeCompare(b.artist)).map((e) => [e.artist, e.title, e.n, e.first, e.last, e.id])];
+    },
+    'tracks_by_programme.csv': (rows) => {
+      const m = new Map();
+      for (const r of rows) { const k = r.show + '\u0001' + r.artist + '\u0001' + r.title, e = m.get(k); e ? e.n++ : m.set(k, { show: r.show, artist: r.artist, title: r.title, n: 1 }); }
+      return [['Show', 'Artist', 'Title', 'Plays'], ...[...m.values()].sort((a, b) => a.show.localeCompare(b.show) || b.n - a.n || a.artist.localeCompare(b.artist)).map((e) => [e.show, e.artist, e.title, e.n])];
+    },
+    'artists_unique.csv': (rows) => {
+      const m = new Map();
+      for (const r of rows) { const e = m.get(r.artist) || m.set(r.artist, { artist: r.artist, n: 0, t: new Set(), id: r.id }).get(r.artist); e.n++; e.t.add(r.title); }
+      return [['Artist', 'Plays', 'Distinct tracks', 'MusicBrainzArtistID'], ...[...m.values()].sort((a, b) => b.n - a.n || a.artist.localeCompare(b.artist)).map((e) => [e.artist, e.n, e.t.size, e.id])];
+    },
+  };
+  /** Read a one-row-per-play CSV, whatever its column names or case, into plain objects. */
+  function playRows(text) {
+    const rows = parseCSV(text), head = rows.shift().map((x) => x.trim().toLowerCase());
+    const at = (...names) => { for (const n of names) if (head.indexOf(n) >= 0) return head.indexOf(n); return -1; };
+    const [ia, it, is, id, ii] = [at('artist'), at('title'), at('show'), at('date', 'played_at_utc'), at('musicbrainzartistid', 'artist_musicbrainz_id')];
+    return rows.filter((r) => r[ia] && r[it]).map((r) => ({ artist: r[ia], title: r[it], show: is >= 0 ? r[is] : '', date: id >= 0 ? r[id].slice(0, 10) : '', id: ii >= 0 ? r[ii] : '' }));
+  }
+  /** CSV, TXT and HTML buttons for a file worked out from the plays file. */
+  function derivedButtons(url, name) {
+    const mk = (kind) => {
+      const label = kind.toUpperCase(), btn = h('button', { type: 'button', 'aria-label': 'Download ' + name + ' as ' + label }, label);
+      btn.addEventListener('click', async () => {
+        if (btn.dataset.busy) return;
+        btn.dataset.busy = '1';
+        try {
+          btn.textContent = 'Working';
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const csv = toCSV(...(([head, ...body]) => [head, body])(DERIVED[name](playRows(await res.text()))));
+          const base = name.replace(/\.csv$/, '');
+          if (kind === 'csv') saveBlob(name, new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+          else if (kind === 'txt') saveBlob(base + '.txt', new Blob([csvToTXT(csv)], { type: 'text/plain;charset=utf-8' }));
+          else saveBlob(base + '.html', new Blob(csvToHTMLParts(csv, base), { type: 'text/html;charset=utf-8' }));
+          btn.textContent = 'Saved ✓';
+        } catch (err) { btn.textContent = 'Could not load'; }
+        delete btn.dataset.busy;
+        setTimeout(() => { btn.textContent = label; }, 4000);
+      });
+      return btn;
+    };
+    return h('span', { class: 'btnrow' }, mk('csv'), ' ', mk('txt'), ' ', mk('html'));
+  }
   const fileButtons = (url, name) => h('span', { class: 'btnrow' }, fileButton(url, name, 'csv'), ' ', fileButton(url, name, 'txt'), ' ', fileButton(url, name, 'html'));
 
   async function downloads() {
@@ -785,7 +835,13 @@
     if (ONLYFILE) {
       return setPage('Downloads', h('h1', {}, 'Downloads'),
         h('p', { class: 'lede' }, 'Every play is in one plain CSV file, free to use for personal, non-commercial purposes (as of ' + fmtDate(meta.as_of) + ').'),
-        section('The dataset', h('p', {}, fileButtons(BASE + ONLYFILE, ONLYFILE))),
+        section('The dataset',
+          h('div', { class: 'tablewrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['File', 'What it is', ''].map((t) => h('th', { scope: 'col' }, t)))),
+            h('tbody', {},
+              h('tr', {}, h('td', {}, h('code', {}, ONLYFILE)), h('td', {}, 'Every play, one row each, with the time, show, artist and title'), h('td', {}, fileButtons(BASE + ONLYFILE, ONLYFILE))),
+              h('tr', {}, h('td', {}, h('code', {}, 'tracks_unique.csv')), h('td', {}, 'Every distinct track with its plays, first and last played'), h('td', {}, derivedButtons(BASE + ONLYFILE, 'tracks_unique.csv'))),
+              h('tr', {}, h('td', {}, h('code', {}, 'tracks_by_programme.csv')), h('td', {}, 'What every show has played, with play counts'), h('td', {}, derivedButtons(BASE + ONLYFILE, 'tracks_by_programme.csv'))),
+              h('tr', {}, h('td', {}, h('code', {}, 'artists_unique.csv')), h('td', {}, 'Every artist with total plays and distinct tracks'), h('td', {}, derivedButtons(BASE + ONLYFILE, 'artists_unique.csv'))))))),
         playlistSection(BASE + ONLYFILE, 'plays'),
         section('Download a chart', h('p', {}, 'Every table and chart on this site has CSV and TXT buttons that download exactly what is on screen. For example:'),
           h('ul', {}, h('li', {}, h('a', { href: '#/most-played/week' }, 'Most played this week')), h('li', {}, h('a', { href: '#/most-played/all' }, 'Most played of all time')), h('li', {}, h('a', { href: '#/years' }, 'Plays per year, and a top 100 for each year')), h('li', {}, h('a', { href: '#/shows' }, 'Every show; open one for a playlist of everything it has played')))));
