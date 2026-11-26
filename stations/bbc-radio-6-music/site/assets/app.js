@@ -71,9 +71,11 @@
   const bbcEpisode = (pid) => (pid ? h('a', { href: 'https://www.bbc.co.uk/programmes/' + encodeURIComponent(pid), rel: 'noopener' }, 'This episode on the BBC') : null);
   /** A playlist download (artist, title) plus links to the transfer services that can import it. */
   function playlistTools(name, pairs) {
-    const get = () => ({ head: ['Artist', 'Title'], rows: pairs });
+    // Tune My Music's own column names, with the playlist name on every row (it reads rows without one as "playlist not found").
+    const get = () => ({ head: ['Track name', 'Artist name', 'Playlist name'], rows: pairs.map((p) => [p[1], p[0], name]) });
+    const save = () => { const d = get(); saveBlob(name + '-playlist.csv', new Blob([toCSV(d.head, d.rows)], { type: 'text/csv;charset=utf-8' })); };
     return h('p', { class: 'playlist' },
-      h('button', { type: 'button', onclick: () => saveFile(name + '-playlist.csv', toCSV(get().head, get().rows), 'text/csv'), 'aria-label': 'Download this tracklist as a playlist CSV' }, 'Playlist CSV'),
+      h('button', { type: 'button', onclick: save, 'aria-label': 'Download this tracklist as a playlist CSV' }, 'Playlist CSV'),
       ' then import it at ', h('a', { href: 'https://www.tunemymusic.com/', rel: 'noopener noreferrer' }, 'Tune My Music'), ' or ', h('a', { href: 'https://soundiiz.com/', rel: 'noopener noreferrer' }, 'Soundiiz'),
       ' to make a playlist in the service you use.');
   }
@@ -748,7 +750,7 @@
             h('tr', {}, h('td', {}, h('code', {}, 'data-latest')), h('td', {}, 'The same CSV files, gzipped and rebuilt daily with the newest plays included (as of ' + fmtDate(meta.as_of) + ')'), h('td', {}, 'gzipped'), h('td', {}, h('a', { class: 'btn', href: REPO + '/releases/tag/data-latest', rel: 'noopener' }, 'Latest data'))))))),
       section('Download a chart', h('p', {}, 'Every table and chart on this site has CSV and TXT buttons that download exactly what is on screen, sorted and filtered the way you have it. For example:'),
         h('ul', {}, h('li', {}, h('a', { href: '#/most-played/week' }, 'Most played this week')), h('li', {}, h('a', { href: '#/most-played/all' }, 'Most played of all time')), h('li', {}, h('a', { href: '#/years' }, 'Plays per year, and a top 100 for each year')), h('li', {}, h('a', { href: '#/shows' }, 'Every show; open one for a playlist of everything it has played')))),
-      section('Playlists', h('p', {}, 'Each show page has a table of every song it has played with a CSV download, ready to import into a playlist-converter service. The command-line program in the source code can also write per-show and per-genre playlist files.')),
+      section('Playlists', h('p', {}, 'Each show page has a table of every song it has played with a CSV download, ready to import into a playlist-converter service. Use the Playlist CSV button on a show or episode page for that: it already has the column names Tune My Music expects (Track name, Artist name, Playlist name). The big dataset files above are for analysis; they are far too large for a converter, and the programme file has some rows with no show name. The command-line program in the source code can also write per-show and per-genre playlist files.')),
       section('Licence and credit', h('p', { class: 'prose' }, 'Tracklist facts originate with the BBC. Artist IDs, countries and dates are MusicBrainz core data (CC0). MusicBrainz genre and tag data is CC BY-NC-SA 3.0: please credit MusicBrainz, use it non-commercially and share alike. The code is MIT licensed.')));
   }
 
