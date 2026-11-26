@@ -646,12 +646,31 @@
       h('p', { class: 'meta' }, 'Searching tracks: use the filter box on any table, for example on the all-time most played page.'));
   }
 
-  /** A button that fetches a file and saves it to the computer, instead of opening it in a new tab. */
-  function fileButton(url, name) {
-    const btn = h('a', { class: 'btn', href: url, download: name, rel: 'noopener' }, 'Download');
+  /** Split CSV text into rows of fields (handles quotes, doubled quotes and line breaks inside quotes). */
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], f = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) { if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"') q = true;
+      else if (c === ',') { row.push(f); f = ''; }
+      else if (c === '\n') { row.push(f); rows.push(row); row = []; f = ''; }
+      else if (c !== '\r') f += c;
+    }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows;
+  }
+  /** Tab-separated plain text, one line per row: opens in any text editor and pastes into a spreadsheet. */
+  const csvToTXT = (text) => parseCSV(text).map((r) => r.map((c) => c.replace(/[\t\r\n]+/g, ' ')).join('\t')).join('\n') + '\n';
+
+  /** A button that fetches a data file and saves it to the computer (as .csv, or converted to .txt) instead of opening it in a tab. */
+  function fileButton(url, name, kind = 'csv') {
+    const label = kind === 'txt' ? 'TXT' : 'CSV';
+    const btn = h('a', { class: 'btn', href: url, download: name, rel: 'noopener', 'aria-label': 'Download ' + name + ' as ' + label }, label);
     btn.addEventListener('click', async (e) => {
-      if (btn.dataset.busy) return e.preventDefault();
       e.preventDefault();
+      if (btn.dataset.busy) return;
       btn.dataset.busy = '1';
       try {
         const res = await fetch(url);
@@ -663,20 +682,25 @@
           const { done, value } = await rd.read();
           if (done) break;
           parts.push(value); got += value.length;
-          btn.textContent = total ? 'Downloading ' + Math.round((got / total) * 100) + '%' : 'Downloading ' + Math.round(got / 1048576) + ' MB';
+          btn.textContent = total ? Math.round((got / total) * 100) + '%' : Math.round(got / 1048576) + ' MB';
         } else parts.push(await res.blob());
-        saveBlob(name, new Blob(parts, { type: 'application/octet-stream' }));
-        btn.textContent = 'Downloaded ✓';
+        if (kind === 'txt') {
+          btn.textContent = 'Converting';
+          await new Promise((r) => setTimeout(r, 30));
+          const text = await new Blob(parts).text();
+          saveBlob(name.replace(/\.csv$/i, '') + '.txt', new Blob([csvToTXT(text)], { type: 'text/plain;charset=utf-8' }));
+        } else saveBlob(name, new Blob(parts, { type: 'text/csv' }));
+        btn.textContent = 'Saved ✓';
       } catch (err) {
-        // If the browser will not let the page fetch it, fall back to opening the file directly.
-        btn.textContent = 'Download';
+        // If the browser will not let the page fetch the file, open it directly instead.
         window.location.href = url;
       }
       delete btn.dataset.busy;
-      setTimeout(() => { btn.textContent = 'Download'; }, 4000);
+      setTimeout(() => { btn.textContent = label; }, 4000);
     });
     return btn;
   }
+  const fileButtons = (url, name) => h('span', { class: 'btnrow' }, fileButton(url, name, 'csv'), ' ', fileButton(url, name, 'txt'));
 
   async function downloads() {
     const meta = await getJSON('meta.json');
@@ -684,7 +708,7 @@
     if (ONLYFILE) {
       return setPage('Downloads', h('h1', {}, 'Downloads'),
         h('p', { class: 'lede' }, 'Every play is in one plain CSV file, free to use for personal, non-commercial purposes (as of ' + fmtDate(meta.as_of) + ').'),
-        section('The dataset', h('p', {}, fileButton(BASE + ONLYFILE, ONLYFILE))),
+        section('The dataset', h('p', {}, fileButtons(BASE + ONLYFILE, ONLYFILE))),
         section('Download a chart', h('p', {}, 'Every table and chart on this site has CSV and TXT buttons that download exactly what is on screen. For example:'),
           h('ul', {}, h('li', {}, h('a', { href: '#/most-played/week' }, 'Most played this week')), h('li', {}, h('a', { href: '#/most-played/all' }, 'Most played of all time')), h('li', {}, h('a', { href: '#/years' }, 'Plays per year, and a top 100 for each year')), h('li', {}, h('a', { href: '#/shows' }, 'Every show; open one for a playlist of everything it has played')))));
     }
@@ -700,7 +724,7 @@
       h('p', { class: 'lede' }, 'The whole dataset is plain CSV and free to use for personal, non-commercial purposes. The files below are a snapshot; the newest plays are in the data release and the website tables.'),
       section('The dataset',
         h('div', { class: 'tablewrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['File', 'What it is', 'Size', ''].map((t) => h('th', { scope: 'col' }, t)))),
-          h('tbody', {}, files.map((f) => h('tr', {}, h('td', {}, h('code', {}, f[0])), h('td', {}, f[1]), h('td', {}, f[2]), h('td', {}, fileButton(raw(f[0]), f[0])))),
+          h('tbody', {}, files.map((f) => h('tr', {}, h('td', {}, h('code', {}, f[0])), h('td', {}, f[1]), h('td', {}, f[2]), h('td', {}, fileButtons(raw(f[0]), f[0])))),
             h('tr', {}, h('td', {}, h('code', {}, 'plays_YYYY.csv.gz')), h('td', {}, 'The full play-by-play record, one file per year (the source of all the others)'), h('td', {}, '4-6 MB each'), h('td', {}, h('a', { class: 'btn', href: REPO + '/tree/main/data/plays', rel: 'noopener' }, 'Browse'))),
             h('tr', {}, h('td', {}, h('code', {}, 'data-latest')), h('td', {}, 'The same CSV files, gzipped and rebuilt daily with the newest plays included (as of ' + fmtDate(meta.as_of) + ')'), h('td', {}, 'gzipped'), h('td', {}, h('a', { class: 'btn', href: REPO + '/releases/tag/data-latest', rel: 'noopener' }, 'Latest data'))))))),
       section('Download a chart', h('p', {}, 'Every table and chart on this site has CSV and TXT buttons that download exactly what is on screen, sorted and filtered the way you have it. For example:'),
