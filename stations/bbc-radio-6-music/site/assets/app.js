@@ -83,7 +83,9 @@
   function saveFile(name, text, type) {
     // A byte-order mark makes Excel read the CSV as UTF-8, so accented names stay right.
     const body = type === 'text/csv' ? ['\ufeff', text] : [text];
-    const blob = new Blob(body, { type: type + ';charset=utf-8' });
+    saveBlob(name, new Blob(body, { type: type + ';charset=utf-8' }));
+  }
+  function saveBlob(name, blob) {
     if (navigator.msSaveOrOpenBlob) return navigator.msSaveOrOpenBlob(blob, name);
     const url = URL.createObjectURL(blob);
     const a = h('a', { href: url, download: name, rel: 'noopener', style: 'display:none' });
@@ -644,17 +646,49 @@
       h('p', { class: 'meta' }, 'Searching tracks: use the filter box on any table, for example on the all-time most played page.'));
   }
 
+  /** A button that fetches a file and saves it to the computer, instead of opening it in a new tab. */
+  function fileButton(url, name) {
+    const btn = h('a', { class: 'btn', href: url, download: name, rel: 'noopener' }, 'Download');
+    btn.addEventListener('click', async (e) => {
+      if (btn.dataset.busy) return e.preventDefault();
+      e.preventDefault();
+      btn.dataset.busy = '1';
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const total = +res.headers.get('content-length') || 0, parts = [];
+        let got = 0;
+        const rd = res.body && res.body.getReader();
+        if (rd) for (;;) {
+          const { done, value } = await rd.read();
+          if (done) break;
+          parts.push(value); got += value.length;
+          btn.textContent = total ? 'Downloading ' + Math.round((got / total) * 100) + '%' : 'Downloading ' + Math.round(got / 1048576) + ' MB';
+        } else parts.push(await res.blob());
+        saveBlob(name, new Blob(parts, { type: 'application/octet-stream' }));
+        btn.textContent = 'Downloaded ✓';
+      } catch (err) {
+        // If the browser will not let the page fetch it, fall back to opening the file directly.
+        btn.textContent = 'Download';
+        window.location.href = url;
+      }
+      delete btn.dataset.busy;
+      setTimeout(() => { btn.textContent = 'Download'; }, 4000);
+    });
+    return btn;
+  }
+
   async function downloads() {
     const meta = await getJSON('meta.json');
     const ONLYFILE = '{{DOWNLOADS}}';
     if (ONLYFILE) {
       return setPage('Downloads', h('h1', {}, 'Downloads'),
         h('p', { class: 'lede' }, 'Every play is in one plain CSV file, free to use for personal, non-commercial purposes (as of ' + fmtDate(meta.as_of) + ').'),
-        section('The dataset', h('p', {}, h('a', { class: 'btn', href: BASE + ONLYFILE }, 'Download ' + ONLYFILE))),
+        section('The dataset', h('p', {}, fileButton(BASE + ONLYFILE, ONLYFILE))),
         section('Download a chart', h('p', {}, 'Every table and chart on this site has CSV and TXT buttons that download exactly what is on screen. For example:'),
           h('ul', {}, h('li', {}, h('a', { href: '#/most-played/week' }, 'Most played this week')), h('li', {}, h('a', { href: '#/most-played/all' }, 'Most played of all time')), h('li', {}, h('a', { href: '#/years' }, 'Plays per year, and a top 100 for each year')), h('li', {}, h('a', { href: '#/shows' }, 'Every show; open one for a playlist of everything it has played')))));
     }
-    const raw = (f) => REPO + '/raw/main/data/' + f;
+    const raw = (f) => REPO.replace('https://github.com/', 'https://raw.githubusercontent.com/') + '/main/data/' + f;
     const files = [
       ['tracks_unique.csv', 'Every distinct track with its plays, first and last played, album, label and MusicBrainz artist ID', '46 MB'],
       ['tracks_by_programme.csv', 'What every show has played, with play counts', '43 MB'],
@@ -666,7 +700,7 @@
       h('p', { class: 'lede' }, 'The whole dataset is plain CSV and free to use for personal, non-commercial purposes. The files below are a snapshot; the newest plays are in the data release and the website tables.'),
       section('The dataset',
         h('div', { class: 'tablewrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['File', 'What it is', 'Size', ''].map((t) => h('th', { scope: 'col' }, t)))),
-          h('tbody', {}, files.map((f) => h('tr', {}, h('td', {}, h('code', {}, f[0])), h('td', {}, f[1]), h('td', {}, f[2]), h('td', {}, h('a', { class: 'btn', href: raw(f[0]), rel: 'noopener' }, 'Download')))),
+          h('tbody', {}, files.map((f) => h('tr', {}, h('td', {}, h('code', {}, f[0])), h('td', {}, f[1]), h('td', {}, f[2]), h('td', {}, fileButton(raw(f[0]), f[0])))),
             h('tr', {}, h('td', {}, h('code', {}, 'plays_YYYY.csv.gz')), h('td', {}, 'The full play-by-play record, one file per year (the source of all the others)'), h('td', {}, '4-6 MB each'), h('td', {}, h('a', { class: 'btn', href: REPO + '/tree/main/data/plays', rel: 'noopener' }, 'Browse'))),
             h('tr', {}, h('td', {}, h('code', {}, 'data-latest')), h('td', {}, 'The same CSV files, gzipped and rebuilt daily with the newest plays included (as of ' + fmtDate(meta.as_of) + ')'), h('td', {}, 'gzipped'), h('td', {}, h('a', { class: 'btn', href: REPO + '/releases/tag/data-latest', rel: 'noopener' }, 'Latest data'))))))),
       section('Download a chart', h('p', {}, 'Every table and chart on this site has CSV and TXT buttons that download exactly what is on screen, sorted and filtered the way you have it. For example:'),
